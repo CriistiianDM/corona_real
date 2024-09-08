@@ -1,0 +1,34 @@
+
+services:
+  db:
+    image: postgres:13
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: coronaReal
+      POSTGRES_USER: corona
+      POSTGRES_PASSWORD: clave1234
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  server:
+    build:
+      context: src/server/
+      dockerfile: Dockerfile
+    container_name: django_app
+    volumes:
+      - .:/app
+    ports:
+      - "4800:4800"
+    depends_on:
+      - db
+    environment:
+      - DJANGO_DB_NAME=coronaReal
+      - DJANGO_DB_USER=corona
+      - DJANGO_DB_PASSWORD=clave1234
+      - DJANGO_DB_HOST=db
+      - DJANGO_DB_PORT=5432
+
+volumes:
+  postgres_data:
