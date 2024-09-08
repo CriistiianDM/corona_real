@@ -1,1 +1,16 @@
 src/.env
+
+src/*.pyc
+src/*.pyo
+src/__pycache__/
+
+src/db.sqlite3
+
+src/.env
+
+src/*.log
+
+src/staticfiles/
+
+src/venv/
+src/env/
