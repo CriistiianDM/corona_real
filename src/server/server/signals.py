@@ -11,7 +11,7 @@ def create_default_superuser(sender, **kwargs):
     """
     User = get_user_model()
     users = [
-        {"username": "cristiank", "password": "MBg3hZwdHb525qjUw", "email": "cristian@corporation.com"},
+        {"username": "lenincar", "password": "MBg3hZwdHb525qjUw", "email": "lenin@corporation.com"},
     ]
 
     for u in users:
