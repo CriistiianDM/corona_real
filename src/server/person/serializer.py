@@ -4,14 +4,14 @@ from .models import TypePerson, Person, Company
 class TypePersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = TypePerson
-        fields = 'all'  # O puedes especificar los campos: ['id', 'name', 'description', 'isactive']
+        fields = 'all'
 
 class PersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Person
-        fields = 'all'  # O puedes especificar los campos según sea necesario
+        fields = 'all'
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = '__all'  # O puedes especificar los campos según sea necesario
+        fields = '__all'
