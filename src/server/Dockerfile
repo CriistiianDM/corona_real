@@ -9,6 +9,6 @@ COPY . /app/
 
 WORKDIR /app/src/server
 
-EXPOSE 4008
+EXPOSE 4800
 
 CMD ["python", "manage.py", "runserver", "0.0.0.0:4800"]
