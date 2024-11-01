@@ -18,3 +18,6 @@ python manage.py runscript seeders_rooms
 
 Correr seeder de transacciones
 python manage.py runscript seeder_transactions
+
+instalar npm install @mui/icons-material en frontend
+
