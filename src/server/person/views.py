@@ -11,7 +11,6 @@ from decouple import config
 
 DJANGO_TOKEN_KEY = config('DJANGO_TOKEN_KEY')
 
-
 @require_POST
 def login_view(request):
     try:
