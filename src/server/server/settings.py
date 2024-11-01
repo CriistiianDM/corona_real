@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'inventory',
     'person',
-    'transactions'
+    'transactions',
+    'django_extensions',
 ]
 
 AUTHENTICATION_BACKENDS = [
