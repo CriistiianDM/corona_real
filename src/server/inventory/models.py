@@ -43,12 +43,30 @@ class Reservations(models.Model):
         return self.note
 
 class Rooms(models.Model):
+    SENCILLA = 'sencilla'
+    DOBLE = 'doble'
+    TIPO_HABITACION_CHOICES = [
+        (SENCILLA, 'Sencilla'),
+        (DOBLE, 'Doble'),
+    ]
+
+    OCUPADO = 'ocupado'
+    DISPONIBLE = 'disponible'
+    SUCIO = 'sucio'
+    AVERIADA = 'averiada'
+    ESTADO_HABITACION_CHOICES = [
+        (OCUPADO, 'Ocupado'),
+        (DISPONIBLE, 'Disponible'),
+        (SUCIO, 'Sucio'),
+        (AVERIADA, 'Averiada'),
+    ]
+
     number_room = models.IntegerField()
-    type_room = models.CharField(max_length=10, choices=[('sencilla', 'Sencilla'), ('doble', 'Doble')])
-    name = models.CharField(max_length=200)
+    type_room = models.CharField(max_length=10, choices=TIPO_HABITACION_CHOICES)
+    status = models.CharField(max_length=20, choices=ESTADO_HABITACION_CHOICES, default=DISPONIBLE)  # Campo de estado añadido
     update_at = models.DateTimeField(auto_now=True)
     create_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
-    def str(self):
-        return self.name
+    def __str__(self):
+        return f"{self.number_room} - {self.get_status_display()}"
