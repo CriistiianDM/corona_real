@@ -1,12 +1,8 @@
-from django.urls import path, include
-from rest_framework import routers
-from .views import TypePersonSerializerViewSet, PersonSerializerViewSet, CompanySerializerViewSet
-
-router = routers.DefaultRouter()
-router.register(r'types_person', TypePersonSerializerViewSet)
-router.register(r'person', PersonSerializerViewSet)
-router.register(r'company', CompanySerializerViewSet)
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('login/', views.login_view, name='login'),
+    path('accounts/', views.post_create_accounts, name='account'),
+    path('____/', views.get_csrf_token, name='token'),
 ]

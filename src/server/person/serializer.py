@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from restframework import serializers
 from .models import TypePerson, Person, Company
 
 class TypePersonSerializer(serializers.ModelSerializer):
