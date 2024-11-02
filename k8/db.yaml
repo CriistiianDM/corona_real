@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: corona-bd-pod
+  labels:
+    app: bd-corona
+spec:
+  containers:
+    - name: corona-db-ct
+      image: postgres:15.5
+      ports:
+        - containerPort: 5432
+      env:
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+      volumeMounts:
+        - name: ms-db-vm
+          mountPath: /docker-entrypoint-initdb.d
+  volumes:
+    - name: ms-db-vm
+      persistentVolumeClaim:
+        claimName: db-pvc
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-db-service
+spec:
+  selector:
+    app: bd-corona
+  ports:
+    - protocol: TCP
+      port: 5433
+      targetPort: 5432
+  type: ClusterIP

@@ -1,0 +1,52 @@
+
+services:
+  db:
+    image: postgres:13
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: coronaReal
+      POSTGRES_USER: corona
+      POSTGRES_PASSWORD: clave1234
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   container_name: pgadmin
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@example.com   # Cambia este correo por el que prefieras
+  #     PGADMIN_DEFAULT_PASSWORD: admin1234        # Cambia esta contraseña por una segura
+  #     PGADMIN_CONFIG_PROXY_X_HOST_COUNT: 1
+  #     PGADMIN_CONFIG_PROXY_X_PREFIX_COUNT: 1
+  #   ports:
+  #     - "5050:80"
+  #   depends_on:
+  #     - db
+  #   volumes:
+  #     - pgadmin_data:/var/lib/pgadmin
+  #   restart: always
+    
+  # server:
+  #   build:
+  #     context: src/server/
+  #     dockerfile: Dockerfile
+  #   container_name: django_app
+  #   volumes:
+  #     - .:/app
+  #   ports:
+  #     - "4800:4800"
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     - DJANGO_DB_NAME=coronaReal
+  #     - DJANGO_DB_USER=corona
+  #     - DJANGO_DB_PASSWORD=clave1234
+  #     - DJANGO_DB_HOST=db
+  #     - DJANGO_DB_PORT=5432
+
+volumes:
+  postgres_data: {}
+  pgadmin_data: {}
