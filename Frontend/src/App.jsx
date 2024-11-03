@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
 import Room from "./pages/Room";
@@ -7,13 +7,14 @@ import Product from "./pages/Product";
 import Person from "./pages/Person";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import { Box, CssBaseline, AppBar, Toolbar, Typography } from "@mui/material";
+import { Box, CssBaseline, AppBar, Toolbar, Typography, Button } from "@mui/material";
 
 const AppContent = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Determinar si se muestra el sidebar
-  const showSidebar = location.pathname !== "/Login" && location.pathname !== "/Register";
+  const showSidebar = location.pathname !== "/login" && location.pathname !== "/register";
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -36,9 +37,20 @@ const AppContent = () => {
               alt="Logo"
               style={{ height: "60px", marginRight: "20px" }}
             />
-            <Typography variant="h6" noWrap color="Black">
+            <Typography variant="h4" noWrap color="White">
               Corona Real
             </Typography>
+            
+            {/* Espacio entre el título y los botones */}
+            <Box sx={{ flexGrow: 1 }} />
+
+            {/* Botones para Login y Registro */}
+            <Button color="inherit" onClick={() => navigate("/login")}>
+              Login
+            </Button>
+            <Button color="inherit" onClick={() => navigate("/register")}>
+              Registro
+            </Button>
           </Toolbar>
         </AppBar>
 
