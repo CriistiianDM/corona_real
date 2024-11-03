@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Grid, Card, CardContent, Typography, Button, Drawer, TextField, Box, Fab, IconButton } from "@mui/material";
+import { Grid, Card, CardContent, Typography, Button, Drawer, TextField, Box, Fab } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 const initialProducts = [
   { id: 1, name: "Coca Cola", quantity: 30, type_product: 1, stock: 30, price: 1000, iva: 0.19, isActive: true, imageUrl: "/public/Coca Cola.webp" },
@@ -14,9 +13,10 @@ const Product = () => {
   const [products, setProducts] = useState(initialProducts);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [transactionType, setTransactionType] = useState(""); // "compra" o "venta"
+  const [transactionType, setTransactionType] = useState(""); // "compra", "venta", o "obsolescencia"
   const [transactionAmount, setTransactionAmount] = useState(1);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [isNewProductDrawerOpen, setIsNewProductDrawerOpen] = useState(false);
   const [newProduct, setNewProduct] = useState({ name: "", quantity: 0, type_product: 0, stock: 0, price: 0, iva: 0.19, imageUrl: "" });
   const [imagePreview, setImagePreview] = useState(null);
@@ -42,6 +42,9 @@ const Product = () => {
             quantity: transactionType === "compra"
               ? product.quantity + transactionAmount
               : Math.max(0, product.quantity - transactionAmount),
+            stock: transactionType === "obsolescencia"
+              ? Math.max(0, product.stock - transactionAmount)
+              : product.stock
           }
         : product
     );
@@ -51,13 +54,37 @@ const Product = () => {
 
   const handleAmountChange = (e) => {
     const value = Math.max(1, parseInt(e.target.value, 10));
-    if (transactionType === "venta" && value > selectedProduct.stock) {
-      setErrorMessage("No hay stock disponible para vender");
+    if ((transactionType === "venta" || transactionType === "obsolescencia") && value > selectedProduct.stock) {
+      setErrorMessage("No hay stock disponible para realizar la operación");
       setTransactionAmount(selectedProduct.stock);
     } else {
       setErrorMessage("");
       setTransactionAmount(value);
     }
+  };
+
+  const openEditDrawer = (product) => {
+    setSelectedProduct(product);
+    setIsEditDrawerOpen(true);
+    setNewProduct({ ...product });
+    setImagePreview(product.imageUrl); // Mostrar la imagen actual al editar
+  };
+
+  const closeEditDrawer = () => {
+    setIsEditDrawerOpen(false);
+    setSelectedProduct(null);
+  };
+
+  const handleEditProductChange = (field, value) => {
+    setNewProduct({ ...newProduct, [field]: value });
+  };
+
+  const updateProduct = () => {
+    const updatedProducts = products.map(product =>
+      product.id === newProduct.id ? newProduct : product
+    );
+    setProducts(updatedProducts);
+    closeEditDrawer();
   };
 
   const openNewProductDrawer = () => {
@@ -107,12 +134,18 @@ const Product = () => {
                 <Typography variant="body2" color="textSecondary">Cantidad: {product.quantity}</Typography>
                 <Typography variant="body2" color="textSecondary">Precio: ${product.price}</Typography>
               </CardContent>
-              <Box display="flex" justifyContent="space-around" width="100%" sx={{ padding: 1 }}>
-                <Button variant="contained" color="primary" sx={{ flex: 1, marginRight: 1 }} onClick={() => openDrawer(product, "compra")}>
+              <Box display="flex" flexDirection="column" justifyContent="space-around" width="100%" sx={{ padding: 1 }}>
+                <Button variant="contained" color="primary" sx={{ flex: 1, marginBottom: 1 }} onClick={() => openDrawer(product, "compra")}>
                   Compra
                 </Button>
-                <Button variant="contained" color="secondary" sx={{ flex: 1 }} onClick={() => openDrawer(product, "venta")}>
+                <Button variant="contained" color="secondary" sx={{ flex: 1, marginBottom: 1 }} onClick={() => openDrawer(product, "venta")}>
                   Venta
+                </Button>
+                <Button variant="contained" color="warning" sx={{ flex: 1, marginBottom: 1 }} onClick={() => openDrawer(product, "obsolescencia")}>
+                  Obsolescencia
+                </Button>
+                <Button variant="contained" color="info" sx={{ flex: 1 }} onClick={() => openEditDrawer(product)}>
+                  Editar
                 </Button>
               </Box>
             </Card>
@@ -137,37 +170,9 @@ const Product = () => {
             </>
           ) : (
             <>
-              <Typography variant="h5">Editar Venta para {selectedProduct?.name}</Typography>
+              <Typography variant="h5">Confirmar Obsolescencia para {selectedProduct?.name}</Typography>
               <TextField
-                label="Tipo de Producto"
-                value={selectedProduct?.type_product || ""}
-                fullWidth
-                margin="normal"
-                disabled
-              />
-              <TextField
-                label="Stock"
-                value={selectedProduct?.stock || ""}
-                fullWidth
-                margin="normal"
-                disabled
-              />
-              <TextField
-                label="Precio"
-                value={selectedProduct?.price || ""}
-                fullWidth
-                margin="normal"
-                disabled
-              />
-              <TextField
-                label="IVA"
-                value={selectedProduct?.iva || ""}
-                fullWidth
-                margin="normal"
-                disabled
-              />
-              <TextField
-                label="Cantidad a Vender"
+                label="Cantidad"
                 type="number"
                 value={transactionAmount}
                 onChange={handleAmountChange}
@@ -185,14 +190,14 @@ const Product = () => {
         </Box>
       </Drawer>
 
-      {/* Drawer para Agregar Nuevo Producto */}
-      <Drawer anchor="right" open={isNewProductDrawerOpen} onClose={closeNewProductDrawer}>
+      {/* Drawer para Editar Producto */}
+      <Drawer anchor="right" open={isEditDrawerOpen} onClose={closeEditDrawer}>
         <Box sx={{ width: 300, padding: 3, marginTop: 10 }}>
-          <Typography variant="h5" gutterBottom>Agregar Nuevo Producto</Typography>
+          <Typography variant="h5" gutterBottom>Editar Producto</Typography>
           <TextField
             label="Nombre"
             value={newProduct.name}
-            onChange={(e) => handleNewProductChange("name", e.target.value)}
+            onChange={(e) => handleEditProductChange('name', e.target.value)}
             fullWidth
             margin="normal"
           />
@@ -200,15 +205,14 @@ const Product = () => {
             label="Cantidad"
             type="number"
             value={newProduct.quantity}
-            onChange={(e) => handleNewProductChange("quantity", parseInt(e.target.value, 10))}
+            onChange={(e) => handleEditProductChange('quantity', parseInt(e.target.value, 10))}
             fullWidth
             margin="normal"
           />
           <TextField
             label="Tipo de Producto"
-            type="number"
             value={newProduct.type_product}
-            onChange={(e) => handleNewProductChange("type_product", parseInt(e.target.value, 10))}
+            onChange={(e) => handleEditProductChange('type_product', parseInt(e.target.value, 10))}
             fullWidth
             margin="normal"
           />
@@ -216,7 +220,7 @@ const Product = () => {
             label="Stock"
             type="number"
             value={newProduct.stock}
-            onChange={(e) => handleNewProductChange("stock", parseInt(e.target.value, 10))}
+            onChange={(e) => handleEditProductChange('stock', parseInt(e.target.value, 10))}
             fullWidth
             margin="normal"
           />
@@ -224,7 +228,7 @@ const Product = () => {
             label="Precio"
             type="number"
             value={newProduct.price}
-            onChange={(e) => handleNewProductChange("price", parseInt(e.target.value, 10))}
+            onChange={(e) => handleEditProductChange('price', parseFloat(e.target.value))}
             fullWidth
             margin="normal"
           />
@@ -232,39 +236,89 @@ const Product = () => {
             label="IVA"
             type="number"
             value={newProduct.iva}
-            onChange={(e) => handleNewProductChange("iva", parseFloat(e.target.value))}
+            onChange={(e) => handleEditProductChange('iva', parseFloat(e.target.value))}
             fullWidth
             margin="normal"
           />
-          <Button
-            variant="contained"
-            component="label"
-            fullWidth
-            sx={{ mt: 2 }}
-            startIcon={<UploadFileIcon />}
-          >
+          <Button variant="contained" component="label" sx={{ marginTop: 2 }}>
             Subir Imagen
-            <input
-              type="file"
-              hidden
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
+            <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
           </Button>
           {imagePreview && (
-            <Box mt={2} display="flex" justifyContent="center">
-              <img src={imagePreview} alt="Vista previa" style={{ width: "100%", maxHeight: 150, objectFit: "contain" }} />
-            </Box>
+            <img src={imagePreview} alt="Vista Previa" style={{ width: "100%", marginTop: 10, maxHeight: 100, objectFit: "contain" }} />
           )}
           <Box display="flex" justifyContent="space-between" mt={2}>
-            <Button variant="outlined" onClick={closeNewProductDrawer}>Cancelar</Button>
-            <Button variant="contained" color="primary" onClick={addNewProduct}>Agregar</Button>
+            <Button variant="outlined" onClick={closeEditDrawer}>Cancelar</Button>
+            <Button variant="contained" onClick={updateProduct}>Actualizar</Button>
           </Box>
         </Box>
       </Drawer>
 
-      {/* Botón flotante para agregar nuevo producto */}
-      <Fab color="primary" aria-label="add" onClick={openNewProductDrawer} style={{ position: "fixed", bottom: 16, right: 16 }}>
+      {/* Drawer para Agregar Producto */}
+      <Drawer anchor="right" open={isNewProductDrawerOpen} onClose={closeNewProductDrawer}>
+        <Box sx={{ width: 300, padding: 3, marginTop: 10 }}>
+          <Typography variant="h5" gutterBottom>Agregar Producto</Typography>
+          <TextField
+            label="Nombre"
+            value={newProduct.name}
+            onChange={(e) => handleNewProductChange('name', e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Cantidad"
+            type="number"
+            value={newProduct.quantity}
+            onChange={(e) => handleNewProductChange('quantity', parseInt(e.target.value, 10))}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Tipo de Producto"
+            value={newProduct.type_product}
+            onChange={(e) => handleNewProductChange('type_product', parseInt(e.target.value, 10))}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Stock"
+            type="number"
+            value={newProduct.stock}
+            onChange={(e) => handleNewProductChange('stock', parseInt(e.target.value, 10))}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Precio"
+            type="number"
+            value={newProduct.price}
+            onChange={(e) => handleNewProductChange('price', parseFloat(e.target.value))}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="IVA"
+            type="number"
+            value={newProduct.iva}
+            onChange={(e) => handleNewProductChange('iva', parseFloat(e.target.value))}
+            fullWidth
+            margin="normal"
+          />
+          <Button variant="contained" component="label" sx={{ marginTop: 2 }}>
+            Subir Imagen
+            <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
+          </Button>
+          {imagePreview && (
+            <img src={imagePreview} alt="Vista Previa" style={{ width: "100%", marginTop: 10, maxHeight: 100, objectFit: "contain" }} />
+          )}
+          <Box display="flex" justifyContent="space-between" mt={2}>
+            <Button variant="outlined" onClick={closeNewProductDrawer}>Cancelar</Button>
+            <Button variant="contained" onClick={addNewProduct}>Agregar</Button>
+          </Box>
+        </Box>
+      </Drawer>
+
+      <Fab color="primary" aria-label="add" onClick={openNewProductDrawer} sx={{ position: "fixed", bottom: 16, right: 16 }}>
         <AddIcon />
       </Fab>
     </div>

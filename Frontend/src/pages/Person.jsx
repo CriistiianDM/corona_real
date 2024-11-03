@@ -3,6 +3,8 @@ import { Grid, Card, CardContent, Typography, Button, Drawer, Select, MenuItem, 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
+import { Link } from "react-router-dom";
+import HomeIcon from '@mui/icons-material/Home'; 
 
 // Datos iniciales de personas
 const initialPersons = [
