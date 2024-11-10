@@ -25,7 +25,17 @@ def login_view(request):
         
         if user is not None:
             login(request, user)
-            return JsonResponse({'status': True, 'message': 'Login successful.'})
+            try:
+                person = Person.objects.get(person_auth=user)
+                person_data = model_to_dict(person, exclude=['person_auth'])
+                
+                return JsonResponse({
+                    'status': True,
+                    'message': 'Login successful.',
+                    'user': person_data
+                })
+            except Person.DoesNotExist:
+                return JsonResponse({'status': False, 'message': 'Person data not found.'})
         else:
             return JsonResponse({'status': False, 'message': 'Invalid username or password.'})
         
