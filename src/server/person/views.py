@@ -16,6 +16,7 @@ from django.db.models import Q
 
 DJANGO_TOKEN_KEY = config('DJANGO_TOKEN_KEY')
 
+@csrf_exempt
 @require_POST
 def login_view(request):
     try:
@@ -60,6 +61,7 @@ def get_csrf_token(request):
     except json.JSONDecodeError:
         return JsonResponse({'status': 'error', 'message': 'Invalid JSON.'}, status=400)
 
+@csrf_exempt
 @require_POST
 def post_create_accounts(request):
     try:

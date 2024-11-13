@@ -8,6 +8,7 @@ import Person from "./pages/Person";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { Box, CssBaseline, AppBar, Toolbar, Typography, Button } from "@mui/material";
+import { createDB, test } from "./tools/api/api"
 
 const AppContent = () => {
   const location = useLocation();
@@ -15,6 +16,11 @@ const AppContent = () => {
 
   // Determinar si se muestra el sidebar
   const showSidebar = location.pathname !== "/login" && location.pathname !== "/register";
+
+  React.useEffect(() => {
+    createDB()
+    test()
+  },[])
 
   return (
     <Box sx={{ display: "flex" }}>
