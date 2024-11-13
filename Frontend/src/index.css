@@ -1,6 +1,7 @@
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
+  background-color: #f3f49f; /* Color de fondo */
 }
 
 h2 {
@@ -69,7 +70,7 @@ h2 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
-.md\\:grid-cols-3 {
+.md\:grid-cols-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
