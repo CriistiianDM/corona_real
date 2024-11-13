@@ -3,6 +3,31 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Dos columnas */
+  gap: 1rem; /* Espacio entre los botones */
+  margin-top: 2rem;
+}
+
+.styled-button {
+  font-size: 1.2rem;
+  width: 400px;
+  padding: 1.5rem 8rem; 
+  border-radius: 8px;
+  background-color: #e38369; /* Color de fondo de los botones */
+  color: white; /* Color del texto */
+  border: none; /* Sin borde */
+  cursor: pointer; /* Cursor tipo puntero */
+  transition: background-color 0.3s, transform 0.2s; /* Transiciones para el hover */
+}
+
+.styled-button:hover {
+  background-color: #c75a5a; /* Color al pasar el mouse */
+  transform: scale(1.05); /* Efecto de crecimiento al pasar el mouse */
 }
 
 .logo {
@@ -11,9 +36,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -42,8 +69,7 @@
 }
 
 .navbar {
-  background-color: aliceblue;
+  background-color: #8e0707; /* Color para la barra superior */
   padding: 1rem 2rem;
   border-bottom: gainsboro;
-
 }
