@@ -13,6 +13,15 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.forms.models import model_to_dict
 from django.db.models import Q
+#from django.shortcuts import render
+# Create your views here.
+from rest_framework import viewsets
+from .models import TypePerson, Person, Company
+from .serializer import(
+    TypePersonSerializer,
+    PersonSerializer,
+    CompanySerializer
+)
 
 DJANGO_TOKEN_KEY = config('DJANGO_TOKEN_KEY')
 
@@ -159,3 +168,25 @@ def get_person_by_type(request):
         return JsonResponse({'status': False, 'message': 'Invalid type_person_id.'}, status=400)
     except Exception as e:
         return JsonResponse({'status': False, 'message': str(e)}, status=500)
+
+
+class TypePersonSerializerViewSet(viewsets.ModelViewSet):
+    queryset=TypePerson.objects.all()
+    serializer_class = TypePerson
+
+
+class PersonSerializerViewSet(viewsets.ModelViewSet):
+    queryset=Person.objects.all()
+    serializer_class = Person
+
+
+class CompanySerializerViewSet(viewsets.ModelViewSet):
+    queryset=Company.objects.all()
+    serializer_class = Company
+
+
+
+
+
+
+
