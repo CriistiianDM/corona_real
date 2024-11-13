@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
 import Room from "./pages/Room";
 import Product from "./pages/Product";
+import Person from "./pages/Person";
 import { Box, CssBaseline, AppBar, Toolbar, Typography } from "@mui/material";
 
 function App() {
@@ -39,6 +40,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/rooms" element={<Room />} />
               <Route path="/products" element={<Product />} />
+              <Route path="/wallets" element={<Product />} />
+              <Route path="/person" element={<Person />} />
             </Routes>
           </Box>
         </Box>
