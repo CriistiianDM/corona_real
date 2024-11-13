@@ -4,17 +4,21 @@ import json from "../../../.conf"; // Archivo de configuración
 // Importaciones de utilidades y funciones
 import { initDB } from "../indexedDB/indexedDB";
 import { getCrsftToken } from "../token/token";
-import { fetchPostGeneral } from "../fetchs/fetchs";
+import { fetchPostGeneral , fetchGetGeneral } from "../fetchs/fetchs";
 import { removeUserData, saveUserData } from "../indexedDB/indexedDB"
 import { getData, addDataToDB } from "../utils/utils"
 
 export const createDB = () => initDB()
+
+
 
 export const test = async () => {
     await Login({
         "username": "holi",
         "password": "password123",
     })
+    await ListProducts()
+    
     // await CreateUser({
     //     "name": "Juan Perez",
     //     "username": "ajnhd",
@@ -69,6 +73,22 @@ export const CreateUser = async (data) => {
             response.password = data.password
             removeUserData()
             saveUserData(response)
+        }
+    } catch (e) {
+        console.log(e)
+    }
+    return response
+}
+
+export const ListProducts = async () => {
+    let response = {}
+    try {
+        const res_ = await fetchGetGeneral({
+           urlEndPoint: `${json.URL}${json.listProducts}`
+        })
+
+        if (res_?.status) {
+            response.data = res_
         }
     } catch (e) {
         console.log(e)

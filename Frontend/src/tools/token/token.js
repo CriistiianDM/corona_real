@@ -20,13 +20,13 @@ export const getCrsftToken = async () => {
 export const getAuthorization = async () => {
     const data = await getData() ?? {}
     console.log("no es de por aqui",data)
-    if (!data?.username) return  ``
-    if (data?.authorization) return data?.authorization
+    // if (!data?.username) return  ``
+    // if (data?.authorization) return data?.authorization
 
     const response = await fetchPostWioutSigned({
         dataSend: {
-          username: data?.username,
-          password: data?.password
+          username: "lenincar",
+          password: "MBg3hZwdHb525qjUw"
         },
         urlEndPoint: `${json.URL}${json.authorization}`
     })

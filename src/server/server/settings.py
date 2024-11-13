@@ -25,9 +25,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-s!@0tnjwf440hbn9@!m28u4gmbkk=va7k#yslq)sy*si+6m%85'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
 
 
 # Application definition
@@ -65,6 +67,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://redesigned-xylophone-gwvxgwqj65395x7-5173.app.github.dev",
 ]
 
 ROOT_URLCONF = 'server.urls'
