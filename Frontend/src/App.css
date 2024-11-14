@@ -18,7 +18,7 @@
   width: 400px;
   padding: 1.5rem 8rem; 
   border-radius: 8px;
-  background-color: #e38369; /* Color de fondo de los botones */
+  background-color: #5f1414; /* Color de fondo de los botones */
   color: white; /* Color del texto */
   border: none; /* Sin borde */
   cursor: pointer; /* Cursor tipo puntero */
@@ -26,7 +26,7 @@
 }
 
 .styled-button:hover {
-  background-color: #c75a5a; /* Color al pasar el mouse */
+  background-color: #7a1b1b; /* Color al pasar el mouse */
   transform: scale(1.05); /* Efecto de crecimiento al pasar el mouse */
 }
 

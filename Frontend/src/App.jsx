@@ -28,7 +28,7 @@ const AppContent = () => {
           position="fixed"
           sx={{
             zIndex: (theme) => theme.zIndex.drawer + 1,
-            backgroundColor: "#e38369",
+            backgroundColor: "#5f1414",
           }}
         >
           <Toolbar>
