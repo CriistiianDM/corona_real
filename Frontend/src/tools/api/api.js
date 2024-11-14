@@ -11,7 +11,7 @@ import { getData, addDataToDB } from "../utils/utils"
 export const createDB = () => initDB()
 
 export const test = async () => {
-    await Login({
+    await loginUser({
         "username": "holi",
         "password": "password123",
     })
@@ -25,7 +25,7 @@ export const test = async () => {
     // })
 }
 
-export const Login = async ({ username, password}) => {
+export const loginUser = async ({ username, password}) => {
     let response = {}
     try {
         const db_ = await getData() ?? {}
@@ -34,7 +34,7 @@ export const Login = async ({ username, password}) => {
                 username: username, 
                 password: password
             },
-           urlEndPoint: `${json.URL}${json.login}`
+           urlEndPoint: `${json.URL}/api/person/login/`
         })
 
         if (res_?.status) {
@@ -57,7 +57,7 @@ export const CreateUser = async (data) => {
         const db_ = await getData() ?? {}
         const res_ = await fetchPostGeneral({
            dataSend: data,
-           urlEndPoint: `${json.URL}${json.create}`
+           urlEndPoint: `${json.URL}/api/person/accounts/`
         })
 
         if (res_?.status) {
