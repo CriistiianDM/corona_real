@@ -37,7 +37,7 @@ export const CreateUser = async (data) => {
         body: data
     })
 
-    if (res_?.status) {
+    if (res?.status) {
         response.authorization = db_?.authorization
         response.user = res_.user
         response.username = data.username
