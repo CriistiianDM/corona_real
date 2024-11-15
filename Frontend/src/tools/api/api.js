@@ -1,12 +1,10 @@
 // Importaciones locales
-import json from "../../../.conf"; // Archivo de configuración
+import json from "../../../.conf";
 
 // Importaciones de utilidades y funciones
 import { initDB } from "../indexedDB/indexedDB";
-import { getCrsftToken } from "../token/token";
-import { fetchPostGeneral } from "../fetchs/fetchs";
-import { removeUserData, saveUserData } from "../indexedDB/indexedDB"
-import { getData, addDataToDB } from "../utils/utils"
+import { fetchPostGeneral , fetchGetGeneral} from "../fetchs/fetchs";
+import { Login } from "./person/api"
 
 export const createDB = () => initDB()
 
@@ -25,51 +23,27 @@ export const test = async () => {
     // })
 }
 
-export const Login = async ({ username, password}) => {
+export const fetchPost = async ({url , body}) => {
     let response = {}
     try {
-        const db_ = await getData() ?? {}
         const res_ = await fetchPostGeneral({
-           dataSend: { 
-                username: username, 
-                password: password
-            },
-           urlEndPoint: `${json.URL}${json.login}`
+           dataSend: body,
+           urlEndPoint: url
         })
-
-        if (res_?.status) {
-            removeUserData()
-            response.crsftToken = db_?.crsftToken
-            response.authorization = db_?.authorization
-            response.username = username
-            response.password = password
-            saveUserData(response)
-        }
+        if (res_) response = res_
     } catch (e) {
         console.log(e)
     }
     return response
 }
 
-export const CreateUser = async (data) => {
+export const fetchGet = async ({ url }) => {
     let response = {}
     try {
-        const db_ = await getData() ?? {}
-        const res_ = await fetchPostGeneral({
-           dataSend: data,
-           urlEndPoint: `${json.URL}${json.create}`
+        const res_ = await fetchGetGeneral({
+           urlEndPoint: url
         })
-
-        if (res_?.status) {
-            console.log(res_)
-            response.crsftToken = db_?.crsftToken
-            response.authorization = db_?.authorization
-            response.user = res_.user
-            response.username = data.username
-            response.password = data.password
-            removeUserData()
-            saveUserData(response)
-        }
+        if (res_) response = res_
     } catch (e) {
         console.log(e)
     }

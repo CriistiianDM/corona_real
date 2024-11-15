@@ -6,20 +6,16 @@ const KEY = "MZDNJKZFBMU874JHSJHHUIRQWIURHIUNRKJNUIHU8GV"
 
 export const getCrsftToken = async () => {
     const data = await getData() ?? {}
-    if (data?.crsftToken) return data?.crsftToken
-
     const response = await fetchPostWioutSigned({
         dataSend: {key: KEY},
-        urlEndPoint: `${json.URL}${json.csrftToken}`
+        urlEndPoint: `${json.csrftToken}`
     })
-    addDataToDB(data,'crsftToken', response?.token)
-
     return response?.token
 }
 
 export const getAuthorization = async () => {
     const data = await getData() ?? {}
-    console.log("no es de por aqui",data)
+ 
     if (!data?.username) return  ``
     if (data?.authorization) return data?.authorization
 
@@ -28,7 +24,7 @@ export const getAuthorization = async () => {
           username: data?.username,
           password: data?.password
         },
-        urlEndPoint: `${json.URL}${json.authorization}`
+        urlEndPoint: `${json.authorization}`
     })
     addDataToDB(data,'authorization', response?.token)
 

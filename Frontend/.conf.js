@@ -1,7 +1,8 @@
+const URL = "http://127.0.0.1:4800"
+
 export default {
-    "URL": "http://127.0.0.1:8000",
-    "csrftToken": "/api/person/____/",
-    "authorization": "/api/token/",
-    "login": "/api/person/login/",
-    "create": "/api/person/accounts/"
+    "csrftToken": `${URL}/api/person/____/`,
+    "authorization": `${URL}/api/token/`,
+    "login": `${URL}/api/person/login/`,
+    "create": `${URL}/api/person/accounts/`
 }
