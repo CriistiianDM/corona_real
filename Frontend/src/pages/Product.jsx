@@ -3,9 +3,9 @@ import { Grid, Card, CardContent, Typography, Button, Drawer, TextField, Box, Fa
 import AddIcon from '@mui/icons-material/Add';
 
 const initialProducts = [
-  { id: 1, name: "Coca Cola", quantity: 30, type_product: 1, stock: 30, price: 1000, iva: 0.19, isActive: true, imageUrl: "/public/Coca Cola.webp" },
-  { id: 2, name: "Doritos", quantity: 15, type_product: 1, stock: 15, price: 2000, iva: 0.19, isActive: true, imageUrl: "/public/Doritos.webp" },
-  { id: 3, name: "Manzana", quantity: 50, type_product: 2, stock: 50, price: 500, iva: 0.05, isActive: true, imageUrl: "/public/Manzana.webp" },
+  { id: 1, name: "Coca Cola", quantity: 30, type_product: 1, stock: 30, price: 1000, isActive: true, imageUrl: "/public/Coca Cola.webp" },
+  { id: 2, name: "Doritos", quantity: 15, type_product: 1, stock: 15, price: 2000, isActive: true, imageUrl: "/public/Doritos.webp" },
+  { id: 3, name: "Manzana", quantity: 50, type_product: 2, stock: 50, price: 500, isActive: true, imageUrl: "/public/Manzana.webp" },
   // Agrega más productos aquí
 ];
 
@@ -18,7 +18,7 @@ const Product = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [isNewProductDrawerOpen, setIsNewProductDrawerOpen] = useState(false);
-  const [newProduct, setNewProduct] = useState({ name: "", quantity: 0, type_product: 0, stock: 0, price: 0, iva: 0.19, imageUrl: "" });
+  const [newProduct, setNewProduct] = useState({ name: "", quantity: 0, type_product: 0, stock: 0, price: 0, imageUrl: "" });
   const [imagePreview, setImagePreview] = useState(null);
 
   const openDrawer = (product, type) => {
@@ -89,7 +89,7 @@ const Product = () => {
 
   const openNewProductDrawer = () => {
     setIsNewProductDrawerOpen(true);
-    setNewProduct({ name: "", quantity: 0, type_product: 0, stock: 0, price: 0, iva: 0, imageUrl: "" });
+    setNewProduct({ name: "", quantity: 0, type_product: 0, stock: 0, price: 0, imageUrl: "" });
     setImagePreview(null);
   };
 
@@ -232,14 +232,6 @@ const Product = () => {
             fullWidth
             margin="normal"
           />
-          <TextField
-            label="IVA"
-            type="number"
-            value={newProduct.iva}
-            onChange={(e) => handleEditProductChange('iva', parseFloat(e.target.value))}
-            fullWidth
-            margin="normal"
-          />
           <Button variant="contained" component="label" sx={{ marginTop: 2 }}>
             Subir Imagen
             <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
@@ -293,14 +285,6 @@ const Product = () => {
             type="number"
             value={newProduct.price}
             onChange={(e) => handleNewProductChange('price', parseFloat(e.target.value))}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="IVA"
-            type="number"
-            value={newProduct.iva}
-            onChange={(e) => handleNewProductChange('iva', parseFloat(e.target.value))}
             fullWidth
             margin="normal"
           />
