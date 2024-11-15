@@ -18,6 +18,7 @@ class Products(models.Model):
     inv = models.IntegerField()
     update_at = models.DateTimeField(auto_now=True)
     create_at = models.DateTimeField(auto_now_add=True)
+    image_url = models.URLField(max_length=500, null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
     def str(self):
