@@ -80,7 +80,7 @@ const Company = () => {
                 </Typography>
                 <Box className="image-container" sx={{ width: "100%", maxHeight: 200, display: "flex", justifyContent: "center", marginTop: 1 }}>
                 <img
-                  src={`/public/company2.png`}
+                  src={`/public/company4.png`}
                   alt={company.name}
                   style={{ width: "100%", height: "100%", objectFit: "contain", maxHeight: 150 }}
                 />

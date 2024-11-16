@@ -8,6 +8,7 @@ import Person from "./pages/Person";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Company from "./pages/Company";
+import CashRegister from "./pages/CashRegister";
 import { Box, CssBaseline, AppBar, Toolbar, Typography, Button } from "@mui/material";
 import { createDB, test } from "./tools/api/api"
 
@@ -73,6 +74,7 @@ const AppContent = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/company" element={<Company />} />
+            <Route path="/cash_register" element={<CashRegister />} />
           </Routes>
         </Box>
       </Box>
