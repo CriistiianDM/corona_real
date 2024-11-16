@@ -32,6 +32,9 @@ const Sidebar = () => {
         <ListItem button component={Link} to="/person">
           <ListItemText primary="Personas" />
         </ListItem>
+        <ListItem button component={Link} to="/company">
+          <ListItemText primary="Company" />
+        </ListItem>
       </List>
     </Drawer>
   );
