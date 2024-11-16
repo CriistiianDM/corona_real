@@ -3,18 +3,16 @@ import { Grid, Card, CardContent, Typography, Button, Drawer, Select, MenuItem, 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
-import { Link } from "react-router-dom";
-import HomeIcon from '@mui/icons-material/Home'; 
 
-// Datos iniciales de personas
+
 const initialPersons = [
-  { id: 1, person_auth: null, type_person: 1, company_id: null, name: "Juan Pérez", tel: 123456789, identification: 1010101010, fecha_expedicion: "2024-07-25T00:00:00" },
-  { id: 2, person_auth: null, type_person: 2, company_id: null, name: "María Gómez", tel: 987654321, identification: 2020202020, fecha_expedicion: "2021-05-20T00:00:00" },
-  { id: 3, person_auth: null, type_person: 3, company_id: null, name: "Carlos Ramírez", tel: 555555555, identification: 3030303030, fecha_expedicion: "2023-03-15T00:00:00" },
-  // Agrega más personas aquí si es necesario
+  { id: 1, person_auth: null, type_person: 1, company_id: null, name: "Juan Pérez", tel: 123456789, identification: 1010101010, fecha_expedicion: "2024-07-25T00:00:00", metodo_pago: "Tarjeta", acompañantes: ["Luis"] },
+  { id: 2, person_auth: null, type_person: 2, company_id: null, name: "María Gómez", tel: 987654321, identification: 2020202020, fecha_expedicion: "2021-05-20T00:00:00", metodo_pago: "Efectivo", acompañantes: ["Carlos", "Ana"] },
+  { id: 3, person_auth: null, type_person: 3, company_id: null, name: "Carlos Ramírez", tel: 555555555, identification: 3030303030, fecha_expedicion: "2023-03-15T00:00:00", metodo_pago: "Transferencia", acompañantes: [] },
 ];
 
-// Tipos de personas
+
+
 const typePersonNames = {
   1: "Cliente",
   2: "Proveedor",
@@ -26,7 +24,16 @@ const Person = () => {
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isNewPersonDrawerOpen, setIsNewPersonDrawerOpen] = useState(false);
-  const [newPerson, setNewPerson] = useState({ name: "", tel: "", identification: "", fecha_expedicion: "", type_person: 1 });
+  const [newPerson, setNewPerson] = useState({
+    name: "",
+    tel: "",
+    identification: "",
+    fecha_expedicion: "",
+    type_person: 1,
+    metodo_pago: "",
+    acompañantes: [], 
+  });
+
 
   const openEditDrawer = (person) => {
     setSelectedPerson(person);
@@ -40,7 +47,15 @@ const Person = () => {
 
   const openNewPersonDrawer = () => {
     setIsNewPersonDrawerOpen(true);
-    setNewPerson({ name: "", tel: "", identification: "", fecha_expedicion: "", type_person: 1 });
+    setNewPerson({
+      name: "",
+      tel: "",
+      identification: "",
+      fecha_expedicion: "",
+      type_person: 1,
+      metodo_pago: "",
+      acompañantes: [],
+    });
   };
 
   const closeNewPersonDrawer = () => {
@@ -73,6 +88,20 @@ const Person = () => {
     setPersons(persons.filter(person => person.id !== id));
   };
 
+  const handleNewAcompananteChange = (index, value) => {
+    const updatedAcompanantes = [...newPerson.acompañantes];
+    updatedAcompanantes[index] = value;
+    setNewPerson({ ...newPerson, acompañantes: updatedAcompanantes });
+  };
+
+  const handleAcompananteChange = (index, value) => {
+    const updatedAcompanantes = [...selectedPerson.acompañantes];
+    updatedAcompanantes[index] = value;
+    setSelectedPerson({ ...selectedPerson, acompañantes: updatedAcompanantes });
+  };
+
+
+
   return (
     <div style={{ display: "flex" }}>
       <Grid container spacing={3} style={{ flex: 1 }}>
@@ -104,8 +133,6 @@ const Person = () => {
           </Grid>
         ))}
       </Grid>
-
-      {/* Drawer para editar persona */}
       <Drawer anchor="right" open={isDrawerOpen} onClose={closeEditDrawer}>
         {selectedPerson && (
           <Box sx={{ width: 300, padding: 3, marginTop: 10 }}>
@@ -157,6 +184,33 @@ const Person = () => {
               <MenuItem value={3}>Acompañante</MenuItem>
               <MenuItem value={4}>Huésped</MenuItem>
             </Select>
+            {/* Método de Pago */}
+            <TextField
+              label="Método de Pago"
+              value={selectedPerson.metodo_pago || ""}
+              onChange={(e) => handleFieldChange("metodo_pago", e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Cantidad de Acompañantes"
+              type="number"
+              value={selectedPerson.acompañantes.length || 0}
+              onChange={(e) => handleFieldChange("acompañantes", Array(Number(e.target.value)).fill(""))}
+              fullWidth
+              margin="normal"
+            />
+            {selectedPerson.acompañantes.map((acompanante, index) => (
+              <TextField
+                key={index}
+                label={`Acompañante ${index + 1}`}
+                value={acompanante}
+                onChange={(e) => handleAcompananteChange(index, e.target.value)}
+                fullWidth
+                margin="normal"
+              />
+            ))}
+
             <Box display="flex" justifyContent="space-between" mt={2}>
               <Button variant="outlined" onClick={closeEditDrawer}>Cancelar</Button>
               <Button variant="contained" color="primary" onClick={saveChanges}>Guardar</Button>
@@ -164,8 +218,6 @@ const Person = () => {
           </Box>
         )}
       </Drawer>
-
-      {/* Drawer para agregar nueva persona */}
       <Drawer anchor="right" open={isNewPersonDrawerOpen} onClose={closeNewPersonDrawer}>
         <Box sx={{ width: 300, padding: 3, marginTop: 10 }}>
           <Typography variant="h5" gutterBottom>Agregar Nueva Persona</Typography>
@@ -215,14 +267,37 @@ const Person = () => {
             <MenuItem value={2}>Proveedor</MenuItem>
             <MenuItem value={3}>Empleado</MenuItem>
           </Select>
+          <TextField
+            label="Método de Pago"
+            value={newPerson.metodo_pago}
+            onChange={(e) => handleNewPersonFieldChange("metodo_pago", e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Cantidad de Acompañantes"
+            type="number"
+            value={newPerson.acompañantes.length || 0}
+            onChange={(e) => handleNewPersonFieldChange("acompañantes", Array(Number(e.target.value)).fill(""))}
+            fullWidth
+            margin="normal"
+          />
+          {newPerson.acompañantes.map((acompanante, index) => (
+            <TextField
+              key={index}
+              label={`Acompañante ${index + 1}`}
+              value={acompanante}
+              onChange={(e) => handleNewAcompananteChange(index, e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+          ))}
           <Box display="flex" justifyContent="space-between" mt={2}>
             <Button variant="outlined" onClick={closeNewPersonDrawer}>Cancelar</Button>
             <Button variant="contained" color="primary" onClick={addNewPerson}>Agregar</Button>
           </Box>
         </Box>
       </Drawer>
-
-      {/* Botón flotante para agregar nueva persona */}
       <Fab color="primary" aria-label="add" onClick={openNewPersonDrawer} style={{ position: "fixed", bottom: 16, right: 16 }}>
         <AddIcon />
       </Fab>
