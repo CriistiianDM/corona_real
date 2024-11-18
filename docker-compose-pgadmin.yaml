@@ -32,12 +32,12 @@ services:
   server:
     build:
       context: src/server/
-      dockerfile: Dockerfile-pgadmin
+      dockerfile: Dockerfile
     container_name: django_app
     volumes:
       - .:/app
     ports:
-      - "4800:8000"
+      - "8000:8000"
     depends_on:
       - db
     environment:
@@ -46,7 +46,7 @@ services:
       - DJANGO_DB_PASSWORD=clave1234
       - DJANGO_DB_HOST=db
       - DJANGO_DB_PORT=5432
-      - DJANGO_TOKEN_KEY=TOKEN
+      - DJANGO_TOKEN_KEY=MZDNJKZFBMU874JHSJHHUIRQWIURHIUNRKJNUIHU8GV
 
 volumes:
   postgres_data: {}
