@@ -46,7 +46,7 @@ services:
       - DJANGO_DB_PASSWORD=clave1234
       - DJANGO_DB_HOST=db
       - DJANGO_DB_PORT=5432
-      - DJANGO_TOKEN_KEY=MZDNJKZFBMU874JHSJHHUIRQWIURHIUNRKJNUIHU8GV
+      - DJANGO_TOKEN_KEY=${TOKEN}
 
 volumes:
   postgres_data: {}
