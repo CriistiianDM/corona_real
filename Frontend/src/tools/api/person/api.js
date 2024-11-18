@@ -19,11 +19,13 @@ export const Login = async ({ username, password}) => {
 
     if (res?.status) {
         removeUserData()
+        console.log("entré")
         response.authorization = db_?.authorization
         response.username = username
         response.password = password
         response.token = true
         saveUserData(response)
+        console.log("entré")
     }
 
     return response
@@ -33,10 +35,9 @@ export const CreateUser = async (data) => {
     let response = {}
     const db_ = await getData() ?? {}
     const res = await fetchPost({
-        url: json.login,
+        url: json.create,
         body: data
     })
-
     if (res?.status) {
         response.authorization = db_?.authorization
         response.user = res_.user

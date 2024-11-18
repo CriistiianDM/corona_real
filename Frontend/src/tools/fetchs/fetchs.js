@@ -91,8 +91,8 @@ const fetchGeneral = async ({
 }) => {
     let response = null
 
-    const csrftToken = await getCrsftToken()
-    const authorization = await getAuthorization()
+    const csrftToken = await getCrsftToken() ?? ""
+    const authorization = await getAuthorization() ?? ""
 
     try {
         const options = {
