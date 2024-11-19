@@ -176,7 +176,7 @@ const Company = () => {
       </Drawer>
 
       {/* Botón flotante para agregar empresa */}
-      <Fab color="primary" aria-label="add" onClick={openNewCompanyDrawer} style={{ position: "fixed", bottom: 16, right: 16 }}>
+      <Fab className="boton-flotante" color="primary" aria-label="add" onClick={openNewCompanyDrawer} style={{ position: "fixed", bottom: 16, right: 16 }}>
         <AddIcon />
       </Fab>
     </div>

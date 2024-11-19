@@ -63,7 +63,7 @@
     position: fixed;
     bottom: 16px;
     right: 16px;
-    background-color: #007bff;
+    background-color: rgb(95 20 20)!important;
     color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s ease;
