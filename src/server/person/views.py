@@ -1,7 +1,8 @@
 import json
 
 from django.shortcuts import render
-
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
@@ -13,6 +14,15 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.forms.models import model_to_dict
 from django.db.models import Q
+#from django.shortcuts import render
+# Create your views here.
+from rest_framework import viewsets
+from .models import TypePerson, Person, Company
+from .serializer import(
+    TypePersonSerializer,
+    PersonSerializer,
+    CompanySerializer
+)
 
 DJANGO_TOKEN_KEY = config('DJANGO_TOKEN_KEY')
 
@@ -159,3 +169,33 @@ def get_person_by_type(request):
         return JsonResponse({'status': False, 'message': 'Invalid type_person_id.'}, status=400)
     except Exception as e:
         return JsonResponse({'status': False, 'message': str(e)}, status=500)
+
+
+class TypePersonSerializerViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset=TypePerson.objects.all()
+    serializer_class = TypePersonSerializer
+
+
+class PersonSerializerViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = Person.objects.all().order_by('-created_at')  # O usa '-id'
+    serializer_class = PersonSerializer
+
+
+
+
+class CompanySerializerViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset=Company.objects.all()
+    serializer_class = CompanySerializer
+
+
+
+
+
+
+

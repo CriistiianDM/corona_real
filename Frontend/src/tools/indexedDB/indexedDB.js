@@ -1,71 +1,67 @@
-// conf
-const DATABASENAME = "_______"
-const TABLENAME = "________"
-const IDUSER = 1
+// Configuración de la base de datos
+const DATABASENAME = "corona_real";
+const TABLENAME = "users";
+const IDUSER = 1;
 
+// Inicializa la base de datos de usuario
 export const initDB = () => {
-    // Abrir la base de datos
-    const request = indexedDB.open(DATABASENAME, 1);
+  const request = indexedDB.open(DATABASENAME, 1);
+  
+  request.onupgradeneeded = (event) => {
+    const db = event.target.result;
+    db.createObjectStore(TABLENAME, { keyPath: "id" });
+  };
 
-    request.onupgradeneeded = function(event) {
-        const db = event.target.result;
-        db.createObjectStore(TABLENAME, { keyPath: "id", autoIncrement: true });
-    };
+  request.onsuccess = (event) => {
+    console.log("Base de datos abierta con éxito");
+  };
 
-    request.onsuccess = function(event) {
-        const db = event.target.result;
-        console.log("Base de datos abierta con éxito");
-    };
-    request.onerror = function(event) {
-        console.log("Error al abrir la base de datos", event);
-    };
+  request.onerror = (event) => {
+    console.error("Error al abrir la base de datos", event);
+  };
 };
 
+// Guarda los datos del usuario en IndexedDB
 export const saveUserData = (data) => {
-    const request = indexedDB.open(DATABASENAME, 1);
-    request.onsuccess = function(event) {
-        const db = event.target.result;
-        const transaction = db.transaction(TABLENAME, "readwrite");
-        const store = transaction.objectStore(TABLENAME);
-        
-        store.put({ id: IDUSER, ...data });
-        transaction.oncomplete = () => console.log("Datos guardados");
-    };
-}
+  const request = indexedDB.open(DATABASENAME, 1);
 
+  request.onsuccess = (event) => {
+    const db = event.target.result;
+    const transaction = db.transaction(TABLENAME, "readwrite");
+    const store = transaction.objectStore(TABLENAME);
+    store.put({ id: IDUSER, ...data });
+  };
+};
+
+// Obtiene los datos del usuario almacenados
 export const getUserData = (callback) => {
-    if (typeof callback !== "function") {
-        console.error("El callback proporcionado no es una función.");
-        return;
-    }
+  const request = indexedDB.open(DATABASENAME, 1);
 
-    const request = indexedDB.open(DATABASENAME, 1);
-    request.onsuccess = function(event) {
-        const db = event.target.result;
-        const transaction = db.transaction(TABLENAME, "readonly");
-        const store = transaction.objectStore(TABLENAME);
-        
-        const consulta = store.get(IDUSER);
-        consulta.onsuccess = () => {
-            callback(consulta.result);
-        };
-    };
-}
+  request.onsuccess = (event) => {
+    const db = event.target.result;
+    const transaction = db.transaction(TABLENAME, "readonly");
+    const store = transaction.objectStore(TABLENAME);
+    const query = store.get(IDUSER);
 
+    query.onsuccess = () => callback(query.result);
+  };
+};
+
+// Verifica si el usuario está autenticado
+export const isUserAuthenticated = (callback) => {
+  getUserData((data) => {
+    callback(data?.token ? data : null);
+  });
+};
+
+// Elimina los datos del usuario al cerrar sesión
 export const removeUserData = () => {
-    const request = indexedDB.open(DATABASENAME, 1);
-    request.onsuccess = function(event) {
-        const db = event.target.result;
-        const transaction = db.transaction(TABLENAME, "readwrite");
-        const store = transaction.objectStore(TABLENAME);
+  const request = indexedDB.open(DATABASENAME, 1);
 
-        store.delete(IDUSER);
-        transaction.oncomplete = () => console.log("Datos eliminados");
-    };
-}
-
-export const isUserAuthenticated = (callbacka_) => {
-    getUserData(function(data) {
-        callbacka_(data && data?.token ? true : false);
-    });
-}
+  request.onsuccess = (event) => {
+    const db = event.target.result;
+    const transaction = db.transaction(TABLENAME, "readwrite");
+    const store = transaction.objectStore(TABLENAME);
+    store.delete(IDUSER);
+  };
+};

@@ -1,5 +1,5 @@
 import React from "react";
-import { Drawer, List, ListItem, ListItemText, Toolbar } from "@mui/material";
+import { Drawer, List, ListItem, ListItemText, Toolbar, Box } from "@mui/material";
 import { Link } from "react-router-dom";
 
 const Sidebar = () => {
@@ -15,7 +15,12 @@ const Sidebar = () => {
         },
       }}
     >
-      <Toolbar />
+      <Toolbar>
+        <Box sx={{ display: "flex", alignItems: "center", padding: 1 }}>
+          <img src="/Logo.png" alt="Logo" style={{ height: "40px", marginRight: "10px" }} />
+          <h3>Corona Real</h3>
+        </Box>
+      </Toolbar>
       <List>
         <ListItem button component={Link} to="/">
           <ListItemText primary="Home" />
@@ -26,11 +31,14 @@ const Sidebar = () => {
         <ListItem button component={Link} to="/products">
           <ListItemText primary="Productos" />
         </ListItem>
-        <ListItem button component={Link} to="/products">
-          <ListItemText primary="Billeteras" />
-        </ListItem>
         <ListItem button component={Link} to="/person">
           <ListItemText primary="Personas" />
+        </ListItem>
+        <ListItem button component={Link} to="/company">
+          <ListItemText primary="Company" />
+        </ListItem>
+        <ListItem button component={Link} to="/cash_register">
+          <ListItemText primary="Billeteras" />
         </ListItem>
       </List>
     </Drawer>
