@@ -4,7 +4,7 @@ import json from "../../../../.conf";
 // Importaciones de utilidades y funciones
 import { removeUserData, saveUserData } from "../../indexedDB/indexedDB"
 import { getData, addDataToDB } from "../../utils/utils"
-import {fetchPost, fetchGet} from "../api"
+import {fetchPost, fetchGet, fetchPut} from "../api"
 
 export const Login = async ({ username, password}) => {
     let response = {}
@@ -31,6 +31,19 @@ export const Login = async ({ username, password}) => {
     return response
 }
 
+export const updatePerson = async (id, personData) => {
+    try {
+      const response = await fetchPut({
+        url: json.person + id + '/', 
+        data: personData,
+      });
+      return response;
+    } catch (error) {
+      console.error("Error al actualizar persona:", error);
+      throw error;
+    }
+  };
+
 export const CreateUser = async (data) => {
     let response = {}
     const db_ = await getData() ?? {}
@@ -49,3 +62,26 @@ export const CreateUser = async (data) => {
 
     return response
 }
+
+export const createPerson = async (personData) => {
+    try {
+        const response = await fetchPost({
+            url: json.person, // Define que el endpoint sea '/api/person/'.
+            body: personData,
+        });
+        return response;
+    } catch (error) {
+        console.error("Error al crear persona:", error);
+        return null;
+    }
+};
+
+// Obtener todas las personas
+export const getPersons = async () => {
+    try {
+        const response = await fetchGet({ url: json.person });
+        return response;
+    } catch (error) {
+        console.error("Error al obtener personas:", error);
+    }
+};

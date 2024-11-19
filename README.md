@@ -19,3 +19,4 @@ python manage.py runscript seeders_rooms
 Correr seeder de transacciones
 python manage.py runscript seeder_transactions
 
+docker-compose -f docker-compose-pgadmin.yaml up --build

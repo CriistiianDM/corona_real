@@ -35,7 +35,7 @@ class ReservationsViewSet(viewsets.ModelViewSet):
     queryset = Reservations.objects.all()
     serializer_class = ReservationsSerializer
 
-@method_decorator(csrf_protect, name='dispatch')
+# @method_decorator(csrf_protect, name='dispatch')
 class RoomsViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
