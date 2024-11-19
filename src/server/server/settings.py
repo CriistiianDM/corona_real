@@ -66,6 +66,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://localhost:57414",
     "https://redesigned-xylophone-gwvxgwqj65395x7-5173.app.github.dev"
 ]
 

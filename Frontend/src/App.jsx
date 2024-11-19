@@ -7,11 +7,10 @@ import Product from "./pages/Product";
 import Person from "./pages/Person";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
-import { isUserAuthenticated, removeUserData } from "./tools/indexedDB/indexedDB";
+import { AppBar, Toolbar, Typography, Button, Box, CssBaseline } from "@mui/material";
+import { isUserAuthenticated, removeUserData, initDB } from "./tools/indexedDB/indexedDB";
 import Company from "./pages/Company";
 import CashRegister from "./pages/CashRegister";
-import { Box, CssBaseline, AppBar, Toolbar, Typography, Button } from "@mui/material";
 import { createDB, test } from "./tools/api/api"
 
 const AppContent = () => {
@@ -24,6 +23,8 @@ const AppContent = () => {
 
   // Carga inicial para comprobar autenticación
   useEffect(() => {
+    initDB()
+    test()
     isUserAuthenticated((data) => {
       if (data) setUser(data.username);
     });

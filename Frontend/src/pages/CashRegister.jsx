@@ -1,254 +1,238 @@
-import React, { useState } from "react";
-import { 
-  Grid, Card, CardContent, Typography, Button, Drawer, Select, MenuItem, 
-  TextField, Box, Fab, IconButton 
-} from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import AddIcon from '@mui/icons-material/Add';
+import React from "react"
 
-const initialCashRegisters = [
-  { 
-    id: 1, 
-    typeCashRegister: 1, 
-    cash_balance: 1500.50, 
-    note: "Caja principal del lobby", 
-  },
-  { 
-    id: 2, 
-    typeCashRegister: 2, 
-    cash_balance: 500.00, 
-    note: "Caja secundaria para eventos", 
-  },
-  { 
-    id: 3, 
-    typeCashRegister: 3, 
-    cash_balance: 0.00, 
-    note: "Caja de mantenimiento, fuera de servicio", 
+// Styles
+import styles from "../css/jscss/root"
+
+// Fetchs
+import { getCashRegister,postCashRegister } from "../tools/api/transaction/api";
+
+// Material IU
+import { Grid2, Button, TextField, Typography, Fab, Card, CardContent, Drawer, Box, MenuItem } from "@mui/material";
+
+// Iconst Material IU
+import AddIcon from "@mui/icons-material/Add";
+
+// Components
+import For from "../components/For/For"
+
+/** TODO: Me Falta separarlo en componentes!!!!! */
+export default function (props) {
+  return (
+      <React.Fragment>
+          <ContainerPrimary />
+      </React.Fragment>
+  )
+}
+
+const handlersFunc = (props) => {
+  const {
+    openModal,
+    isLoadSave,
+    setGlobal
+  } = props
+
+  const closeModal = () => setGlobal((prev) => ({
+     ...prev,
+     openModal: !openModal
+  }))
+
+  const loadForm = () => setGlobal((prev) => ({
+    ...prev,
+    isLoadSave: !isLoadSave
+ }))
+
+  const createCashRegister = async (data) => {
+    const response = await postCashRegister({
+       data: data
+    })
+    return response
   }
-];
 
-const typeCashRegister = {
-  1: "Caja Facturados",
-  2: "Caja Secundaria",
-  3: "Cajas Productos",
-};
+  const listCashRegister = async (data) => {
+    const response = await getCashRegister()
+    setGlobal((prev) => ({
+      ...prev,
+      list: response
+   }))  
+  }
 
-const CashRegister = () => {
-  const [cashRegisters, setCashRegisters] = useState(initialCashRegisters);
-  const [selectedCashRegister, setSelectedCashRegister] = useState(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isNewDrawerOpen, setIsNewDrawerOpen] = useState(false);
-  const [newCashRegister, setNewCashRegister] = useState({
-    typeCashRegister: 1,
+  const updateList = () => {
+    setGlobal((prev) => ({
+      ...prev,
+      update: new Date(Date.now())
+   }))  
+  }
+  
+  return {
+    closeModal: closeModal,
+    createCashRegister: createCashRegister,
+    loadForm: loadForm,
+    listCashRegister: listCashRegister,
+    updateList: updateList
+  }
+}
+
+/** BODY */
+const ContainerPrimary = () => {
+   const [ global , setGlobal ] = React.useState({
+      openModal: false,
+      isLoadSave: false,
+      list: [],
+      update: null
+   })
+   const handlers = handlersFunc({...{ ...global, setGlobal }})
+
+   React.useEffect(() => {
+    handlers.listCashRegister()
+   }, [global.update])
+
+   return (
+      <Grid2 sx={styles.containerPrimary}>
+        <ActionsForms {...{ ...global, handlers}} />
+        <ListCashRegister {...{ ...global, handlers}} />
+      </Grid2>
+   )
+}
+
+
+/** Actions FORMS */
+const ActionsForms = (props) => {
+  const { handlers } = props
+
+  return (
+    <section>
+      <AddNewCashRegister {...props} />
+      <Fab aria-label="add" onClick={handlers.closeModal}>
+        <AddIcon />
+      </Fab>
+    </section>
+  )
+}
+
+const ListCashRegister = ({ list }) => {
+   return (
+      <section>
+          <For func={cardCashRegister} list={list} />
+      </section>
+   )
+}
+
+const cardCashRegister = (element, index) => {
+  const names = {
+    "1": "Facturados",
+    "2": "Secundaria",
+    "3": "Productos"
+  }
+  return (
+    <Grid2>
+      <Card sx={{ margin: 2, padding: 2 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            {names[element.type_cash_register]}
+          </Typography>
+
+          <Typography variant="body1" color="textSecondary">
+            Balance: ${element.cash_balance}
+          </Typography>
+
+          <Button
+            variant="outlined"
+            color="primary"
+            sx={{ marginTop: 2 }}
+          >
+            Editar
+          </Button>
+        </CardContent>
+      </Card>
+    </Grid2>
+  )
+}
+
+const AddNewCashRegister = ({ openModal, isLoadSave, handlers }) => {
+  const [formValues, setFormValues] = React.useState({
+    type_cash_register: "",
     cash_balance: "",
     note: "",
   });
 
-  const openEditDrawer = (cashRegister) => {
-    setSelectedCashRegister(cashRegister);
-    setIsDrawerOpen(true);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({ ...formValues, [name]: value });
   };
 
-  const closeEditDrawer = () => {
-    setSelectedCashRegister(null);
-    setIsDrawerOpen(false);
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    handlers.loadForm()
+    const res = await handlers.createCashRegister(formValues)
 
-  const openNewDrawer = () => {
-    setIsNewDrawerOpen(true);
-    setNewCashRegister({
-      typeCashRegister: 1,
-      cash_balance: "",
-      note: "",
-    });
-  };
+    if (res.id) {
+      alert("Creacion Exitosa")
+      handlers.updateList()
+      handlers.closeModal()
+    } else {
+      alert("Error Al Crear")
+    }
 
-  const closeNewDrawer = () => {
-    setIsNewDrawerOpen(false);
-  };
-
-  const handleFieldChange = (field, value) => {
-    setSelectedCashRegister({ ...selectedCashRegister, [field]: value });
-  };
-
-  const handleNewFieldChange = (field, value) => {
-    setNewCashRegister({ ...newCashRegister, [field]: value });
-  };
-
-  const saveChanges = () => {
-    setCashRegisters((prev) => 
-      prev.map((c) => (c.id === selectedCashRegister.id ? selectedCashRegister : c))
-    );
-    closeEditDrawer();
-  };
-
-  const addNewCashRegister = () => {
-    setCashRegisters((prev) => [...prev, { ...newCashRegister, id: prev.length + 1 }]);
-    closeNewDrawer();
-  };
-
-  const deleteCashRegister = (id) => {
-    setCashRegisters((prev) => prev.filter((c) => c.id !== id));
+    // Quitar Load
+    setTimeout(() => {
+      handlers.loadForm()
+    }, (600));
   };
 
   return (
-    <div style={{ display: "flex" }}>
-      <Grid container spacing={3} style={{ flex: 1 }}>
-        {cashRegisters.map((cashRegister) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={cashRegister.id}>
-            <Card sx={{ padding: 2, textAlign: "center", height: "100%" }}>
-              <Typography variant="h6" sx={{ fontWeight: "bold", fontSize: "1.1rem" }}>
-                {typeCashRegister[cashRegister.typeCashRegister]}
-              </Typography>
-              <CardContent>
-                <Box 
-                  className="image-container" 
-                  sx={{ width: "100%", maxHeight: 200, display: "flex", justifyContent: "center", marginTop: 1 }}
-                >
-                  <img
-                    src={`/cash_register.png`}
-                    alt={cashRegister.note}
-                    style={{ width: "100%", height: "100%", objectFit: "contain", maxHeight: 150 }}
-                  />
-                </Box>
-              </CardContent>
-              <Box display="flex" justifyContent="space-around" width="100%" sx={{ padding: 1 }}>
-                <IconButton color="primary" onClick={() => handleOpenDrawer(cashRegister)}>
-                  <EditIcon />
-                </IconButton>
-                <IconButton color="secondary" onClick={() => deleteCashRegister(cashRegister.id)}>
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-
-
-      {/* Drawer for Editing */}
-      <Drawer anchor="right" open={isDrawerOpen} onClose={closeEditDrawer}>
-        {selectedCashRegister && (
-          <Box sx={{ width: 300, padding: 3, marginTop: 10 }}>
-            <Typography variant="h5" gutterBottom>
-              Editar Caja
-            </Typography>
-            <Box 
-              className="image-container" 
-              sx={{ width: "100%", maxHeight: 200, display: "flex", justifyContent: "center", marginBottom: 2 }}
-            >
-              <img
-                src={`/cash_register.png`}
-                alt={selectedCashRegister.note}
-                style={{ width: "100%", height: "100%", objectFit: "contain", maxHeight: 150 }}
-              />
-            </Box>
-            <Select
-              label="Tipo de Caja"
-              value={selectedCashRegister.typeCashRegister}
-              onChange={(e) => handleFieldChange("typeCashRegister", e.target.value)}
-              fullWidth
-              margin="normal"
-            >
-              {Object.entries(typeCashRegister).map(([key, value]) => (
-                <MenuItem key={key} value={parseInt(key)}>
-                  {value}
-                </MenuItem>
-              ))}
-            </Select>
-            <TextField
-              label="Saldo"
-              type="number"
-              value={selectedCashRegister.cash_balance}
-              onChange={(e) => handleFieldChange("cash_balance", e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Nota"
-              value={selectedCashRegister.note}
-              onChange={(e) => handleFieldChange("note", e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-            <Box display="flex" justifyContent="space-between" mt={2}>
-              <Button variant="outlined" onClick={closeEditDrawer}>
-                Cancelar
-              </Button>
-              <Button variant="contained" color="primary" onClick={saveChanges}>
-                Guardar
-              </Button>
-            </Box>
-          </Box>
-        )}
-      </Drawer>
-
-      {/* Drawer for Adding New */}
-      <Drawer anchor="right" open={isNewDrawerOpen} onClose={closeNewDrawer}>
-        <Box sx={{ width: 300, padding: 3, marginTop: 10 }}>
-          <Typography variant="h5" gutterBottom>
-            Nueva Caja
-          </Typography>
-          <Box 
-            className="image-container" 
-            sx={{ width: "100%", maxHeight: 200, display: "flex", justifyContent: "center", marginBottom: 2 }}
-          >
-            <img
-              src={`/cash_register.png`}
-              alt="Nueva Caja"
-              style={{ width: "100%", height: "100%", objectFit: "contain", maxHeight: 150 }}
-            />
-          </Box>
-          <Select
-            label="Tipo de Caja"
-            value={newCashRegister.typeCashRegister}
-            onChange={(e) => handleNewFieldChange("typeCashRegister", e.target.value)}
-            fullWidth
-            margin="normal"
-          >
-            {Object.entries(typeCashRegister).map(([key, value]) => (
-              <MenuItem key={key} value={parseInt(key)}>
-                {value}
-              </MenuItem>
-            ))}
-          </Select>
+    <Drawer sx={styles.drawer} anchor="right" open={openModal} onClose={handlers.closeModal}>
+      <Box>
+        <h2>Crear Registro de Caja</h2>
+        <form onSubmit={handleSubmit}>
           <TextField
-            label="Saldo"
-            type="number"
-            value={newCashRegister.cash_balance}
-            onChange={(e) => handleNewFieldChange("cash_balance", e.target.value)}
+            label="Tipo de Registro"
+            name="type_cash_register"
+            select
             fullWidth
             margin="normal"
+            value={formValues.type_cash_register}
+            onChange={handleChange}
+          >
+            <MenuItem value="1">Facturados</MenuItem>
+            <MenuItem value="2">Secundaria</MenuItem>
+            <MenuItem value="3">Productos</MenuItem>
+          </TextField>
+
+          <TextField
+            label="Balance de Caja"
+            name="cash_balance"
+            type="number"
+            fullWidth
+            margin="normal"
+            value={formValues.cash_balance}
+            onChange={handleChange}
+            inputProps={{ step: "0.01" }}
           />
+
           <TextField
             label="Nota"
-            value={newCashRegister.note}
-            onChange={(e) => handleNewFieldChange("note", e.target.value)}
+            name="note"
+            multiline
+            rows={4}
             fullWidth
             margin="normal"
+            value={formValues.note}
+            onChange={handleChange}
           />
-          <Box display="flex" justifyContent="space-between" mt={2}>
-            <Button variant="outlined" onClick={closeNewDrawer}>
-              Cancelar
-            </Button>
-            <Button variant="contained" color="primary" onClick={addNewCashRegister}>
-              Agregar
-            </Button>
-          </Box>
-        </Box>
-      </Drawer>
 
-      <Fab
-        color="primary"
-        aria-label="add"
-        onClick={openNewDrawer}
-        style={{ position: "fixed", bottom: 16, right: 16 }}
-      >
-        <AddIcon />
-      </Fab>
-    </div>
-  );
-};
-
-export default CashRegister;
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            {
+              !isLoadSave? 'Crear Registro': 'Creando...'
+            }
+          </Button>
+        </form>
+      </Box>
+    </Drawer>
+  )
+}
