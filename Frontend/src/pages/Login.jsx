@@ -1,66 +1,41 @@
 import React, { useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
-import { Link } from "react-router-dom"; // Importa Link para navegación
+import { Link, useNavigate } from "react-router-dom";
+import { loginUser } from "../tools/api/api"; 
+import { saveUserData } from "../tools/indexedDB/indexedDB";
 
 const Login = () => {
-  const [credentials, setCredentials] = useState({
-    identification: "",
-    password: "",
-  });
+  const navigate = useNavigate();
+  const [credentials, setCredentials] = useState({ username: "", password: "" });
+  const [error, setError] = useState("");
 
   const handleFieldChange = (field, value) => {
     setCredentials({ ...credentials, [field]: value });
   };
 
-  const handleLogin = () => {
-    // Lógica de autenticación
-    console.log("Credenciales de Login:", credentials);
-    setCredentials({
-      identification: "",
-      password: "",
-    });
+  const handleLogin = async () => {
+    try {
+      const response = await loginUser(credentials); // Usa loginUser
+      if (response.authorization) {
+        saveUserData(response); // Guarda el token en IndexedDB
+        navigate('/'); // Redirige a Home si el login es exitoso
+      } else {
+        setError("Credenciales incorrectas");
+      }
+    } catch (error) {
+      console.error('Error en el login:', error);
+      setError("Ocurrió un error durante el login");
+    }
   };
 
   return (
     <Box sx={{ maxWidth: 400, margin: "auto", padding: 3, mt: 5 }}>
       <Typography variant="h4" gutterBottom>Login</Typography>
-      <TextField
-        label="Cédula"
-        type="number"
-        value={credentials.identification}
-        onChange={(e) => handleFieldChange("identification", e.target.value)}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Contraseña"
-        type="password"
-        value={credentials.password}
-        onChange={(e) => handleFieldChange("password", e.target.value)}
-        fullWidth
-        margin="normal"
-      />
-      <Button
-        variant="contained"
-        color="primary"
-        fullWidth
-        sx={{ mt: 3 }}
-        onClick={handleLogin}
-      >
-        Iniciar Sesión
-      </Button>
-
-      {/* Botón de "Atrás" que redirige a Home */}
-      <Button
-        component={Link}
-        to="/"
-        variant="outlined"
-        color="secondary"
-        fullWidth
-        sx={{ mt: 2 }}
-      >
-        Atrás
-      </Button>
+      {error && <Typography color="error">{error}</Typography>}
+      <TextField label="Username" value={credentials.username} onChange={(e) => handleFieldChange("username", e.target.value)} fullWidth margin="normal" />
+      <TextField label="Contraseña" type="password" value={credentials.password} onChange={(e) => handleFieldChange("password", e.target.value)} fullWidth margin="normal" />
+      <Button variant="contained" color="primary" fullWidth sx={{ mt: 3 }} onClick={handleLogin}>Iniciar Sesión</Button>
+      <Button component={Link} to="/" variant="outlined" color="secondary" fullWidth sx={{ mt: 2 }}>Atrás</Button>
     </Box>
   );
 };
