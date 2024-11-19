@@ -26,9 +26,6 @@ const Sidebar = () => {
         <ListItem button component={Link} to="/products">
           <ListItemText primary="Productos" />
         </ListItem>
-        <ListItem button component={Link} to="/products">
-          <ListItemText primary="Billeteras" />
-        </ListItem>
         <ListItem button component={Link} to="/person">
           <ListItemText primary="Personas" />
         </ListItem>
@@ -36,7 +33,7 @@ const Sidebar = () => {
           <ListItemText primary="Company" />
         </ListItem>
         <ListItem button component={Link} to="/cash_register">
-          <ListItemText primary="CashRegister" />
+          <ListItemText primary="Billeteras" />
         </ListItem>
       </List>
     </Drawer>
