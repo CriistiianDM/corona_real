@@ -5,7 +5,6 @@ export const getData = () => {
         let existDB = false;
         isUserAuthenticated((isAuthenticated) => {
             existDB = isAuthenticated;
-
             if (existDB) {
                 getUserData((userData) => {
                     resolve(userData);

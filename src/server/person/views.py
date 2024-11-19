@@ -1,7 +1,8 @@
 import json
 
 from django.shortcuts import render
-
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
@@ -171,18 +172,26 @@ def get_person_by_type(request):
 
 
 class TypePersonSerializerViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset=TypePerson.objects.all()
-    serializer_class = TypePerson
+    serializer_class = TypePersonSerializer
 
 
 class PersonSerializerViewSet(viewsets.ModelViewSet):
-    queryset=Person.objects.all()
-    serializer_class = Person
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = Person.objects.all().order_by('-created_at')  # O usa '-id'
+    serializer_class = PersonSerializer
+
+
 
 
 class CompanySerializerViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset=Company.objects.all()
-    serializer_class = Company
+    serializer_class = CompanySerializer
 
 
 

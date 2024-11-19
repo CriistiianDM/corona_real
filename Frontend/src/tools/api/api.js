@@ -1,75 +1,65 @@
 // Importaciones locales
-import json from "../../../.conf"; // Archivo de configuración
+import json from "../../../.conf";
 
 // Importaciones de utilidades y funciones
 import { initDB } from "../indexedDB/indexedDB";
-import { getCrsftToken } from "../token/token";
-import { fetchPostGeneral } from "../fetchs/fetchs";
-import { removeUserData, saveUserData } from "../indexedDB/indexedDB"
-import { getData, addDataToDB } from "../utils/utils"
+import { fetchPostGeneral , fetchGetGeneral , fetchPutGeneral} from "../fetchs/fetchs";
+import { Login , CreateUser } from "./person/api"
 
 export const createDB = () => initDB()
 
 export const test = async () => {
-    await loginUser({
-        "username": "holi",
-        "password": "password123",
+
+    await Login({
+        "username": "prueba1",
+        "password": "123456",
     })
     // await CreateUser({
-    //     "name": "Juan Perez",
-    //     "username": "ajnhd",
-    //     "password": "password123",
+    //     "name": "Lenin Carabali",
+    //     "username": "prueba1",
+    //     "password": "123456",
     //     "type_person": 1,
-    //     "identification": 12493789,
+    //     "identification": 1222,
     //     "fecha_expedition": "2024-01-01T10:00:00Z"
     // })
 }
 
-export const loginUser = async ({ username, password}) => {
+export const fetchPost = async ({url , body}) => {
     let response = {}
     try {
-        const db_ = await getData() ?? {}
         const res_ = await fetchPostGeneral({
-           dataSend: { 
-                username: username, 
-                password: password
-            },
-           urlEndPoint: `${json.URL}/api/person/login/`
+           dataSend: body,
+           urlEndPoint: url
         })
-
-        if (res_?.status) {
-            removeUserData()
-            response.crsftToken = db_?.crsftToken
-            response.authorization = db_?.authorization
-            response.username = username
-            response.password = password
-            saveUserData(response)
-        }
+        if (res_) response = res_
     } catch (e) {
         console.log(e)
     }
     return response
 }
 
-export const CreateUser = async (data) => {
+export const fetchGet = async ({ url }) => {
     let response = {}
     try {
-        const db_ = await getData() ?? {}
-        const res_ = await fetchPostGeneral({
-           dataSend: data,
-           urlEndPoint: `${json.URL}/api/person/accounts/`
+        const res_ = await fetchGetGeneral({
+           urlEndPoint: url
         })
+        if (res_) response = res_
+    } catch (e) {
+        console.log(e)
+    }
+    return response
+}
 
-        if (res_?.status) {
-            console.log(res_)
-            response.crsftToken = db_?.crsftToken
-            response.authorization = db_?.authorization
-            response.user = res_.user
-            response.username = data.username
-            response.password = data.password
-            removeUserData()
-            saveUserData(response)
-        }
+
+export const fetchPut = async ({ data ,url }) => {
+    let response = {}
+    try {
+        const res_ = await fetchPutGeneral({
+            dataSend : data,
+           urlEndPoint: url
+        })
+        if (res_) response = res_
     } catch (e) {
         console.log(e)
     }

@@ -5,8 +5,10 @@ class TypesProductsSerializer(serializers.ModelSerializer):
     class Meta:
         model = TypesProducts
         fields = '__all__'
+        # fields = ['id', 'name']
 
 class ProductsSerializer(serializers.ModelSerializer):
+    # type_product = TypeProductSerializer()
     class Meta:
         model = Products
         fields = '__all__'
