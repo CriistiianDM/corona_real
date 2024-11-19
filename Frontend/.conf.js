@@ -1,4 +1,4 @@
-const LOCAL_URL = "http://127.0.0.1:4800";
+const LOCAL_URL = "http://localhost:8000";
 const REMOTE_URL = "https://redesigned-xylophone-gwvxgwqj65395x7-8000.app.github.dev";
 
 // Selecciona la URL adecuada dependiendo del hostname
@@ -13,5 +13,7 @@ export default {
     "login": `${URL}/api/person/login/`,
     "create": `${URL}/api/person/accounts/`,
     "products": `${URL}/api/inventory/products/`,
-    "person": `${URL}/api/person/person/`
+    "person": `${URL}/api/person/person/`,
+    "cashRegister": `${URL}/api/transactions/cash_register/`,
+    "typeCashRegister": `${URL}/api/transactions/types_cash_register/`,
 }

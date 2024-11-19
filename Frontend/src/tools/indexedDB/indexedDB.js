@@ -50,7 +50,7 @@ export const getUserData = (callback) => {
 // Verifica si el usuario está autenticado
 export const isUserAuthenticated = (callback) => {
   getUserData((data) => {
-    callback(data?.authorization ? data : null);
+    callback(data?.token ? data : null);
   });
 };
 

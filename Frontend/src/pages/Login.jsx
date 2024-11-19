@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "../tools/api/api"; 
+import { Login as LoginUser} from "../tools/api/person/api"; 
 import { saveUserData } from "../tools/indexedDB/indexedDB";
 
 const Login = () => {
@@ -15,7 +15,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await loginUser(credentials); // Usa loginUser
+      const response = await LoginUser(credentials);
       if (response.authorization) {
         saveUserData(response); // Guarda el token en IndexedDB
         navigate('/'); // Redirige a Home si el login es exitoso

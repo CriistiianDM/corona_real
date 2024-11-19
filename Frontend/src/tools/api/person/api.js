@@ -53,7 +53,7 @@ export const CreateUser = async (data) => {
     })
     if (res?.status) {
         response.authorization = db_?.authorization
-        response.user = res_.user
+        response.user = res.user
         response.username = data.username
         response.password = data.password
         removeUserData()

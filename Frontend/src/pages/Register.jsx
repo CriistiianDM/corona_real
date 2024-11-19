@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, TextField, Typography, Select, MenuItem } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import { CreateUser } from "../tools/api/api"; // Importa la función CreateUser
+import { CreateUser } from "../tools/api/person/api"; // Importa la función CreateUser
 
 const Register = () => {
   const navigate = useNavigate();

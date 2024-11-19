@@ -11,8 +11,8 @@ export const createDB = () => initDB()
 export const test = async () => {
 
     await Login({
-        "username": "prueba1",
-        "password": "123456",
+        "username": "holi",
+        "password": "password123",
     })
     // await CreateUser({
     //     "name": "Lenin Carabali",
@@ -56,7 +56,7 @@ export const fetchPut = async ({ data ,url }) => {
     let response = {}
     try {
         const res_ = await fetchPutGeneral({
-            dataSend : data,
+           dataSend : data,
            urlEndPoint: url
         })
         if (res_) response = res_

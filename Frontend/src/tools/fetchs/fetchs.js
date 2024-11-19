@@ -39,7 +39,7 @@ export const fetchPostWioutSigned = ({
     urlEndPoint,
 }) => {
     return fetchGeneralWhioutSigned({
-        dataSend,
+        dataSend: dataSend,
         urlEndPoint,
         type: methodPost     
     });

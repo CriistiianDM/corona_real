@@ -15,10 +15,8 @@ export const getCrsftToken = async () => {
 
 export const getAuthorization = async () => {
     const data = await getData() ?? {}
- 
-    if (!data?.username) return  ``
-    if (data?.authorization) return data?.authorization
-
+    if (data?.username === undefined) return  ``
+    if (data?.authorization !== undefined) return data?.authorization
     const response = await fetchPostWioutSigned({
         dataSend: {
           username: data?.username,
