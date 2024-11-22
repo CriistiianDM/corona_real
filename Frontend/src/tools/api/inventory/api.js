@@ -54,3 +54,13 @@ export const deleteProduct = async (productId) => {
         throw error;
     }
 };
+
+//Listar Habitaciones 
+export const getRooms = async () => {
+    try {
+        const response = await fetchGet({ url: json.rooms });
+        return response;
+    } catch (error) {
+        console.error("Error al obtener las habitaciones:", error);
+    }
+};
