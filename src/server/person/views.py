@@ -81,7 +81,7 @@ def post_create_accounts(request):
         password = data.get('password')
         type_person = data.get('type_person')
         identification = data.get('identification')
-        fecha_expedition = data.get('fecha_expedition')
+        fecha_expedition = data.get('lugar_expedicion')
         type_person_id = data.get('type_person') 
 
         if type_person_id in [1, 2]:
@@ -99,7 +99,7 @@ def post_create_accounts(request):
             company=company,
             name=name,
             identification=identification,
-            fecha_expedition=fecha_expedition,
+            lugar_expedicion=fecha_expedition,
             update_at=timezone.now(),
             created_at=timezone.now(),
             is_active=True
