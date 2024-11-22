@@ -34,7 +34,7 @@ export const loginUser = async ({ username, password}) => {
                 username: username, 
                 password: password
             },
-           urlEndPoint: `${json.URL}/api/person/login/`
+           urlEndPoint: `${json.URL}${json.create}`
         })
 
         if (res_?.status) {
@@ -57,7 +57,7 @@ export const CreateUser = async (data) => {
         const db_ = await getData() ?? {}
         const res_ = await fetchPostGeneral({
            dataSend: data,
-           urlEndPoint: `${json.URL}/api/person/accounts/`
+           urlEndPoint: `${json.URL}${json.create}`
         })
 
         if (res_?.status) {
