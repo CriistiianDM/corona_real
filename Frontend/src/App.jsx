@@ -24,7 +24,6 @@ const AppContent = () => {
   // Carga inicial para comprobar autenticación
   useEffect(() => {
     initDB()
-    test()
     isUserAuthenticated((data) => {
       if (data) setUser(data.username);
     });

@@ -16,7 +16,8 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const response = await LoginUser(credentials);
-      if (response.authorization) {
+      console.log(response)
+      if (response.token) {
         saveUserData(response); // Guarda el token en IndexedDB
         navigate('/'); // Redirige a Home si el login es exitoso
       } else {
