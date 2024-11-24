@@ -11,6 +11,7 @@ from transactions.models import Transactions
 #         return self.name
 
 class Products(models.Model):
+    name = models.CharField(max_length=255)
     update_by = models.IntegerField()
     stock = models.IntegerField()
     price = models.IntegerField()
