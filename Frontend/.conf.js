@@ -16,4 +16,6 @@ export default {
     "person": `${URL}/api/person/person/`,
     "cashRegister": `${URL}/api/transactions/cash_register/`,
     "typeCashRegister": `${URL}/api/transactions/types_cash_register/`,
+    "rooms": `${URL}/api/inventory/rooms/`,
+
 }

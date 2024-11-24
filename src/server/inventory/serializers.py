@@ -1,11 +1,13 @@
 from rest_framework import serializers
-from .models import TypesProducts, Products, SellerProducts, Reservations, Rooms
+from .models import Products, SellerProducts, Reservations, Rooms
+# , TypesProducts
 
-class TypesProductsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TypesProducts
-        fields = '__all__'
-        # fields = ['id', 'name']
+
+# class TypesProductsSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = TypesProducts
+#         fields = '__all__'
+#         # fields = ['id', 'name']
 
 class ProductsSerializer(serializers.ModelSerializer):
     # type_product = TypeProductSerializer()
