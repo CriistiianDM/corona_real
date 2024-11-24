@@ -258,6 +258,7 @@ const Product = () => {
       </Drawer>
 
       <Fab
+        className="boton-flotante"
         color="primary"
         aria-label="add"
         onClick={() => setIsNewProductDrawerOpen(true)}
