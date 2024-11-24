@@ -12,24 +12,24 @@ services:
     ports:
       - "5432:5432"
 
-  # server:
-  #   build:
-  #     context: src/server/
-  #     dockerfile: Dockerfile
-  #   container_name: django_app
-  #   volumes:
-  #     - .:/app
-  #   ports:
-  #     - "4800:8000"
-  #   depends_on:
-  #     - db
-  #   environment:
-  #     - DJANGO_DB_NAME=coronaReal
-  #     - DJANGO_DB_USER=corona
-  #     - DJANGO_DB_PASSWORD=clave1234
-  #     - DJANGO_DB_HOST=db
-  #     - DJANGO_DB_PORT=5432
-  #     - DJANGO_TOKEN_KEY=TOKEN
+  server:
+    build:
+      context: src/server/
+      dockerfile: Dockerfile
+    container_name: django_app
+    volumes:
+      - .:/app
+    ports:
+      - "4800:8000"
+    depends_on:
+      - db
+    environment:
+      - DJANGO_DB_NAME=coronaReal
+      - DJANGO_DB_USER=corona
+      - DJANGO_DB_PASSWORD=clave1234
+      - DJANGO_DB_HOST=db
+      - DJANGO_DB_PORT=5432
+      - DJANGO_TOKEN_KEY=TOKEN
 
 volumes:
   postgres_data: {}
