@@ -19,7 +19,7 @@ class Person(models.Model):
 
     name = models.CharField(max_length=200)
     identification = models.IntegerField()
-    fecha_expedition = models.DateTimeField()
+    lugar_expedicion = models.CharField(max_length=255, null=True, blank=True)
 
     update_at = models.DateTimeField(default=timezone.now)
     created_at = models.DateTimeField(default=timezone.now)

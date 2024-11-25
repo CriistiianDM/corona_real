@@ -11,7 +11,9 @@ src/.env
 src/*.log
 
 src/staticfiles/
+__pycache__/
 
 src/venv/
 src/env/
 venv
+.env

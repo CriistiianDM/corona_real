@@ -1,7 +1,8 @@
 import json
 
 from django.shortcuts import render
-
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
@@ -80,7 +81,7 @@ def post_create_accounts(request):
         password = data.get('password')
         type_person = data.get('type_person')
         identification = data.get('identification')
-        fecha_expedition = data.get('fecha_expedition')
+        fecha_expedition = data.get('lugar_expedicion')
         type_person_id = data.get('type_person') 
 
         if type_person_id in [1, 2]:
@@ -98,7 +99,7 @@ def post_create_accounts(request):
             company=company,
             name=name,
             identification=identification,
-            fecha_expedition=fecha_expedition,
+            lugar_expedicion=fecha_expedition,
             update_at=timezone.now(),
             created_at=timezone.now(),
             is_active=True
@@ -171,18 +172,26 @@ def get_person_by_type(request):
 
 
 class TypePersonSerializerViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset=TypePerson.objects.all()
-    serializer_class = TypePerson
+    serializer_class = TypePersonSerializer
 
 
 class PersonSerializerViewSet(viewsets.ModelViewSet):
-    queryset=Person.objects.all()
-    serializer_class = Person
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = Person.objects.all().order_by('-created_at')  # O usa '-id'
+    serializer_class = PersonSerializer
+
+
 
 
 class CompanySerializerViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset=Company.objects.all()
-    serializer_class = Company
+    serializer_class = CompanySerializer
 
 
 

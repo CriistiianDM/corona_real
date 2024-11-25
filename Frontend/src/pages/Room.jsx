@@ -109,7 +109,7 @@ const Room = () => {
       </Grid>
 
       {/* Botón para agregar nueva habitación */}
-      <Fab color="primary" aria-label="add" style={{ position: 'absolute', bottom: 20, right: 20 }} onClick={openAddDrawer}>
+      <Fab className="boton-flotante" color="primary" aria-label="add" style={{ position: 'absolute', bottom: 20, right: 20 }} onClick={openAddDrawer}>
         <AddIcon />
       </Fab>
 

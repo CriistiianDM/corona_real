@@ -9,7 +9,7 @@ class TypePersonSerializer(serializers.ModelSerializer):
 class PersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Person
-        fields = 'all'
+        fields = '__all__'
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:

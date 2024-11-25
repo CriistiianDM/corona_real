@@ -49,16 +49,9 @@ export const getUserData = (callback) => {
 
 // Verifica si el usuario está autenticado
 export const isUserAuthenticated = (callback) => {
-  const request = indexedDB.open(DATABASENAME, 1);
-
-  request.onsuccess = (event) => {
-    const db = event.target.result;
-    const transaction = db.transaction(TABLENAME, "readonly");
-    const store = transaction.objectStore(TABLENAME);
-    const query = store.get(IDUSER);
-
-    query.onsuccess = () => callback(query.result);
-  };
+  getUserData((data) => {
+    callback(data?.token ? data : null);
+  });
 };
 
 // Elimina los datos del usuario al cerrar sesión

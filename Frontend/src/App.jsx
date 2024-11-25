@@ -8,7 +8,11 @@ import Person from "./pages/Person";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
-import { isUserAuthenticated, removeUserData, saveUserData } from "./tools/indexedDB/indexedDB";
+import { isUserAuthenticated, removeUserData, saveUserData, initDB } from "./tools/indexedDB/indexedDB";
+import Company from "./pages/Company";
+import CashRegister from "./pages/CashRegister";
+import { createDB } from "./tools/api/api"
+
 
 const AppContent = () => {
   const [user, setUser] = useState(null); // Estado para guardar la información del usuario
@@ -20,6 +24,7 @@ const AppContent = () => {
 
   // Carga inicial para verificar si hay un usuario autenticado
   useEffect(() => {
+    initDB()
     isUserAuthenticated((data) => {
       if (data) setUser(data); // Guarda los datos del usuario en el estado
     });
@@ -35,7 +40,7 @@ const AppContent = () => {
   return (
     <Box sx={{ display: "flex" }}>
       {/* Barra superior */}
-      <AppBar position="fixed" sx={{ backgroundColor: "#5f1414" }}>
+      { showSidebar && <AppBar position="fixed" sx={{ backgroundColor: "#5f1414" }}>
         <Toolbar>
           <img src="/Logo.png" alt="Logo" style={{ height: "60px", marginRight: "20px" }} />
           <Typography variant="h6" sx={{ flexGrow: 1 }}>Corona Real</Typography>
@@ -54,6 +59,7 @@ const AppContent = () => {
           )}
         </Toolbar>
       </AppBar>
+      }
 
       {/* Sidebar (si aplica) */}
       {showSidebar && <Sidebar />}
@@ -69,6 +75,8 @@ const AppContent = () => {
           <Route path="/person" element={<Person />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/company" element={<Company />} />
+          <Route path="/cash_register" element={<CashRegister />} />
         </Routes>
       </Box>
     </Box>

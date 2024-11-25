@@ -39,7 +39,7 @@ export const fetchPostWioutSigned = ({
     urlEndPoint,
 }) => {
     return fetchGeneralWhioutSigned({
-        dataSend,
+        dataSend: dataSend,
         urlEndPoint,
         type: methodPost     
     });
@@ -91,8 +91,8 @@ const fetchGeneral = async ({
 }) => {
     let response = null
 
-    const csrftToken = await getCrsftToken()
-    const authorization = await getAuthorization()
+    const csrftToken = await getCrsftToken() ?? ""
+    const authorization = await getAuthorization() ?? ""
 
     try {
         const options = {
