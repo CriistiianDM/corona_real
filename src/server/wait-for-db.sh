@@ -2,8 +2,8 @@
 # wait-for-db.sh
 
 # Host y puerto de la base de datos
-DB_HOST=db
-DB_PORT=5432
+DB_HOST=junction.proxy.rlwy.net
+DB_PORT=48935
 
 sleep 5
 

@@ -11,7 +11,7 @@ import { AppBar, Toolbar, Typography, Button, Box, CssBaseline } from "@mui/mate
 import { isUserAuthenticated, removeUserData, initDB } from "./tools/indexedDB/indexedDB";
 import Company from "./pages/Company";
 import CashRegister from "./pages/CashRegister";
-import { createDB, test } from "./tools/api/api"
+import { createDB } from "./tools/api/api"
 
 const AppContent = () => {
   const [user, setUser] = useState(null);
@@ -39,24 +39,24 @@ const AppContent = () => {
   return (
     <Box sx={{ display: "flex" }}>
       {/* Encabezado con opciones de sesión */}
-      <AppBar position="fixed" sx={{ backgroundColor: "#5f1414" }}>
-  <Toolbar>
-    <img src="/Logo.png" alt="Logo" style={{ height: "60px", marginRight: "20px" }} />
-    <Typography variant="h6" sx={{ flexGrow: 1 }}>Corona Real</Typography>
-    {/* Opciones de usuario */}
-    {user ? (
-      <>
-        <Typography variant="h6">Bienvenido, {user}</Typography>
-        <Button color="inherit" onClick={handleLogout}>Cerrar sesión</Button>
-      </>
-    ) : (
-      <>
-        <Button color="inherit" onClick={() => navigate("/login")}>Login</Button>
-        <Button color="inherit" onClick={() => navigate("/register")}>Registro</Button>
-      </>
-    )}
-  </Toolbar>
-</AppBar>
+      {showSidebar && <AppBar position="fixed" sx={{ backgroundColor: "#5f1414" }}>
+      <Toolbar>
+        <img src="/Logo.png" alt="Logo" style={{ height: "60px", marginRight: "20px" }} />
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>Corona Real</Typography>
+        {/* Opciones de usuario */}
+        {user ? (
+          <>
+            <Typography variant="h6">Bienvenido, {user}</Typography>
+            <Button color="inherit" onClick={handleLogout}>Cerrar sesión</Button>
+          </>
+        ) : (
+          <>
+            <Button color="inherit" onClick={() => navigate("/login")}>Login</Button>
+            <Button color="inherit" onClick={() => navigate("/register")}>Registro</Button>
+          </>
+        )}
+      </Toolbar>
+    </AppBar>}
 
 
       {/* Sidebar */}
@@ -64,7 +64,7 @@ const AppContent = () => {
 
       {/* Contenido principal */}
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Toolbar /> {/* Espacio para el AppBar */}
+        <Toolbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/rooms" element={<Room />} />

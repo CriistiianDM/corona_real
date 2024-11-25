@@ -54,3 +54,41 @@ export const deleteProduct = async (productId) => {
         throw error;
     }
 };
+
+//Listar Habitaciones 
+export const getRooms = async () => {
+    try {
+        const response = await fetchGet({ url: json.rooms });
+        return response;
+    } catch (error) {
+        console.error("Error al obtener las habitaciones:", error);
+    }
+};
+
+//Crear Habitación 
+export const createRoom = async (roomData) => {
+    try {
+        const response = await fetchPost({
+            url: json.rooms,
+            body: roomData,
+        });
+        return response;
+    } catch (error) {
+        console.error("Error al crear habitación:", error);
+    }
+};
+
+// Actualizar una habitación 
+export const updateRoom = async (roomId, roomData) => {
+    try {
+        const url = `${json.rooms}${roomId}/`; 
+        const response = await fetchPost({
+            url: url,
+            body: roomData, 
+        });
+        return response;
+    } catch (error) {
+        console.error("Error al actualizar habitación:", error);
+        throw error;
+    }
+};

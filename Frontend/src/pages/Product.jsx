@@ -18,7 +18,6 @@ const Product = () => {
     stock: 0,
     price: 0,
     is_active: true,
-    type_product: 0, 
     update_by: 1, 
     // image_url: "", 
 });
@@ -166,7 +165,7 @@ const Product = () => {
                   {product.name}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Cantidad: {product.quantity}
+                  Cantidad: {product.stock}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
                   Precio: ${product.price}
@@ -239,14 +238,6 @@ const Product = () => {
             type="number"
             value={newProduct.price}
             onChange={(e) => handleNewProductChange("price", parseFloat(e.target.value))}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Tipo de Producto ID"
-            type="number"
-            value={newProduct.type_product}
-            onChange={(e) => handleNewProductChange("type_product", parseInt(e.target.value, 10))}
             fullWidth
             margin="normal"
           />

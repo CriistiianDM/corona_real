@@ -2,16 +2,16 @@ from django.db import models
 from person.models import Person
 from transactions.models import Transactions
 
-class TypesProducts(models.Model):
-    name = models.TextField()
-    description = models.CharField(max_length=255)
-    is_active = models.BooleanField(default=True)
+# class TypesProducts(models.Model):
+#     name = models.TextField()
+#     description = models.CharField(max_length=255)
+#     is_active = models.BooleanField(default=True)
 
-    def str(self):
-        return self.name
+#     def str(self):
+#         return self.name
 
 class Products(models.Model):
-    type_product = models.ForeignKey('TypesProducts', on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, default="prducto")
     update_by = models.IntegerField()
     stock = models.IntegerField()
     price = models.IntegerField()

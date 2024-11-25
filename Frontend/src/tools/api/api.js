@@ -8,22 +8,6 @@ import { Login , CreateUser } from "./person/api"
 
 export const createDB = () => initDB()
 
-export const test = async () => {
-
-    await Login({
-        "username": "holi",
-        "password": "password123",
-    })
-    // await CreateUser({
-    //     "name": "Lenin Carabali",
-    //     "username": "prueba1",
-    //     "password": "123456",
-    //     "type_person": 1,
-    //     "identification": 1222,
-    //     "fecha_expedition": "2024-01-01T10:00:00Z"
-    // })
-}
-
 export const fetchPost = async ({url , body}) => {
     let response = {}
     try {
