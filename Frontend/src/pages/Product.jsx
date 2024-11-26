@@ -11,6 +11,20 @@ const Product = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [Updateproducts, setUpdateProducts] = useState(null);
+  const [editingProduct, setEditingProduct] = useState(null);
+
+  const openEditDrawer = (product) => {
+    setEditingProduct(product);
+    setNewProduct({
+      name: product.name,
+      stock: product.stock,
+      price: product.price,
+      is_active: product.is_active,
+      update_by: product.update_by,
+      image_url: product.image_url || "",
+    });
+    setIsNewProductDrawerOpen(true);
+  };
 
   const [isNewProductDrawerOpen, setIsNewProductDrawerOpen] = useState(false);
   const [newProduct, setNewProduct] = useState({
@@ -51,31 +65,27 @@ const Product = () => {
   };
 
   const handleTransaction = async () => {
+    // Crear el producto actualizado para obsolescencia
     const updatedProduct = {
-      ...selectedProduct,
-      quantity:
-        transactionType === "compra"
-          ? selectedProduct.quantity + transactionAmount
-          : Math.max(0, selectedProduct.quantity - transactionAmount),
-      stock:
-        transactionType === "obsolescencia"
-          ? Math.max(0, selectedProduct.stock - transactionAmount)
-          : selectedProduct.stock,
+      ...selectedProduct, // Copia los datos actuales del producto seleccionado
+      stock: Math.max(0, selectedProduct.stock - transactionAmount), // Reduce el stock pero no permite valores negativos
     };
-
+  
     try {
+      // Actualiza el producto en el backend
       await updateProduct(selectedProduct.id, updatedProduct);
-      setProducts((prevProducts) =>
-        prevProducts.map((product) =>
-          product.id === selectedProduct.id ? updatedProduct : product
-        )
-      );
+  
+      // Recarga los productos desde el backend para mantener sincronización
+      const updatedProducts = await getProducts();
+      setProducts(updatedProducts); // Sincroniza el estado del frontend con el backend
     } catch (error) {
       console.error("Error al realizar la transacción:", error);
     }
-    closeDrawer();
+  
+    closeDrawer(); // Cierra el Drawer después de la operación
   };
-
+  
+  
   const handleAmountChange = (e) => {
     const value = Math.max(1, parseInt(e.target.value, 10));
     if ((transactionType === "venta" || transactionType === "obsolescencia") && value > selectedProduct.stock) {
@@ -87,22 +97,46 @@ const Product = () => {
     }
   };
 
-  const addNewProduct = async () => {
+  const saveProduct = async () => {
     try {
-      const response = await createProduct(newProduct);
-      if (response?.id) {
-        const updatedProducts = await getProducts();
-        setProducts(updatedProducts);
-        setUpdateProducts(new Date(Date.now()))
-        closeNewProductDrawer();
+      if (editingProduct) {
+        // Incluye todos los campos necesarios, conservando los datos originales
+        const updatedProduct = {
+          ...editingProduct, // Conserva los datos originales del producto
+          name: newProduct.name, // Actualiza el nombre
+          price: newProduct.price, // Actualiza el precio
+        };
+  
+        console.log("Datos enviados al backend:", updatedProduct);
+  
+        // Llama a la función `updateProduct` para enviar la solicitud PUT al backend
+        await updateProduct(editingProduct.id, updatedProduct);
+      } else {
+        // Crear un nuevo producto
+        await createProduct(newProduct);
       }
+  
+      // Obtén la lista actualizada de productos después de la operación
+      const updatedProducts = await getProducts();
+      setProducts(updatedProducts);
+  
+      closeNewProductDrawer(); // Cierra el Drawer después de guardar
     } catch (error) {
-      console.error("Error al agregar producto:", error);
+      console.error("Error al guardar producto:", error);
     }
   };
-
+  
   const closeNewProductDrawer = () => {
     setIsNewProductDrawerOpen(false);
+    setEditingProduct(null); // Salir del modo edición
+    setNewProduct({
+      name: "",
+      stock: 0,
+      price: 0,
+      is_active: true,
+      update_by: 1,
+      image_url: "",
+    });
   };
 
   const handleNewProductChange = (field, value) => {
@@ -181,6 +215,9 @@ const Product = () => {
                 <Button variant="contained" color="warning" sx={{ flex: 1, marginBottom: 1 }} onClick={() => openDrawer(product, "obsolescencia")}>
                   Obsolescencia
                 </Button>
+                <Button variant="contained" color="info" sx={{ flex: 1, marginBottom: 1 }} onClick={() => openEditDrawer(product)}>
+                  Editar
+                </Button>
               </Box>
             </Card>
           </Grid>
@@ -217,7 +254,9 @@ const Product = () => {
       {/* Drawer para agregar producto */}
       <Drawer anchor="right" open={isNewProductDrawerOpen} onClose={closeNewProductDrawer}>
         <Box sx={{ width: 300, padding: 3, marginTop: 10 }}>
-          <Typography variant="h5" gutterBottom>Agregar Producto</Typography>
+          <Typography variant="h5" gutterBottom>
+            {editingProduct ? "Editar Producto" : "Agregar Producto"}
+          </Typography>
           <TextField
             label="Nombre"
             value={newProduct.name}
@@ -225,28 +264,35 @@ const Product = () => {
             fullWidth
             margin="normal"
           />
-          <TextField
-            label="Stock"
-            type="number"
-            value={newProduct.stock}
-            onChange={(e) => handleNewProductChange("stock", parseInt(e.target.value, 10))}
-            fullWidth
-            margin="normal"
-          />
+          {!editingProduct && (
+            <TextField
+              label="Stock"
+              type="number"
+              value={newProduct.stock}
+              onChange={(e) => handleNewProductChange("stock", e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+          )}
           <TextField
             label="Precio"
             type="number"
             value={newProduct.price}
-            onChange={(e) => handleNewProductChange("price", parseFloat(e.target.value))}
+            onChange={(e) => handleNewProductChange("price", e.target.value)}
             fullWidth
             margin="normal"
           />
           <Box display="flex" justifyContent="space-between" mt={2}>
-            <Button variant="outlined" onClick={closeNewProductDrawer}>Cancelar</Button>
-            <Button variant="contained" onClick={addNewProduct}>Agregar</Button>
+            <Button variant="outlined" onClick={closeNewProductDrawer}>
+              Cancelar
+            </Button>
+            <Button variant="contained" onClick={saveProduct}>
+              {editingProduct ? "Guardar Cambios" : "Agregar"}
+            </Button>
           </Box>
         </Box>
       </Drawer>
+
 
       <Fab
         className="boton-flotante"

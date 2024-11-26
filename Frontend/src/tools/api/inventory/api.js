@@ -1,5 +1,5 @@
 import json from "../../../../.conf";
-import { fetchPost, fetchGet } from "../api"; 
+import { fetchPost, fetchGet, fetchPut } from "../api"; 
 
 // Obtener todos los productos
 export const getProducts = async () => {
@@ -27,10 +27,9 @@ export const createProduct = async (productData) => {
 // Actualizar un producto
 export const updateProduct = async (productId, productData) => {
     try {
-        const url = `${json.products}${productId}/`; 
-        const response = await fetchPost({
-            url: url,
-            body: productData, 
+        const response = await fetchPut({
+            url: json.products + productId + '/',
+            data: productData, 
         });
         return response;
     } catch (error) {
@@ -81,10 +80,9 @@ export const createRoom = async (roomData) => {
 // Actualizar una habitación 
 export const updateRoom = async (roomId, roomData) => {
     try {
-        const url = `${json.rooms}${roomId}/`; 
-        const response = await fetchPost({
-            url: url,
-            body: roomData, 
+        const response = await fetchPut({
+            url: json.rooms + roomId + '/',
+            data: roomData, 
         });
         return response;
     } catch (error) {
