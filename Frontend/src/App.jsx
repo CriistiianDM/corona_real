@@ -20,7 +20,7 @@ const AppContent = () => {
   const navigate = useNavigate();
 
   // Determina si se debe mostrar el Sidebar
-  const showSidebar = location.pathname !== "/login" && location.pathname !== "/register";
+  const showSidebar = location.pathname !== "/" && location.pathname !== "/register";
 
   // Carga inicial para verificar si hay un usuario autenticado
   useEffect(() => {
@@ -28,7 +28,7 @@ const AppContent = () => {
     isUserAuthenticated((data) => {
       if (data) setUser(data.username);
       if (data?.token == undefined)
-          navigate("/login")
+          navigate("/")
     });
   }, []);
 
@@ -36,7 +36,7 @@ const AppContent = () => {
   const handleLogout = () => {
     removeUserData(); // Elimina la información del usuario almacenada
     setUser(null);    // Reinicia el estado del usuario
-    navigate("/");    // Redirige a Home
+    navigate("/");    // Redirige a Login
   };
 
   return (
@@ -55,7 +55,7 @@ const AppContent = () => {
             </>
           ) : (
             <>
-              <Button color="inherit" onClick={() => navigate("/login")}>Login</Button>
+              <Button color="inherit" onClick={() => navigate("/")}>Cerrar sesión</Button>
               <Button color="inherit" onClick={() => navigate("/register")}>Registro</Button>
             </>
           )}
@@ -70,12 +70,12 @@ const AppContent = () => {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar /> {/* Espacio para la barra superior */}
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/rooms" element={<Room />} />
           <Route path="/products" element={<Product />} />
           <Route path="/wallets" element={<Product />} />
           <Route path="/person" element={<Person />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/company" element={<Company />} />
           <Route path="/cash_register" element={<CashRegister />} />
