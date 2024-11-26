@@ -17,6 +17,7 @@ export default {
     "cashRegister": `${URL}/api/transactions/cash_register/`,
     "typeCashRegister": `${URL}/api/transactions/types_cash_register/`,
     "rooms": `${URL}/api/inventory/rooms/`,
-    "roomreservation": `${URL}/api/transactions/roomreservation/`,
+    "room_reservation": `${URL}/api/transactions/room_reservation/`,
+    "transactionPost": `${URL}/api/transactions/transactions/`,
 
 }

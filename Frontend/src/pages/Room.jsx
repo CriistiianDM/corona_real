@@ -5,7 +5,7 @@ import { getRooms} from "../tools/api/inventory/api";
 import { getPersons} from "../tools/api/person/api";
 
 import { createRoomReservation } from "../tools/api/transaction/api";
-
+import { getData } from "../tools/utils/utils";
 
 
 const Room = () => {
@@ -97,7 +97,7 @@ const [isSaleDrawerOpen, setIsSaleDrawerOpen] = useState(false);
 const [saleData, setSaleData] = useState({
   id_guest: "",
   value: "",
-  payment_type: "factura",
+  payment_type: 1, // Debe ser un id
   date: new Date().toISOString(), // Fecha de inicio
   date_finish: "", // Fecha de fin (puedes calcularla automáticamente)
 });
@@ -113,23 +113,41 @@ const closeSaleDrawer = () => {
 };
 
 const handleSale = async () => {
-  try {
-    // Valida que los campos obligatorios estén completos
-    if (!saleData.id_guest || !saleData.value || !saleData.date || !saleData.date_finish) {
-      alert("Por favor, completa todos los campos");
-      return;
-    }
+    try {
+        //Valida que los campos obligatorios estén completos
+        if (!saleData.id_guest || !saleData.value || !saleData.date || !saleData.date_finish) {
+          alert("Por favor, completa todos los campos");
+          return;
+        }
 
-    const response = await createRoomReservation(saleData); // Usa la API para crear la reserva
-    if (response) {
-      // Actualiza la lista de habitaciones y cierra el Drawer
-      const updatedRooms = await getRooms();
-      setRooms(updatedRooms);
-      closeSaleDrawer();
+        const dbClient = await getData() ?? {}
+        const cash_register = Number(saleData.payment_type) === 1? 1 : 2;
+        const dataSend = {
+            data_room: selectedRoom,
+            data_transactions: {
+            type_transaction: Number(saleData.payment_type),
+            cash_register: cash_register,
+            value: Number(saleData.value),
+            },
+            data_user: dbClient?.user_data,
+            data_room_reservation: {
+              count_accompany: 0, // Falta
+              date: saleData.date,
+              date_finish: saleData.date_finish,
+              status: "RESERVACION", // Falta
+            }
+        }
+        const response = await createRoomReservation({ data: dataSend }); // Usa la API para crear la reserva
+        if (response?.id) {
+          alert("Funciona Mi papacho")
+          const updatedRooms = await getRooms();
+          setRooms(updatedRooms);
+          closeSaleDrawer();
+        }
+
+    } catch (error) {
+        console.error("Error al registrar la venta:", error);
     }
-  } catch (error) {
-    console.error("Error al registrar la venta:", error);
-  }
 };
 
 
@@ -371,8 +389,8 @@ const handleSale = async () => {
             fullWidth
             margin="normal"
           >
-            <MenuItem value="factura">Factura</MenuItem>
-            <MenuItem value="sin factura">Sin Factura</MenuItem>
+            <MenuItem value="1">Factura</MenuItem>
+            <MenuItem value="2">Sin Factura</MenuItem>
           </Select>
 
           {/* Fechas */}

@@ -43,6 +43,7 @@ class RoomReservation(models.Model):
     reservation = models.ForeignKey('inventory.Reservations', null=True, on_delete=models.CASCADE)
     room = models.ForeignKey('inventory.Rooms', on_delete=models.CASCADE, related_name='updated_reservations')
     update_by = models.ForeignKey('person.Person', on_delete=models.CASCADE,related_name='guest_reservations')
+    id_transaction = models.ForeignKey('transactions.Transactions', null=True, on_delete=models.CASCADE,related_name='transaction_id')
     id_guest = models.ForeignKey('person.Person', on_delete=models.CASCADE, null=True)
     occupancy = models.JSONField()
     count_accompany = models.IntegerField()
