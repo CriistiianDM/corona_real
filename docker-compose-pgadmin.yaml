@@ -13,19 +13,19 @@ services:
   #     - "5432:5432"
 
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com   # Cambia este correo por el que prefieras
-      PGADMIN_DEFAULT_PASSWORD: admin1234        # Cambia esta contraseña por una segura
-      PGADMIN_CONFIG_PROXY_X_HOST_COUNT: 1
-      PGADMIN_CONFIG_PROXY_X_PREFIX_COUNT: 1
-    ports:
-      - "5050:80"
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-    restart: always
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   container_name: pgadmin
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@example.com   # Cambia este correo por el que prefieras
+  #     PGADMIN_DEFAULT_PASSWORD: admin1234        # Cambia esta contraseña por una segura
+  #     PGADMIN_CONFIG_PROXY_X_HOST_COUNT: 1
+  #     PGADMIN_CONFIG_PROXY_X_PREFIX_COUNT: 1
+  #   ports:
+  #     - "5050:80"
+  #   volumes:
+  #     - pgadmin_data:/var/lib/pgadmin
+  #   restart: always
     
   server:
     build:
@@ -38,8 +38,8 @@ services:
       - "8000:8000"
     environment:
       - DJANGO_DB_NAME=${DJANGO_DB_NAME}
-      - DJANGO_DB_USER= ${DJANGO_DB_USER}
-      - DJANGO_DB_PASSWORD= ${DJANGO_DB_PASSWORD}
+      - DJANGO_DB_USER=${DJANGO_DB_USER}
+      - DJANGO_DB_PASSWORD=${DJANGO_DB_PASSWORD}
       - DJANGO_DB_HOST=${DJANGO_DB_HOST}
       - DJANGO_DB_PORT=${DJANGO_DB_PORT}
       - DJANGO_TOKEN_KEY=${DJANGO_TOKEN_KEY}

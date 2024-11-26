@@ -78,3 +78,16 @@ export const getTypeCashRegister = async () => {
     }
     return response
 }
+
+export const createRoomReservation = async ({ data }) => {
+    let response = {}
+    try {
+        response = await fetchPost({ 
+            url: json.roomreservation,
+            body: data,
+        });
+    } catch (error) {
+        console.error("Error al crear RoomReservation:", error);
+    }
+    return response
+}
