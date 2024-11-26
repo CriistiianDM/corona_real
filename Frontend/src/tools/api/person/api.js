@@ -8,26 +8,30 @@ import {fetchPost, fetchGet, fetchPut} from "../api"
 
 export const Login = async ({ username, password}) => {
     let response = {}
-    const db_ = await getData() ?? {}
-    const res = await fetchPost({
-        url: json.login,
-        body: {
-            username: username,
-            password: password
+    try {
+        const db_ = await getData() ?? {}
+        const res = await fetchPost({
+            url: json.login,
+            body: {
+                username: username,
+                password: password
+            }
+        })
+    
+        if (res?.status) {
+            removeUserData()
+            response.authorization = db_?.authorization
+            response.username = username
+            response.password = password
+            response.rol = res?.user?.type_person ?? null
+            response.user_data = res?.user ?? null
+            response.token = true
+            saveUserData(response)
         }
-    })
-
-    if (res?.status) {
-        removeUserData()
-        console.log("entré")
-        response.authorization = db_?.authorization
-        response.username = username
-        response.password = password
-        response.token = true
-        saveUserData(response)
-        console.log("entré")
+    
+    } catch (e) {
+        console.log(e)
     }
-
     return response
 }
 
