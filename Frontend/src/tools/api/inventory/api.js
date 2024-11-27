@@ -1,5 +1,6 @@
 import json from "../../../../.conf";
-import { fetchPost, fetchGet } from "../api"; 
+import { fetchPost, fetchGet, fetchPut } from "../api"; 
+import { postTransaction, putCashRegister, getCashRegisterById } from  "../transaction/api";
 
 // Obtener todos los productos
 export const getProducts = async () => {
@@ -27,10 +28,9 @@ export const createProduct = async (productData) => {
 // Actualizar un producto
 export const updateProduct = async (productId, productData) => {
     try {
-        const url = `${json.products}${productId}/`; 
-        const response = await fetchPost({
-            url: url,
-            body: productData, 
+        const response = await fetchPut({
+            url: json.products + productId + '/',
+            data: productData, 
         });
         return response;
     } catch (error) {
@@ -81,10 +81,9 @@ export const createRoom = async (roomData) => {
 // Actualizar una habitación 
 export const updateRoom = async (roomId, roomData) => {
     try {
-        const url = `${json.rooms}${roomId}/`; 
-        const response = await fetchPost({
-            url: url,
-            body: roomData, 
+        const response = await fetchPut({
+            url: json.rooms + roomId + '/',
+            data: roomData, 
         });
         return response;
     } catch (error) {
@@ -92,3 +91,102 @@ export const updateRoom = async (roomId, roomData) => {
         throw error;
     }
 };
+  
+export const createSellerProduct = async ({ data }) => {
+    let response = {};
+    try {
+      const { data_product, data_transactions } = data;
+  
+      // Validaciones iniciales
+      if (!data_product?.id) {
+        throw new Error("Producto no identificado.");
+      }
+  
+      // Actualizar el producto directamente (Stock)
+      const productUpdateResponse = await updateProduct(data_product.id, data_product);
+      if (!productUpdateResponse?.id) {
+        throw new Error("No se pudo actualizar el producto.");
+      }
+  
+      // Crear la transacción
+      const transactionResponse = await postTransaction({
+        data: {
+          type_transaction: data_transactions.type_transaction, // 1: Venta, 2: Compra
+          cash_register: 1, // Caja fija
+          description: "producto", // Descripción fija
+          value: data_transactions.value, // Valor procesado en el frontend
+        },
+      });
+  
+      if (!transactionResponse?.id) {
+        throw new Error("No se pudo crear la transacción.");
+      }
+  
+      // **Actualizar el balance de la caja**
+      // Obtener el balance actual de la caja
+      const cashRegisterResponse = await getCashRegisterById(1); // Caja fija con ID: 1
+      if (!cashRegisterResponse?.id) {
+        throw new Error("No se pudo obtener la caja.");
+      }
+  
+      const updatedCashBalance =
+        data_transactions.type_transaction === 1 // Venta
+        ? Number(cashRegisterResponse.cash_balance) + Number(data_transactions.value) // Asegura que ambos sean números
+        : Number(cashRegisterResponse.cash_balance) - Number(data_transactions.value); // Compra
+
+  
+      // Actualizar el balance de la caja
+      const updateCashResponse = await putCashRegister({
+        id: cashRegisterResponse.id, // ID de la caja a actualizar
+        data: {
+          ...cashRegisterResponse,
+          cash_balance: updatedCashBalance, // Actualiza el balance de la caja
+        },
+      });
+      
+      if (!updateCashResponse?.id) {
+        throw new Error("No se pudo actualizar el balance de la caja.");
+      }
+  
+      // Crear el registro en SellerProducts (solo para ventas)
+      if (data_transactions.type_transaction === 1) {
+        const sellerProductBody = {
+          person: data_transactions.user_id, // Usuario que realiza la venta
+          product: data_product.id,
+          transaction_id: transactionResponse.id,
+          transacted: data_transactions.amount, // Cantidad transaccionada
+          date: new Date().toISOString(),
+          is_active: true,
+        };
+  
+        const sellerProductResponse = await fetchPost({
+          url: json.seller_products,
+          body: sellerProductBody,
+        });
+  
+        if (!sellerProductResponse?.id) {
+          throw new Error("No se pudo registrar en SellerProducts.");
+        }
+  
+        response = {
+          success: true,
+          product: productUpdateResponse,
+          transaction: transactionResponse,
+          seller_product: sellerProductResponse,
+          cash_register: updateCashResponse,
+        };
+      } else {
+        response = {
+          success: true,
+          product: productUpdateResponse,
+          transaction: transactionResponse,
+          cash_register: updateCashResponse,
+        };
+      }
+    } catch (error) {
+      console.error("Error en createSellerProduct:", error);
+      response = { success: false, error: error.message };
+    }
+    return response;
+  };
+  

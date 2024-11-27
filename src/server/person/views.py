@@ -181,7 +181,7 @@ class TypePersonSerializerViewSet(viewsets.ModelViewSet):
 class PersonSerializerViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    queryset = Person.objects.all().order_by('-created_at')  # O usa '-id'
+    queryset = Person.objects.all().order_by('-id')  # O usa '-id'
     serializer_class = PersonSerializer
 
 

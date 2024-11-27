@@ -24,7 +24,7 @@ const Register = () => {
       const response = await CreateUser(newUser);
       console.log(response)
       if (response?.username) {
-        navigate('/login'); // Redirige a Home si el registro es exitoso
+        navigate('/'); // Redirige a Login si el registro es exitoso
       } else {
         console.error('Error en el registro');
       }
@@ -48,7 +48,7 @@ const Register = () => {
       <TextField label="Username" value={newUser.username} onChange={(e) => handleFieldChange("username", e.target.value)} fullWidth margin="normal" />
       <TextField label="Contraseña" type="password" value={newUser.password} onChange={(e) => handleFieldChange("password", e.target.value)} fullWidth margin="normal" />
       <Button variant="contained" color="primary" fullWidth sx={{ mt: 3 }} onClick={handleRegister}>Registrarse</Button>
-      <Button component={Link} to="/" variant="outlined" color="secondary" fullWidth sx={{ mt: 2 }}>Atrás</Button>
+      <Button component={Link} to="/home" variant="outlined" color="secondary" fullWidth sx={{ mt: 2 }}>Atrás</Button>
     </Box>
   );
 };
