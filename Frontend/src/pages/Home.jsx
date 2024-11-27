@@ -12,6 +12,7 @@ import ProductionQuantityLimitsIcon from '@mui/icons-material/ProductionQuantity
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import BusinessIcon from '@mui/icons-material/Business';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 // Components
 import For from "../components/For/For"
@@ -26,6 +27,7 @@ const routes = [
   { to: "/person", name: "Personas", icon: <PeopleAltIcon /> },
   { to: "/company", name: "Company", icon: <BusinessIcon /> },
   { to: "/cash_register", name: "Billeteras", icon: <MonetizationOnIcon /> },
+  { to: "/register", name: "Usuarios", icon: <PersonAddIcon /> },
 ]
 
 export default function () {
@@ -39,7 +41,7 @@ export default function () {
 /** BODY */
 const ContainerPrimary = () => {
   return (
-    <BoxPrimary>
+    <BoxPrimary title={"Panel de Control"}>
       <For func={listOptions} list={routes} />
     </BoxPrimary>
   )

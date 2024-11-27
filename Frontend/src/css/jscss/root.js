@@ -147,7 +147,7 @@ export default {
             '& .MuiAvatar-root': {
                 width: "40px",
                 height: "40px",
-                background: "#D9D9D9"
+                background: "#583535"
             },
             '& img': {
                 width: "30px",
@@ -158,7 +158,7 @@ export default {
     toogleMenuUser: {
         '& .MuiPaper-root': {
             minWidth: "130px",
-            background: "#D9D9D9",
+            background: "#583535",
             '& h2': {
                 textAlign: "center",
             },
@@ -179,7 +179,7 @@ export default {
         position: "relative",
         display: "flex",
         flexWrap: "wrap",
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         padding: "20px",
         maxWidth: "1300px",
         margin: "-50px auto 30px auto",
@@ -188,7 +188,13 @@ export default {
         width: "calc(95% - 40px)",
         background: "#433A3A",
         overflowY: "auto",
-        overflowX: "hidden"
+        overflowX: "hidden",
+        '& .title-box': {
+            width: "100%",
+            height: "40px",
+            color: "white",
+            fontSize: "20px",
+        }
     },
     containerBoxHome: {
         cursor: 'pointer',
@@ -197,12 +203,12 @@ export default {
         padding: "14px",
         margin: "10px 10px",
         background: '#D9D9D9',
-        width: '170px',
+        width: '150px',
         overflow: "hidden",
         '@media (max-width: 500px)': {
             width: '100%',
         },
-        height: '200px',
+        height: '170px',
         borderRadius: '8px',
         '& .MuiListItemIcon-root': {
             display: "flex",
@@ -212,6 +218,7 @@ export default {
             '& svg': {
                 width: "70%",
                 height: "70%",
+                fill: '#5c0100',
                 '@media (max-width: 500px)': {
                     width: "50%",
                     height: "50%",
@@ -225,5 +232,73 @@ export default {
             color: '#5c0100',
             fontWeight: 'bold'
         }
+    },
+    containerRooms: {
+        all: 'unset',
+        display: 'flex',
+        flexWrap: 'wrap',
+        overflow: 'hidden',
+        justifyContent: 'space-between',
+        gap: '20px',
+        '& > .MuiGrid-root': {
+            width: 'calc(50% - 20px)',
+            maxHeight: "100%",
+            overflow: 'hidden',
+            '@media (max-width: 500px)': {
+                width: "100%",
+            },
+            '& .MuiPaper-root': {
+                borderRadius: '10px',
+                background: '#fcf2e6',
+                boxSizing: 'border-box',
+                padding: "20px",
+                height: '100%',
+                '@media (max-width: 500px)': {
+                    width: "100%",
+                    flexDirection: 'column',
+                },
+                '& .MuiCardContent-root': {
+                    boxSizing: 'border-box',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexDirection: 'column',
+                    height: '100%',
+                    width: '100%',
+                    '& > .MuiGrid-root:first-of-type': {
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexDirection: 'column',
+                        height: '70%',
+                        '& > h6:first-of-type': {
+                            fontSize: '2em !important',
+                            fontWeight: 'bold !important'
+                        }
+                    },
+                    '& > .MuiGrid-root:last-of-type': {
+                        display: 'flex',
+                        alignItems: 'end',
+                        justifyContent: 'end',
+                        flexDirection: 'column',
+                        width: '100%',
+                        height: '100%',
+                        '& button': {
+                            width: '100%'
+                        },
+                        '& button:last-of-type': {
+                            border: 'none',
+                            background: '#8BC34A',
+                            color: 'white'
+                        },
+                        '& button:first-of-type': {
+                            border: 'none',
+                            background: '#b3b3b3',
+                            color: 'white'
+                        }
+                    }
+                }
+            }
+        },
     }
 }
