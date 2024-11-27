@@ -7,6 +7,8 @@ import { getPersons} from "../tools/api/person/api";
 import { createRoomReservation } from "../tools/api/transaction/api";
 import { getData } from "../tools/utils/utils";
 
+// Componets
+import BoxPrimary from "../components/Share/BoxPrimary.jsx"
 
 const Room = () => {
   const [rooms, setRooms] = useState([])
@@ -154,6 +156,7 @@ const handleSale = async () => {
 
 
   return (
+    <BoxPrimary>
     <div style={{ display: "flex" }}>
       <Grid container spacing={3} style={{ flex: 1, transition: "all 0.3s", transform: isDrawerOpen ? "scale(0.9)" : "scale(1)" }}>
         {rooms.map((room) => (
@@ -426,6 +429,7 @@ const handleSale = async () => {
     </Drawer>
 
     </div>
+    </BoxPrimary>
   );
 };
 

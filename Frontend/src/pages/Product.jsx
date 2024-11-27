@@ -3,6 +3,9 @@ import { Grid, Card, CardContent, Typography, Button, Drawer, TextField, Box, Fa
 import AddIcon from "@mui/icons-material/Add";
 import { getProducts, createProduct, updateProduct } from "../tools/api/inventory/api";
 
+// Componets
+import BoxPrimary from "../components/Share/BoxPrimary.jsx"
+
 const Product = () => {
   const [products, setProducts] = useState([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -159,7 +162,8 @@ const Product = () => {
   };
 
   return (
-    <div style={{ display: "flex" }}>
+    <BoxPrimary>
+    <div style={{ width: '100%' }}>
       <Grid container spacing={3} style={{ flex: 1 }}>
         {products?.length>0 && products.map((product) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
@@ -304,6 +308,7 @@ const Product = () => {
         <AddIcon />
       </Fab>
     </div>
+    </BoxPrimary>
   );
 };
 

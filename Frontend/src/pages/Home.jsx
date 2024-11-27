@@ -2,9 +2,6 @@
 import React from 'react';
 import { useNavigate, Link } from "react-router-dom";
 
-// Components
-import BoxPrimary from "../components/Share/BoxPrimary.jsx"
-
 // Material IU
 import { Button, Menu , MenuItem , Grid2, Box, Avatar  } from "@mui/material"
 import ListItemIcon from '@mui/material/ListItemIcon'
@@ -18,6 +15,7 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 
 // Components
 import For from "../components/For/For"
+import BoxPrimary from "../components/Share/BoxPrimary.jsx"
 
 // Styles
 import styles from "../css/jscss/root"

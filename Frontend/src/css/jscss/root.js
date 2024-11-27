@@ -83,7 +83,7 @@ export default {
             height: "100%",
             width: "100%",
             '@media (max-width: 500px)': {
-                maxWidth: "500px)",
+                maxWidth: "ll500px)",
             },
         },
         '& > section:last-of-type': {
@@ -187,7 +187,8 @@ export default {
         borderRadius: "10px",
         width: "calc(95% - 40px)",
         background: "#433A3A",
-        overflow: "auto"
+        overflowY: "auto",
+        overflowX: "hidden"
     },
     containerBoxHome: {
         cursor: 'pointer',
