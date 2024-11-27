@@ -65,12 +65,12 @@ const handlersFunc = (props) => {
       const response = await LoginUser(credentials)
       if (response.token) {
         saveUserData(response)
-        AlertService.success("Credenciales válidas");
+        AlertService.success("Credenciales válidas", "Ingreso Exitoso", "top-end");
         navigate('/home')
       } else {
         setSuccess(true)
         // setError("Credenciales incorrectas")
-        AlertService.error("Credenciales incorrectas");
+        AlertService.error("Credenciales incorrecta", "Error", "top-end");
       }
 
       setTimeout(() => {
