@@ -19,5 +19,6 @@ export default {
     "rooms": `${URL}/api/inventory/rooms/`,
     "room_reservation": `${URL}/api/transactions/room_reservation/`,
     "transactionPost": `${URL}/api/transactions/transactions/`,
-
+    "seller_products": `${URL}/api/inventory/seller_products/`,
+    "transactionCaja": `${URL}/api/transactions/transactions_by_cash_register/`,
 }
