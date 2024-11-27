@@ -30,7 +30,7 @@ class TypesCashRegisterViewSet(viewsets.ModelViewSet):
 class CashRegisterViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    queryset = CashRegister.objects.all()
+    queryset = CashRegister.objects.all().order_by('id')
     serializer_class = CashRegisterSerializer
 
 # @method_decorator(csrf_protect, name='dispatch')

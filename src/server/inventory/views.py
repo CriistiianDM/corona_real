@@ -20,7 +20,7 @@ from .serializers import ProductsSerializer, SellerProductsSerializer, Reservati
 class ProductsViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    queryset = Products.objects.all()
+    queryset = Products.objects.all().order_by('id')
     serializer_class = ProductsSerializer
 
 # @method_decorator(csrf_protect, name='dispatch')
@@ -41,5 +41,5 @@ class ReservationsViewSet(viewsets.ModelViewSet):
 class RoomsViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    queryset = Rooms.objects.all()
+    queryset = Rooms.objects.all().order_by('id')
     serializer_class = RoomsSerializer

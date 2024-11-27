@@ -21,6 +21,16 @@ export const getCashRegister = async () => {
     return response
 }
 
+export const getCashRegisterById = async (id) => {
+    let response = {};
+    try {
+      response = await fetchGet({ url: `${json.cashRegister}${id}/` });
+    } catch (error) {
+      console.error("Error al obtener la caja:", error);
+    }
+    return response;
+  };
+
 /**
  * Crea un nuevo registro de caja enviando los datos al servidor.
  * @async
@@ -52,18 +62,32 @@ export const postCashRegister = async ({ data }) => {
  * @returns {Promise<Object>} Una promesa que se resuelve con la respuesta del servidor.
  * @throws {Error} Si ocurre un error al actualizar los datos.
  */
-export const putCashRegister = async ({ data }) => {
-    let response = {}
+// export const putCashRegister = async ({ data }) => {
+//     let response = {}
+//     try {
+//         response = await fetchPut({ 
+//             url: json.cashRegister,
+//             data: data,
+//         });
+//     } catch (error) {
+//         console.error("Error al obtener productos:", error);
+//     }
+//     return response
+// }
+
+export const putCashRegister = async ({ id, data }) => {
+    let response = {};
     try {
-        response = await fetchPut({ 
-            url: json.cashRegister,
-            data: data,
-        });
+      response = await fetchPut({
+        url: `${json.cashRegister}${id}/`, // Incluye el ID en la URL
+        data: data,
+      });
     } catch (error) {
-        console.error("Error al obtener productos:", error);
+      console.error("Error al actualizar la caja:", error);
     }
-    return response
-}
+    return response;
+  };
+  
 
 /**
  * Obtiene la lista de tipos de registros de caja desde el servidor.
