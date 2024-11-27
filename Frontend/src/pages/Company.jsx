@@ -4,6 +4,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 
+// Componets
+import BoxPrimary from "../components/Share/BoxPrimary.jsx"
+
 const initialCompanies = [
   { id: 1, name: "Servimos S.A.S", nit: 1122, date: "2024-07-25T00:00:00" },
   { id: 2, name: "Todo Limpio Ltda", nit: 2233, date: "2021-05-20T00:00:00" },
@@ -67,11 +70,12 @@ const Company = () => {
   };
 
   return (
-    <div style={{ display: "flex" }}>
+    <BoxPrimary>
+    <div style={{ display: "flex", width: "100%" }}>
       <Grid container spacing={3} style={{ flex: 1 }}>
         {companies.map((company) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={company.id}>
-            <Card sx={{ padding: 2, textAlign: "center", height: "100%" }}>
+            <Card sx={{ padding: 2, textAlign: "center", height: "350px" }}>
               <Typography variant="h6" sx={{ fontWeight: "bold", fontSize: "1.1rem" }}>{company.name}</Typography>
               <CardContent>
                 <Typography variant="body2" color="textSecondary">NIT: {company.nit}</Typography>
@@ -180,6 +184,7 @@ const Company = () => {
         <AddIcon />
       </Fab>
     </div>
+    </BoxPrimary>
   );
 };
 

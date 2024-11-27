@@ -3,6 +3,9 @@ import { Box, Button, TextField, Typography, Select, MenuItem } from "@mui/mater
 import { Link, useNavigate } from "react-router-dom";
 import { CreateUser } from "../tools/api/person/api"; // Importa la función CreateUser
 
+// Componets
+import BoxPrimary from "../components/Share/BoxPrimary.jsx"
+
 const Register = () => {
   const navigate = useNavigate();
   const [newUser, setNewUser] = useState({
@@ -34,6 +37,7 @@ const Register = () => {
   };
 
   return (
+    <BoxPrimary>
     <Box sx={{ maxWidth: 400, margin: "auto", padding: 3, mt: 5 }}>
       <Typography variant="h4" gutterBottom>Registro</Typography>
       <TextField label="Nombre" value={newUser.name} onChange={(e) => handleFieldChange("name", e.target.value)} fullWidth margin="normal" />
@@ -50,6 +54,7 @@ const Register = () => {
       <Button variant="contained" color="primary" fullWidth sx={{ mt: 3 }} onClick={handleRegister}>Registrarse</Button>
       <Button component={Link} to="/home" variant="outlined" color="secondary" fullWidth sx={{ mt: 2 }}>Atrás</Button>
     </Box>
+    </BoxPrimary>
   );
 };
 

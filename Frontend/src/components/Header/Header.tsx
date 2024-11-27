@@ -164,7 +164,14 @@ const TemporaryDrawer = ({ open, setOpen, toggleDrawer }) =>  {
   
     return (
       <div>
-        <Drawer open={open} onClose={toggleDrawer(false)}>
+        <Drawer 
+          open={open} 
+          onClose={toggleDrawer(false)}
+          sx={{
+            '& .MuiPaper-root': {
+              background: '#FFFEEE'
+            }
+          }}>
           {DrawerList}
         </Drawer>
       </div>
