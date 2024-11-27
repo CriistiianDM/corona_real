@@ -12,6 +12,7 @@ import BoxPrimary from "../components/Share/BoxPrimary.jsx"
 
 // Styles
 import styles from "../css/jscss/root"
+import AlertService from "./utils/AlertService.js";
 
 const Room = () => {
   const [rooms, setRooms] = useState([])
@@ -28,6 +29,8 @@ useEffect(() => {
       setPersons(personsData); // Almacena las personas en el estado
     } catch (error) {
       console.error("Error al obtener personas:", error);
+      const errorMessage = error.response?.data?.message || error.message || "Error al obtener personas";
+      AlertService.error(errorMessage, "Error", "top-start");
     }
   };
 
@@ -40,7 +43,8 @@ useEffect(() => {
         const roomsData = await getRooms();
         setRooms(roomsData); // Actualiza el estado con los datos obtenidos
       } catch (error) {
-        console.error("Error al obtener habitaciones:", error);
+        const errorMessage = error.response?.data?.message || error.message || "Error al obtener habitaciones";
+        AlertService.error(errorMessage, "Error", "top-start");
       }
     };
 
@@ -68,7 +72,7 @@ useEffect(() => {
   const saveChanges = async () => {
     try {
       if (!selectedRoom) {
-        alert("No se ha seleccionado ninguna habitación.");
+        AlertService.warning("No se ha seleccionado ninguna habitación", "Advertencia", "top-start");
         return;
       }
   
@@ -88,15 +92,15 @@ useEffect(() => {
         );
         setRooms(updatedRooms);
   
-        alert("La habitación se ha actualizado correctamente.");
+        AlertService.success("La habitación se ha actualizado correctamente", "Éxito", "top-start");
       } else {
-        alert("No se pudo actualizar la habitación.");
+        AlertService.error("No se pudo actualizar la habitación", "Error", "top-start");
       }
   
       closeEditDrawer(); // Cierra el drawer
     } catch (error) {
       console.error("Error al guardar cambios:", error);
-      alert("Error al guardar los cambios.");
+      AlertService.error(errorMessage, "Error", "top-start");
     }
   };
   
@@ -105,6 +109,7 @@ useEffect(() => {
     const updatedRooms = rooms.filter(room => room.id !== selectedRoom.id);
     setRooms(updatedRooms);
     closeEditDrawer();
+    AlertService.success("Habitación eliminada con éxito", "Éxito", "top-start");
   };
 
   const openAddDrawer = () => {
@@ -149,7 +154,7 @@ const handleSale = async () => {
     try {
         //Valida que los campos obligatorios estén completos
         if (!saleData.id_guest || !saleData.value || !saleData.date || !saleData.date_finish) {
-          alert("Por favor, completa todos los campos");
+          AlertService.warning("Por favor, completa todos los campos", "Advertencia", "top-start");
           return;
         }
 
@@ -172,14 +177,15 @@ const handleSale = async () => {
         }
         const response = await createRoomReservation({ data: dataSend }); // Usa la API para crear la reserva
         if (response?.id) {
-          alert("Funciona Mi papacho")
+          AlertService.success("Funciona","Éxito", "top-start")
           const updatedRooms = await getRooms();
           setRooms(updatedRooms);
           closeSaleDrawer();
         }
 
     } catch (error) {
-        console.error("Error al registrar la venta:", error);
+      const errorMessage = error.response?.data?.message || error.message || "Error al registrar la venta";
+      AlertService.error(errorMessage, "Error", "top-start");
     }
 };
 
