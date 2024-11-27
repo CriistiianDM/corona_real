@@ -8,6 +8,9 @@ import { createPerson, getPersons , updatePerson} from '../tools/api/person/api'
 
 import './estilos/Person.css';
 
+// Componets
+import BoxPrimary from "../components/Share/BoxPrimary.jsx"
+
 const Person = () => {
   const [persons, setPersons] = useState([]);
   const [selectedPerson, setSelectedPerson] = useState(null);
@@ -102,6 +105,7 @@ const Person = () => {
   };
 
   return (
+    <BoxPrimary>
     <Box className="contenedor">
       <Typography variant="h4" className="title">Personas</Typography>
       <TableContainer component={Paper} className="tabla">
@@ -280,6 +284,7 @@ const Person = () => {
         <AddIcon />
       </Fab>
     </Box>
+    </BoxPrimary>
   );
 };
 

@@ -7,6 +7,11 @@ import { getPersons} from "../tools/api/person/api";
 import { createRoomReservation } from "../tools/api/transaction/api";
 import { getData } from "../tools/utils/utils";
 
+// Componets
+import BoxPrimary from "../components/Share/BoxPrimary.jsx"
+
+// Styles
+import styles from "../css/jscss/root"
 
 const Room = () => {
   const [rooms, setRooms] = useState([])
@@ -182,57 +187,59 @@ const handleSale = async () => {
 
 
   return (
-    <div style={{ display: "flex" }}>
-      <Grid container spacing={3} style={{ flex: 1 }}>
+    <BoxPrimary title={"Habitaciones"}>
+      <Grid sx={styles.containerRooms}>
       {rooms.map((room) => {
     // Función para determinar el color del borde
     const borderColor = (() => {
       switch (room.status) {
         case "ocupado":
-          return "red";
+          return "#6a0203";
         case "disponible":
-          return "green";
+          return "#589958";
         case "sucio":
           return "orange";
         case "averiada":
-          return "gray";
+          return "#328ecd";
         default:
           return "black"; // Color por defecto
       }
     })();
 
     return (
-      <Grid item xs={12} sm={6} md={4} lg={3} key={room.id}>
+      <Grid  key={room.id}>
         <Card
           className="thumb-cards_room"
           style={{
             display: "flex",
             alignItems: "center",
             borderColor: borderColor, // Aplica el color basado en el estado
-            borderWidth: 2,
+            borderWidth: 7,
             borderStyle: "solid",
-            padding: "10px",
           }}
         >
-          <div style={{ flexShrink: 0, marginRight: 10 }}>
+          <div>
             <img
               src="/Room2.png"
               alt={`Habitación ${room.number_room}`}
-              style={{ width: 60, height: 60, objectFit: "cover", borderRadius: "8px" }}
+              style={{ width: 245, height: 300, objectFit: "cover", borderRadius: "8px" }}
             />
           </div>
-          <CardContent style={{ flex: 1, padding: 0 }}>
+          <CardContent>
+          <Grid>
             <Typography variant="h6" style={{ fontSize: "1rem" }}>{room.number_room}</Typography>
             <Typography variant="h6" style={{ fontSize: "1rem" }}>{room.name}</Typography>
-            <Typography variant="body2">Tipo: {room.type_room}</Typography>
+            <Typography variant="body2"><b>Tipo:</b> {room.type_room}</Typography>
             <Typography variant="body2" style={{ color: borderColor }}>
-              Estado: {room.status}
+              <b>Estado: </b>{room.status}
             </Typography>
             {room.status === "ocupada" && (
               <Typography variant="body2" style={{ fontWeight: "bold", marginTop: 5 }}>
                 Cliente: {room.cliente || "Sin asignar"}
               </Typography>
             )}
+            </Grid>
+            <Grid>
             <Button
               variant="outlined"
               color="primary"
@@ -251,6 +258,7 @@ const handleSale = async () => {
                 Registrar Venta
               </Button>
             )}
+            </Grid>
           </CardContent>
         </Card>
       </Grid>
@@ -259,10 +267,8 @@ const handleSale = async () => {
 </Grid>
 
 
-
-
       {/* Botón para agregar nueva habitación */}
-      <Fab className="boton-flotante" color="primary" aria-label="add" style={{ position: 'absolute', bottom: 20, right: 20 }} onClick={openAddDrawer}>
+      <Fab className="boton-flotante" color="primary" aria-label="add" style={{ position: 'fixed', zIndex: 99, bottom: 20, right: 20 }} onClick={openAddDrawer}>
         <AddIcon />
       </Fab>
 
@@ -270,8 +276,13 @@ const handleSale = async () => {
         anchor="right"
         open={isAddDrawerOpen}
         onClose={closeAddDrawer}
+        sx={{
+          '& .MuiPaper-root': {
+            background: '#FFFEEE'
+          }
+        }}
       >
-        <Box sx={{ width: 300, padding: 2, marginTop: 10 }}>
+        <Box sx={{ width: 300, padding: 2, marginTop: 10, background: '#FFFEEE'}}>
           <Typography variant="h5" gutterBottom>Agregar Nueva Habitación</Typography>
           <TextField
             label="Número de Habitación"
@@ -308,14 +319,18 @@ const handleSale = async () => {
             color="primary"
             onClick={addNewRoom}
             fullWidth
-            style={{ marginTop: 20, borderColor: 'blue', color: 'blue', borderWidth: 2, borderStyle: 'solid' }} // Borde azul
+            style={{ marginTop: 20, color: '#fff', background: '#320001' }} // Borde azul
           >
             Agregar
           </Button>
         </Box>
       </Drawer>
 
-      <Drawer anchor="right" open={isDrawerOpen} onClose={closeEditDrawer}>
+      <Drawer sx={{
+          '& .MuiPaper-root': {
+            background: '#FFFEEE'
+          }
+        }} anchor="right" open={isDrawerOpen} onClose={closeEditDrawer}>
       {selectedRoom && (
         <Box sx={{ width: 300, padding: 2, marginTop: 10 }}>
           <Typography variant="h5" gutterBottom>
@@ -395,14 +410,18 @@ const handleSale = async () => {
             color="primary"
             onClick={saveChanges}
             fullWidth
-            style={{ marginTop: 20 }}
+            style={{ marginTop: 20, color: '#fff', background: '#320001' }}
           >
             Guardar Cambios
           </Button>
         </Box>
       )}
     </Drawer>
-    <Drawer anchor="right" open={isSaleDrawerOpen} onClose={closeSaleDrawer}>
+    <Drawer         sx={{
+          '& .MuiPaper-root': {
+            background: '#FFFEEE'
+          }
+        }} anchor="right" open={isSaleDrawerOpen} onClose={closeSaleDrawer}>
       {selectedRoom && (
         <Box sx={{ width: 300, padding: 2, marginTop: 10 }}>
           <Typography variant="h5" gutterBottom>
@@ -474,15 +493,14 @@ const handleSale = async () => {
             color="primary"
             onClick={handleSale}
             fullWidth
-            style={{ marginTop: 20 }}
+            style={{ marginTop: 20, color: '#fff', background: '#320001' }}
           >
             Confirmar Venta
           </Button>
         </Box>
       )}
     </Drawer>
-
-    </div>
+    </BoxPrimary>
   );
 };
 

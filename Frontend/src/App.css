@@ -34,6 +34,11 @@
   transform: scale(1.05); /* Efecto de crecimiento al pasar el mouse */
 }
 
+.MuiDrawer-root.MuiDrawer-modal .MuiButtonBase-root.MuiButton-root {
+  background-color: #5f1414 !important;
+  color: #fff !important;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
