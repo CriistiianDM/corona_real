@@ -154,8 +154,8 @@ export const createRoomReservation = async ({ data }) => {
         if (roomState?.id === undefined) return response
 
         const data_transaction = {
-            type_transaction: data_transactions?.type_transaction ?? 1,
-            cash_register: data_transactions?.cash_register ?? 1,
+            type_transaction: data_transactions?.type_transaction ?? 3,
+            cash_register: data_transactions?.cash_register ?? 2,
             description: "room_reservation",
             value: data_transactions?.value ?? 0,
         }
@@ -163,6 +163,32 @@ export const createRoomReservation = async ({ data }) => {
         const transaction_res = await postTransaction({ data: data_transaction })
         
         if (transaction_res?.id === undefined) return response
+
+        // Actualizar el balance de la caja registradora
+        const cashRegisterId = data_transactions?.cash_register ?? 2;
+        const cashRegisterResponse = await getCashRegisterById(cashRegisterId);
+
+        if (!cashRegisterResponse?.id) {
+            throw new Error("No se pudo obtener la caja registradora.");
+        }
+
+        const updatedCashBalance = 
+            Number(cashRegisterResponse.cash_balance) + Number(data_transactions.value);
+
+        const updatedCashRegister = {
+            ...cashRegisterResponse,
+            cash_balance: updatedCashBalance,
+        };
+
+        const cashUpdateResponse = await putCashRegister({
+            id: cashRegisterResponse.id,
+            data: updatedCashRegister,
+        });
+
+        if (!cashUpdateResponse?.id) {
+            throw new Error("No se pudo actualizar el balance de la caja.");
+        }
+
 
         const room_reservation_body = {
             reservation: null,
