@@ -64,7 +64,7 @@ const handlersFunc = (props) => {
       const response = await LoginUser(credentials)
       if (response.token) {
         saveUserData(response)
-        navigate('/')
+        navigate('/home')
       } else {
         setSuccess(true)
         setError("Credenciales incorrectas")
