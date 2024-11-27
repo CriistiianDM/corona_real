@@ -8,11 +8,11 @@ import Person from "./pages/Person";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
-import { isUserAuthenticated, removeUserData, saveUserData, initDB } from "./tools/indexedDB/indexedDB";
+import { isUserAuthenticated, removeUserData, initDB } from "./tools/indexedDB/indexedDB";
 import Company from "./pages/Company";
 import CashRegister from "./pages/CashRegister";
-import { createDB } from "./tools/api/api"
-
+import CashRegisterDetails from "./pages/CashRegisterDetails";
+import { createDB } from "./tools/api/api";
 
 const AppContent = () => {
   const [user, setUser] = useState(null); // Estado para guardar la información del usuario
@@ -24,44 +24,54 @@ const AppContent = () => {
 
   // Carga inicial para verificar si hay un usuario autenticado
   useEffect(() => {
-    initDB()
+    initDB();
     isUserAuthenticated((data) => {
       if (data) setUser(data.username);
-      if (data?.token == undefined)
-          navigate("/login")
+      if (data?.token == undefined) navigate("/login");
     });
   }, []);
 
   // Manejo del cierre de sesión
   const handleLogout = () => {
     removeUserData(); // Elimina la información del usuario almacenada
-    setUser(null);    // Reinicia el estado del usuario
-    navigate("/");    // Redirige a Home
+    setUser(null); // Reinicia el estado del usuario
+    navigate("/"); // Redirige a Home
   };
 
   return (
     <Box sx={{ display: "flex" }}>
       {/* Barra superior */}
-      { showSidebar && <AppBar position="fixed" sx={{ backgroundColor: "#5f1414" }}>
-        <Toolbar>
-          <img src="/Logo.png" alt="Logo" style={{ height: "60px", marginRight: "20px" }} />
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>Corona Real</Typography>
-          {/* Botones del toolbar */}
-          {user ? (
-            <>
-              <Typography variant="h6">Bienvenido, {user.name}</Typography>
-              <Button color="inherit" onClick={() => navigate("/register")}>Registro</Button>
-              <Button color="inherit" onClick={handleLogout}>Cerrar sesión</Button>
-            </>
-          ) : (
-            <>
-              <Button color="inherit" onClick={() => navigate("/login")}>Login</Button>
-              <Button color="inherit" onClick={() => navigate("/register")}>Registro</Button>
-            </>
-          )}
-        </Toolbar>
-      </AppBar>
-      }
+      {showSidebar && (
+        <AppBar position="fixed" sx={{ backgroundColor: "#5f1414" }}>
+          <Toolbar>
+            <img src="/Logo.png" alt="Logo" style={{ height: "60px", marginRight: "20px" }} />
+            <Typography variant="h6" sx={{ flexGrow: 1 }}>
+              Corona Real
+            </Typography>
+            {/* Botones del toolbar */}
+            {user ? (
+              <>
+                <Typography variant="h6">Bienvenido, {user.name}</Typography>
+                <Button color="inherit" onClick={() => navigate("/register")}>
+                  Registro
+                </Button>
+                <Button color="inherit" onClick={handleLogout}>
+                  Cerrar sesión
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button color="inherit" onClick={() => navigate("/login")}>
+                  Login
+                </Button>
+                <Button color="inherit" onClick={() => navigate("/register")}>
+                  Registro
+                </Button>
+              </>
+            )}
+          </Toolbar>
+        </AppBar>
+      )}
 
       {/* Sidebar (si aplica) */}
       {showSidebar && <Sidebar />}
@@ -79,6 +89,7 @@ const AppContent = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/company" element={<Company />} />
           <Route path="/cash_register" element={<CashRegister />} />
+          <Route path="/cash_register/:id" element={<CashRegisterDetails />} />
         </Routes>
       </Box>
     </Box>

@@ -447,7 +447,7 @@ const handleSale = async () => {
             margin="normal"
           >
             <MenuItem value="2">Factura</MenuItem>
-            <MenuItem value="">Sin Factura</MenuItem>
+            <MenuItem value="1">Sin Factura</MenuItem>
           </Select>
 
           {/* Fechas */}
