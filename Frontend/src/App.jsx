@@ -13,6 +13,9 @@ import Company from "./pages/Company";
 import CashRegister from "./pages/CashRegister";
 import { createDB } from "./tools/api/api"
 
+// Components
+import Header from "./components/Header/Header"
+import CoronaReal from "./components/Header/CoronaReal"
 
 const AppContent = () => {
   const [user, setUser] = useState(null); // Estado para guardar la información del usuario
@@ -40,35 +43,16 @@ const AppContent = () => {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", flexWrap: "wrap" }}>
       {/* Barra superior */}
-      { showSidebar && <AppBar position="fixed" sx={{ backgroundColor: "#5f1414" }}>
-        <Toolbar>
-          <img src="/Logo.png" alt="Logo" style={{ height: "60px", marginRight: "20px" }} />
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>Corona Real</Typography>
-          {/* Botones del toolbar */}
-          {user ? (
-            <>
-              <Typography variant="h6">Bienvenido, {user.name}</Typography>
-              <Button color="inherit" onClick={() => navigate("/register")}>Registro</Button>
-              <Button color="inherit" onClick={handleLogout}>Cerrar sesión</Button>
-            </>
-          ) : (
-            <>
-              <Button color="inherit" onClick={() => navigate("/")}>Cerrar sesión</Button>
-              <Button color="inherit" onClick={() => navigate("/register")}>Registro</Button>
-            </>
-          )}
-        </Toolbar>
-      </AppBar>
-      }
+      { showSidebar && <Header /> }
+      { showSidebar && <CoronaReal />}
 
       {/* Sidebar (si aplica) */}
-      {showSidebar && <Sidebar />}
+      {/* {showSidebar && <Sidebar />} */}
 
       {/* Contenido principal */}
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Toolbar /> {/* Espacio para la barra superior */}
+       {/* Espacio para la barra superior */}
         <Routes>
           <Route path="/home" element={<Home />} />
           <Route path="/rooms" element={<Room />} />
@@ -80,7 +64,6 @@ const AppContent = () => {
           <Route path="/company" element={<Company />} />
           <Route path="/cash_register" element={<CashRegister />} />
         </Routes>
-      </Box>
     </Box>
   );
 };
