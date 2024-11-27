@@ -128,10 +128,10 @@ const Person = () => {
       if (response && response.id) {
         fetchPersons(); // Refresca la lista de personas
         closeNewPersonDrawer();
-        AlertService.success("Nueva persona creada con éxito", "Error","top-start");
+        AlertService.success("Nueva persona creada con éxito", "Éxito","top-start");
       }
     } catch (error) {
-      AlertService.error("Error al agregar nueva persona");
+      AlertService.error("Error al agregar nueva persona", "Éxito", "top-start");
       console.error("Error al agregar nueva persona:", error, "top-start");
     }
   };

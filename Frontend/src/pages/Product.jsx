@@ -3,6 +3,7 @@ import { Grid, Card, CardContent, Typography, Button, Drawer, TextField, Box, Fa
 import AddIcon from "@mui/icons-material/Add";
 import { getProducts, createProduct, updateProduct, createSellerProduct} from "../tools/api/inventory/api";
 import { getData } from "../tools/utils/utils";
+import AlertService from "./utils/AlertService";//
 
 // Componets
 import BoxPrimary from "../components/Share/BoxPrimary.jsx"
@@ -50,6 +51,7 @@ const Product = () => {
         const data = await getProducts();
         setProducts(data);
       } catch (error) {
+        AlertService.error(errorMessage, "Error", "top-start");
         console.log("Error al cargar productos:", error);
       }
     };
@@ -77,7 +79,7 @@ const Product = () => {
   const handleSellerProduct = async () => {
     try {
       if (!selectedProduct || !transactionType) {
-        alert("Por favor, selecciona un producto y un tipo de transacción.");
+        AlertService.warning("Selecciona un producto y un tipo de transacción", "Advertencia", "top-start");
         return;
       }
   
@@ -89,9 +91,10 @@ const Product = () => {
       }
   
       closeDrawer(); // Cierra el Drawer después de completar la acción
+      AlertService.success("Transacción completada con éxito", "Éxito", "top-start");
     } catch (error) {
       console.error("Error en handleSellerProduct:", error);
-      alert("Ocurrió un error al procesar la transacción.");
+      AlertService.error(errorMessage, "Error", "top-start");
     }
   };
 
@@ -109,7 +112,9 @@ const Product = () => {
       const updatedProducts = await getProducts();
       setProducts(updatedProducts); // Sincroniza el estado del frontend con el backend
     } catch (error) {
-      console.error("Error al realizar la transacción:", error);
+      const errorMessage = error.response?.data?.message || error.message || "Error al realizar la transacción";
+
+      AlertService.error(errorMessage, "Error", "top-start");
     }
   
     closeDrawer(); // Cierra el Drawer después de la operación
@@ -171,13 +176,13 @@ const Product = () => {
   const handleSell = async () => {
     try {
       if (!selectedProduct || !transactionType) {
-        alert("Por favor, selecciona un producto y un tipo de transacción.");
+        AlertService.warning("Por favor, selecciona un producto y un tipo de transacción.", "Advertencia", "top-start");
         return;
       }
   
       const dbClient = await getData(); // Obtener datos del usuario desde el almacenamiento local
       if (!dbClient?.user_data) {
-        alert("No se pudo obtener la información del usuario.");
+        AlertService.error("No se pudo obtener la información del usuario", "Error", "top-start");
         return;
       }
   
@@ -211,16 +216,18 @@ const Product = () => {
       const response = await createSellerProduct({ data: dataSend });
   
       if (response?.success) {
-        alert("Transacción completada con éxito.");
+        AlertService.success("Transacción completada con éxito", "Éxito", "top-start");
         const updatedProducts = await getProducts(); // Refrescar la lista de productos
         setProducts(updatedProducts);
         closeDrawer(); // Cerrar el Drawer
       } else {
-        alert("No se pudo completar la transacción.");
+        AlertService.error("No se pudo completar la transacción", "Error", "top-start");
+
       }
     } catch (error) {
       console.error("Error al realizar la transacción:", error);
-      alert("Error al realizar la transacción.");
+      const errorMessage = error.response?.data?.message || error.message || "Error al realizar la transacción";
+      AlertService.error(errorMessage, "Error", "top-start");
     }
   };
   
@@ -262,8 +269,9 @@ const Product = () => {
       setProducts(updatedProducts);
   
       closeNewProductDrawer(); // Cierra el Drawer después de guardar
+      AlertService.success("Producto guardado con éxito", "Éxito", "top-start");
     } catch (error) {
-      console.error("Error al guardar producto:", error);
+      AlertService.error(errorMessage, "Error", "top-start");
     }
   };
   
