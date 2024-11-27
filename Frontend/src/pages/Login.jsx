@@ -65,6 +65,7 @@ const handlersFunc = (props) => {
       const response = await LoginUser(credentials)
       if (response.token) {
         saveUserData(response)
+        AlertService.success("Credenciales válidas");
         navigate('/home')
       } else {
         setSuccess(true)

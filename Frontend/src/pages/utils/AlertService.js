@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 
 // Configuración básica para SweetAlert2
 const AlertService = {
-  success: (message, title = "Success") =>
+  success: (message, title = "Ingreso exitoso") =>
     Swal.fire({
       title,
       text: message,
