@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Card, CardContent, Typography, Button, Drawer, Select, MenuItem, TextField, Box, Fab } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
-import { getRooms} from "../tools/api/inventory/api";
+import { getRooms, updateRoom} from "../tools/api/inventory/api";
 import { getPersons} from "../tools/api/person/api";
 
 import { createRoomReservation } from "../tools/api/transaction/api";
@@ -62,13 +62,41 @@ useEffect(() => {
     setSelectedRoom({ ...selectedRoom, [field]: value });
   };
 
-  const saveChanges = () => {
-    const updatedRooms = rooms.map(room =>
-      room.id === selectedRoom.id ? selectedRoom : room
-    );
-    setRooms(updatedRooms);
-    closeEditDrawer();
+  const saveChanges = async () => {
+    try {
+      if (!selectedRoom) {
+        alert("No se ha seleccionado ninguna habitación.");
+        return;
+      }
+  
+      // Prepara los datos para la actualización
+      const updatedRoomData = {
+        ...selectedRoom,
+        cliente: selectedRoom.status === "disponible" ? null : selectedRoom.cliente, // Elimina cliente si es "disponible"
+      };
+  
+      // Realiza la solicitud PUT al backend
+      const response = await updateRoom(selectedRoom.id, updatedRoomData);
+  
+      if (response?.id) {
+        // Actualiza el estado local con la respuesta del backend
+        const updatedRooms = rooms.map((room) =>
+          room.id === response.id ? response : room
+        );
+        setRooms(updatedRooms);
+  
+        alert("La habitación se ha actualizado correctamente.");
+      } else {
+        alert("No se pudo actualizar la habitación.");
+      }
+  
+      closeEditDrawer(); // Cierra el drawer
+    } catch (error) {
+      console.error("Error al guardar cambios:", error);
+      alert("Error al guardar los cambios.");
+    }
   };
+  
 
   const handleDeleteRoom = () => {
     const updatedRooms = rooms.filter(room => room.id !== selectedRoom.id);
@@ -123,7 +151,7 @@ const handleSale = async () => {
         }
 
         const dbClient = await getData() ?? {}
-        const cash_register = Number(saleData.payment_type) === 1? 1 : 2;
+        const cash_register = Number(saleData.payment_type) === 2? 2 : 3;
         const dataSend = {
             data_room: selectedRoom,
             data_transactions: {
@@ -158,54 +186,83 @@ const handleSale = async () => {
   return (
     <BoxPrimary>
     <div style={{ display: "flex" }}>
-      <Grid container spacing={3} style={{ flex: 1, transition: "all 0.3s", transform: isDrawerOpen ? "scale(0.9)" : "scale(1)" }}>
-        {rooms.map((room) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={room.id}>
-            <Card
-              className="thumb-cards_room"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                borderColor: room.status === "Ocupada" ? "red" : room.status === "Mantenimiento" ? "blue" : "green",
-                borderWidth: 2,
-                borderStyle: "solid",
-                padding: "10px",
-              }}
-            >
-              <div style={{ flexShrink: 0, marginRight: 10 }}>
-                <img
-                  src="/Room2.png"
-                  alt={`Habitación ${room.number_room}`}
-                  style={{ width: 60, height: 60, objectFit: "cover", borderRadius: "8px" }}
-                />
-              </div>
-              <CardContent style={{ flex: 1, padding: 0 }}>
-              <Typography variant="h6" style={{ fontSize: "1rem" }}>{room.number_room}</Typography>
-                <Typography variant="h6" style={{ fontSize: "1rem" }}>{room.name}</Typography>
-                <Typography variant="body2">Tipo: {room.type_room}</Typography>
-                <Typography variant="body2">Estado: {room.status}</Typography>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => openEditDrawer(room)}
-                  style={{ marginTop: 10 }}
-                >
-                  Editar información
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={() => openSaleDrawer(room)}
-                  style={{ marginTop: 10 }}
-                >
-                  Registrar Venta
-                </Button>
+      <Grid container spacing={3} style={{ flex: 1 }}>
+      {rooms.map((room) => {
+    // Función para determinar el color del borde
+    const borderColor = (() => {
+      switch (room.status) {
+        case "ocupado":
+          return "red";
+        case "disponible":
+          return "green";
+        case "sucio":
+          return "orange";
+        case "averiada":
+          return "gray";
+        default:
+          return "black"; // Color por defecto
+      }
+    })();
 
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+    return (
+      <Grid item xs={12} sm={6} md={4} lg={3} key={room.id}>
+        <Card
+          className="thumb-cards_room"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            borderColor: borderColor, // Aplica el color basado en el estado
+            borderWidth: 2,
+            borderStyle: "solid",
+            padding: "10px",
+          }}
+        >
+          <div style={{ flexShrink: 0, marginRight: 10 }}>
+            <img
+              src="/Room2.png"
+              alt={`Habitación ${room.number_room}`}
+              style={{ width: 60, height: 60, objectFit: "cover", borderRadius: "8px" }}
+            />
+          </div>
+          <CardContent style={{ flex: 1, padding: 0 }}>
+            <Typography variant="h6" style={{ fontSize: "1rem" }}>{room.number_room}</Typography>
+            <Typography variant="h6" style={{ fontSize: "1rem" }}>{room.name}</Typography>
+            <Typography variant="body2">Tipo: {room.type_room}</Typography>
+            <Typography variant="body2" style={{ color: borderColor }}>
+              Estado: {room.status}
+            </Typography>
+            {room.status === "ocupada" && (
+              <Typography variant="body2" style={{ fontWeight: "bold", marginTop: 5 }}>
+                Cliente: {room.cliente || "Sin asignar"}
+              </Typography>
+            )}
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => openEditDrawer(room)}
+              style={{ marginTop: 10 }}
+            >
+              Editar información
+            </Button>
+            {room.status === "disponible" && (
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => openSaleDrawer(room)}
+                style={{ marginTop: 10 }}
+              >
+                Registrar Venta
+              </Button>
+            )}
+          </CardContent>
+        </Card>
       </Grid>
+    );
+  })}
+</Grid>
+
+
+
 
       {/* Botón para agregar nueva habitación */}
       <Fab className="boton-flotante" color="primary" aria-label="add" style={{ position: 'absolute', bottom: 20, right: 20 }} onClick={openAddDrawer}>
@@ -306,8 +363,8 @@ const handleSale = async () => {
             margin="normal"
           >
             <MenuItem value="disponible">Disponible</MenuItem>
-            <MenuItem value="ocupada">Ocupada</MenuItem>
-            <MenuItem value="mantenimiento">Mantenimiento</MenuItem>
+            <MenuItem value="sucio">Sucia</MenuItem>
+            <MenuItem value="averiada">Averiada</MenuItem>
           </Select>
           {/* {selectedRoom.status === "Ocupada" && (
               <Box sx={{ pl: 2, mt: 2 }}>
@@ -392,8 +449,8 @@ const handleSale = async () => {
             fullWidth
             margin="normal"
           >
-            <MenuItem value="1">Factura</MenuItem>
-            <MenuItem value="2">Sin Factura</MenuItem>
+            <MenuItem value="2">Factura</MenuItem>
+            <MenuItem value="1">Sin Factura</MenuItem>
           </Select>
 
           {/* Fechas */}

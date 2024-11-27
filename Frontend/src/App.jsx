@@ -8,7 +8,7 @@ import Person from "./pages/Person";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
-import { isUserAuthenticated, removeUserData, saveUserData, initDB } from "./tools/indexedDB/indexedDB";
+import { isUserAuthenticated, removeUserData, initDB } from "./tools/indexedDB/indexedDB";
 import Company from "./pages/Company";
 import CashRegister from "./pages/CashRegister";
 import { createDB } from "./tools/api/api"
@@ -16,6 +16,7 @@ import { createDB } from "./tools/api/api"
 // Components
 import Header from "./components/Header/Header"
 import CoronaReal from "./components/Header/CoronaReal"
+import CashRegisterDetails from "./pages/CashRegisterDetails";
 
 const AppContent = () => {
   const [user, setUser] = useState(null); // Estado para guardar la información del usuario
@@ -27,11 +28,10 @@ const AppContent = () => {
 
   // Carga inicial para verificar si hay un usuario autenticado
   useEffect(() => {
-    initDB()
+    initDB();
     isUserAuthenticated((data) => {
       if (data) setUser(data.username);
-      if (data?.token == undefined)
-          navigate("/")
+      if (data?.token == undefined) navigate("/login");
     });
   }, []);
 
@@ -63,6 +63,7 @@ const AppContent = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/company" element={<Company />} />
           <Route path="/cash_register" element={<CashRegister />} />
+          <Route path="/cash_register/:id" element={<CashRegisterDetails />} />
         </Routes>
     </Box>
   );

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Card, CardContent, Typography, Button, Drawer, TextField, Box, Fab } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { getProducts, createProduct, updateProduct } from "../tools/api/inventory/api";
+import { getProducts, createProduct, updateProduct, createSellerProduct} from "../tools/api/inventory/api";
+import { getData } from "../tools/utils/utils";
 
 // Componets
 import BoxPrimary from "../components/Share/BoxPrimary.jsx"
@@ -15,6 +16,8 @@ const Product = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [Updateproducts, setUpdateProducts] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [transactionCost, setTransactionCost] = useState(0);
+
 
   const openEditDrawer = (product) => {
     setEditingProduct(product);
@@ -64,11 +67,35 @@ const Product = () => {
 
   const closeDrawer = () => {
     setSelectedProduct(null);
+    setTransactionType("");
+    setTransactionAmount(1);
+    setTransactionCost(0); // Resetea el costo
     setIsDrawerOpen(false);
   };
+  
 
-  const handleTransaction = async () => {
-    // Crear el producto actualizado para obsolescencia
+  const handleSellerProduct = async () => {
+    try {
+      if (!selectedProduct || !transactionType) {
+        alert("Por favor, selecciona un producto y un tipo de transacción.");
+        return;
+      }
+  
+      // Delegar a funciones específicas según el tipo de transacción
+      if (transactionType === "obsolescencia") {
+        await handleObsolescence(); // Llama a la lógica de obsolescencia
+      } else {
+        await handleSell(); // Llama a la lógica para compra/venta
+      }
+  
+      closeDrawer(); // Cierra el Drawer después de completar la acción
+    } catch (error) {
+      console.error("Error en handleSellerProduct:", error);
+      alert("Ocurrió un error al procesar la transacción.");
+    }
+  };
+
+  const handleObsolescence = async () => {
     const updatedProduct = {
       ...selectedProduct, // Copia los datos actuales del producto seleccionado
       stock: Math.max(0, selectedProduct.stock - transactionAmount), // Reduce el stock pero no permite valores negativos
@@ -87,6 +114,117 @@ const Product = () => {
   
     closeDrawer(); // Cierra el Drawer después de la operación
   };
+
+  
+
+  // // opcion 1
+  // const handleSell = async () => {
+  //   try {
+  //     if (!selectedProduct || !transactionType) {
+  //       alert("Por favor, selecciona un producto y un tipo de transacción.");
+  //       return;
+  //     }
+  
+  //     const dbClient = await getData() ?? {} // Obtén el usuario actual desde el almacenamiento
+  //     if (!dbClient?.user_data) {
+  //       alert("No se pudo obtener la información del usuario.");
+  //       return;
+  //     }
+  
+  //     // Calcula el nuevo stock según el tipo de transacción
+  //     const newStock =
+  //       transactionType === "compra"
+  //         ? selectedProduct.stock + transactionAmount
+  //         : Math.max(0, selectedProduct.stock - transactionAmount);
+  
+  //     // Crea una copia del producto seleccionado y actualiza solo el stock
+  //     const updatedProduct = {
+  //       ...selectedProduct,
+  //       stock: newStock,
+  //     };
+  
+  //     // Prepara los datos para la transacción
+  //     const dataSend = {
+  //       data_product: updatedProduct,
+  //       data_user: dbClient.user_data, // Usuario que realiza la operación
+  //       data_transactions: {
+  //         value: transactionAmount * selectedProduct.price, // Calcula el valor de la transacción
+  //       },
+  //     };
+  
+  //     // Llama a la API con los datos
+  //     const response = await createSellerProduct({ data: dataSend });
+  
+  //     if (response?.success) {
+  //       alert("Transacción completada con éxito");
+  //       const updatedProducts = await getProducts(); // Refresca los productos
+  //       setProducts(updatedProducts);
+  //       closeDrawer();
+  //     } else {
+  //       alert("No se pudo completar la transacción.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error al realizar la transacción:", error);
+  //     alert("Error al realizar la transacción.");
+  //   }
+  // };
+  const handleSell = async () => {
+    try {
+      if (!selectedProduct || !transactionType) {
+        alert("Por favor, selecciona un producto y un tipo de transacción.");
+        return;
+      }
+  
+      const dbClient = await getData(); // Obtener datos del usuario desde el almacenamiento local
+      if (!dbClient?.user_data) {
+        alert("No se pudo obtener la información del usuario.");
+        return;
+      }
+  
+      // Calcular el nuevo stock
+      const newStock =
+        transactionType === "compra"
+          ? selectedProduct.stock + transactionAmount
+          : Math.max(0, selectedProduct.stock - transactionAmount);
+  
+      // Calcular el valor de la transacción
+      const transactionValue =
+        transactionType === "compra"
+          ? transactionCost // Valor ingresado en el frontend para compras
+          : transactionAmount * selectedProduct.price; // Precio del producto en ventas
+  
+      // Preparar los datos a enviar
+      const dataSend = {
+        data_product: {
+          ...selectedProduct,
+          stock: newStock, // Actualiza el stock
+        },
+        data_transactions: {
+          type_transaction: transactionType === "compra" ? 2 : 1, // 2: Compra, 1: Venta
+          value: transactionValue, // Valor de la transacción calculado
+          amount: transactionAmount, // Cantidad transaccionada
+          user_id: dbClient.user_data.id, // ID del usuario que realiza la operación
+        },
+      };
+  
+      // Llamar a `createSellerProduct` para manejar la lógica completa
+      const response = await createSellerProduct({ data: dataSend });
+  
+      if (response?.success) {
+        alert("Transacción completada con éxito.");
+        const updatedProducts = await getProducts(); // Refrescar la lista de productos
+        setProducts(updatedProducts);
+        closeDrawer(); // Cerrar el Drawer
+      } else {
+        alert("No se pudo completar la transacción.");
+      }
+    } catch (error) {
+      console.error("Error al realizar la transacción:", error);
+      alert("Error al realizar la transacción.");
+    }
+  };
+  
+  
   
   
   const handleAmountChange = (e) => {
@@ -232,8 +370,11 @@ const Product = () => {
       <Drawer anchor="right" open={isDrawerOpen} onClose={closeDrawer}>
         <Box sx={{ width: 300, padding: 3, marginTop: 10 }}>
           <Typography variant="h5" gutterBottom>
-            {transactionType === "compra" ? "¿Cuántos desea comprar?" : "¿Confirmar la operación?"}
+            {transactionType === "compra"
+              ? "¿Cuántos desea comprar y a qué costo?"
+              : "¿Cuántos desea vender?"}
           </Typography>
+
           <TextField
             label="Cantidad"
             type="number"
@@ -244,16 +385,36 @@ const Product = () => {
             error={!!errorMessage}
             helperText={errorMessage}
           />
+
+          {transactionType === "compra" && (
+            <TextField
+              label="Costo Total de la Compra"
+              type="number"
+              value={transactionCost} // Estado adicional para el costo
+              onChange={(e) => setTransactionCost(Number(e.target.value))}
+              fullWidth
+              margin="normal"
+              error={!transactionCost || transactionCost <= 0}
+              helperText={!transactionCost ? "El costo es obligatorio" : ""}
+            />
+          )}
+
           <Box display="flex" justifyContent="space-between" mt={2}>
             <Button variant="outlined" onClick={closeDrawer}>
               Cancelar
             </Button>
-            <Button variant="contained" color="primary" onClick={handleTransaction}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSellerProduct}
+              disabled={transactionType === "compra" && (!transactionCost || transactionCost <= 0)}
+            >
               Aceptar
             </Button>
           </Box>
         </Box>
       </Drawer>
+
 
       {/* Drawer para agregar producto */}
       <Drawer anchor="right" open={isNewProductDrawerOpen} onClose={closeNewProductDrawer}>

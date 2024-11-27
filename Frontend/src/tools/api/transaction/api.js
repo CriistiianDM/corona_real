@@ -21,6 +21,16 @@ export const getCashRegister = async () => {
     return response
 }
 
+export const getCashRegisterById = async (id) => {
+    let response = {};
+    try {
+      response = await fetchGet({ url: `${json.cashRegister}${id}/` });
+    } catch (error) {
+      console.error("Error al obtener la caja:", error);
+    }
+    return response;
+  };
+
 /**
  * Crea un nuevo registro de caja enviando los datos al servidor.
  * @async
@@ -52,18 +62,32 @@ export const postCashRegister = async ({ data }) => {
  * @returns {Promise<Object>} Una promesa que se resuelve con la respuesta del servidor.
  * @throws {Error} Si ocurre un error al actualizar los datos.
  */
-export const putCashRegister = async ({ data }) => {
-    let response = {}
+// export const putCashRegister = async ({ data }) => {
+//     let response = {}
+//     try {
+//         response = await fetchPut({ 
+//             url: json.cashRegister,
+//             data: data,
+//         });
+//     } catch (error) {
+//         console.error("Error al obtener productos:", error);
+//     }
+//     return response
+// }
+
+export const putCashRegister = async ({ id, data }) => {
+    let response = {};
     try {
-        response = await fetchPut({ 
-            url: json.cashRegister,
-            data: data,
-        });
+      response = await fetchPut({
+        url: `${json.cashRegister}${id}/`, // Incluye el ID en la URL
+        data: data,
+      });
     } catch (error) {
-        console.error("Error al obtener productos:", error);
+      console.error("Error al actualizar la caja:", error);
     }
-    return response
-}
+    return response;
+  };
+  
 
 /**
  * Obtiene la lista de tipos de registros de caja desde el servidor.
@@ -130,8 +154,8 @@ export const createRoomReservation = async ({ data }) => {
         if (roomState?.id === undefined) return response
 
         const data_transaction = {
-            type_transaction: data_transactions?.type_transaction ?? 1,
-            cash_register: data_transactions?.cash_register ?? 1,
+            type_transaction: data_transactions?.type_transaction ?? 3,
+            cash_register: data_transactions?.cash_register ?? 2,
             description: "room_reservation",
             value: data_transactions?.value ?? 0,
         }
@@ -139,6 +163,32 @@ export const createRoomReservation = async ({ data }) => {
         const transaction_res = await postTransaction({ data: data_transaction })
         
         if (transaction_res?.id === undefined) return response
+
+        // Actualizar el balance de la caja registradora
+        const cashRegisterId = data_transactions?.cash_register ?? 2;
+        const cashRegisterResponse = await getCashRegisterById(cashRegisterId);
+
+        if (!cashRegisterResponse?.id) {
+            throw new Error("No se pudo obtener la caja registradora.");
+        }
+
+        const updatedCashBalance = 
+            Number(cashRegisterResponse.cash_balance) + Number(data_transactions.value);
+
+        const updatedCashRegister = {
+            ...cashRegisterResponse,
+            cash_balance: updatedCashBalance,
+        };
+
+        const cashUpdateResponse = await putCashRegister({
+            id: cashRegisterResponse.id,
+            data: updatedCashRegister,
+        });
+
+        if (!cashUpdateResponse?.id) {
+            throw new Error("No se pudo actualizar el balance de la caja.");
+        }
+
 
         const room_reservation_body = {
             reservation: null,
@@ -163,3 +213,14 @@ export const createRoomReservation = async ({ data }) => {
     }
     return response
 }
+
+export const getTransactionsByCashRegisterId = async (cashRegisterId) => {
+    try {
+      const response = await fetchGet({ url: json.transactionCaja + cashRegisterId + '/' });
+      return response;
+    } catch (error) {
+      console.error("Error al obtener transacciones:", error);
+      throw error;
+    }
+  };
+  
