@@ -2,9 +2,6 @@
 import React from 'react';
 import { useNavigate, Link } from "react-router-dom";
 
-// Components
-import BoxPrimary from "../components/Share/BoxPrimary.jsx"
-
 // Material IU
 import { Button, Menu , MenuItem , Grid2, Box, Avatar  } from "@mui/material"
 import ListItemIcon from '@mui/material/ListItemIcon'
@@ -15,9 +12,11 @@ import ProductionQuantityLimitsIcon from '@mui/icons-material/ProductionQuantity
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import BusinessIcon from '@mui/icons-material/Business';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 // Components
 import For from "../components/For/For"
+import BoxPrimary from "../components/Share/BoxPrimary.jsx"
 
 // Styles
 import styles from "../css/jscss/root"
@@ -28,6 +27,7 @@ const routes = [
   { to: "/person", name: "Personas", icon: <PeopleAltIcon /> },
   { to: "/company", name: "Company", icon: <BusinessIcon /> },
   { to: "/cash_register", name: "Billeteras", icon: <MonetizationOnIcon /> },
+  { to: "/register", name: "Usuarios", icon: <PersonAddIcon /> },
 ]
 
 export default function () {
@@ -41,8 +41,10 @@ export default function () {
 /** BODY */
 const ContainerPrimary = () => {
   return (
-    <BoxPrimary>
-      <For func={listOptions} list={routes} />
+    <BoxPrimary title={"Panel de Control"}>
+      <Box sx={styles.containerFixedHome}>
+        <For func={listOptions} list={routes} />
+      </Box>
     </BoxPrimary>
   )
 }

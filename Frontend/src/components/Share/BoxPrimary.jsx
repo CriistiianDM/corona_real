@@ -3,12 +3,12 @@ import React from "react"
 // Styles
 import styles from "../../css/jscss/root"
 
-import { Box } from "@mui/material"
+import { Box, Grid2 } from "@mui/material"
 
-export default function ({ children }) {
+export default function ({ title, children }) {
     return (
         <React.Fragment>
-            <ContainerPrimary>
+            <ContainerPrimary title={title}>
                 {children}
             </ContainerPrimary>
         </React.Fragment>
@@ -16,8 +16,12 @@ export default function ({ children }) {
 }
 
 /** BODY */
-const ContainerPrimary = ({ children }) => {
+const ContainerPrimary = ({ title, children }) => {
+    console.log(title)
     return (
-    <Box sx={styles.boxContainerPrimary}>{children}</Box>
+    <Box sx={styles.boxContainerPrimary}>
+        <Grid2 className="title-box">{title}</Grid2>
+        {children}
+    </Box>
     )
 }

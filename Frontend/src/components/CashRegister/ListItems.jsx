@@ -21,16 +21,13 @@ const names = {
 export default function ListItems({ list }) {
   return (
     <section>
-      <Grid container spacing={2}>
         {list.map((element, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Card sx={{ margin: 2, padding: 2 }}>
+            <Card>
               <CardContent>
-                <Grid container justifyContent="center">
+                <Grid>
                   <img
                     src={cashRegisterlogo}
                     alt="cash register logo"
-                    style={{ width: "50px", height: "50px" }}
                   />
                 </Grid>
                 <Typography variant="h6" gutterBottom>
@@ -45,7 +42,7 @@ export default function ListItems({ list }) {
                   to={`/cash_register/${element.id}`} // Redirige a la página de detalles
                   style={{ textDecoration: "none" }}
                 >
-                  <Button variant="outlined" color="primary" sx={{ marginTop: 2 }}>
+                  <Button sx={{ width: '100%',marginTop: 2 }}>
                     <Grid container alignItems="center">
                       <img
                         src={edit}
@@ -58,9 +55,7 @@ export default function ListItems({ list }) {
                 </Link>
               </CardContent>
             </Card>
-          </Grid>
         ))}
-      </Grid>
     </section>
   );
 }

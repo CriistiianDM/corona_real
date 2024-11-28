@@ -3,6 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Typography, Grid, Card, CardContent, Button, Drawer, Box, TextField } from "@mui/material";
 import { getTransactionsByCashRegisterId, getCashRegisterById, putCashRegister } from "../tools/api/transaction/api";
 
+// Componets
+import BoxPrimary from "../components/Share/BoxPrimary.jsx"
+
 const CashRegisterDetails = () => {
   const { id } = useParams(); // Obtiene el ID de la caja registradora desde la URL
   const navigate = useNavigate();
@@ -67,11 +70,7 @@ const CashRegisterDetails = () => {
   }, [id]);
 
   return (
-    <div>
-      <Typography variant="h4" gutterBottom>
-        Transacciones para la Caja #{id}
-      </Typography>
-
+    <BoxPrimary title={`Transacciones para la Caja ${id}`}>
       {transactions.length > 0 ? (
         <Grid container spacing={2}>
           {transactions.map((transaction, index) => (
@@ -139,11 +138,7 @@ const CashRegisterDetails = () => {
           </Button>
         </Box>
       </Drawer>
-
-      <Button variant="outlined" onClick={() => navigate("/cash_register")} sx={{ marginTop: 3 }}>
-        Volver a Cajas Registradoras
-      </Button>
-    </div>
+      </BoxPrimary>
   );
 };
 
