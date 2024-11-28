@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Typography, Grid, Card, CardContent, Button, Drawer, Box, TextField } from "@mui/material";
 import { getTransactionsByCashRegisterId, getCashRegisterById, putCashRegister, postTransaction } from "../tools/api/transaction/api";
+import AlertService from "./utils/AlertService";
 
 // Componets
 import BoxPrimary from "../components/Share/BoxPrimary.jsx"
@@ -17,14 +18,14 @@ const CashRegisterDetails = () => {
   const handleDeduction = async () => {
     try {
       if (!deductionAmount || isNaN(deductionAmount) || deductionAmount <= 0) {
-        alert("Por favor, ingresa un valor válido.");
+        AlertService.warning("Por favor, ingresa un valor válido.", "Advertencia", "top-start");
         return;
       }
   
       // Obtener la caja registradora
       const cashRegister = await getCashRegisterById(id);
       if (!cashRegister?.id) {
-        alert("No se pudo obtener la caja registradora.");
+        AlertService.error("No se pudo obtener la caja registradora.", "Error", "top-start");
         return;
       }
   
@@ -34,7 +35,7 @@ const CashRegisterDetails = () => {
       // Calcular el nuevo balance
       const newBalance = cashRegister.cash_balance - parseFloat(deductionAmount);
       if (newBalance < 0) {
-        alert("El balance no puede ser negativo.");
+        AlertService.warning("El balance no puede ser negativo.", "Advertencia", "top-start");
         return;
       }
   
@@ -43,10 +44,14 @@ const CashRegisterDetails = () => {
         id: cashRegister.id,
         data: { ...cashRegister, cash_balance: newBalance },
       });
-  
-      if (!updateResponse?.id) {
-        alert("No se pudo actualizar el balance de la caja.");
-        return;
+
+      if (response?.id) {
+        AlertService.success("Resta aplicada con éxito.", "Éxito", "top-start");
+        setIsDrawerOpen(false);
+        setDeductionAmount(""); // Resetea el valor
+        fetchTransactions(); // Refrescar transacciones
+      } else {
+        AlertService.error("No se pudo aplicar la resta.", "Error", "top-start");
       }
   
       // Crear la transacción de resta
@@ -70,7 +75,7 @@ const CashRegisterDetails = () => {
       fetchTransactions(); // Refresca las transacciones
     } catch (error) {
       console.error("Error al restar a la caja:", error);
-      alert("Ocurrió un error al intentar restar a la caja.");
+      AlertService.error("Error al restar a la caja:", "Error", "top-start");
     }
   };
   
@@ -82,6 +87,8 @@ const CashRegisterDetails = () => {
       setTransactions(response || []); // Establece las transacciones
     } catch (error) {
       console.error("Error al cargar las transacciones:", error);
+      const errorMessage = error.response?.data?.message || error.message || "Error al cargar las transacciones.";
+      AlertService.error(errorMessage, "Error", "top-start");
     }
   };
 
