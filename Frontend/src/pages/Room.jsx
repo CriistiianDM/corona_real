@@ -3,6 +3,8 @@ import { Grid, Card, CardContent, Typography, Button, Drawer, Select, MenuItem, 
 import AddIcon from '@mui/icons-material/Add';
 import { getRooms, updateRoom} from "../tools/api/inventory/api";
 import { getPersons} from "../tools/api/person/api";
+import Stack from '@mui/material/Stack';
+import Autocomplete from '@mui/material/Autocomplete';
 
 import { createRoomReservation } from "../tools/api/transaction/api";
 import { getData } from "../tools/utils/utils";
@@ -187,6 +189,41 @@ const handleSale = async () => {
       const errorMessage = error.response?.data?.message || error.message || "Error al registrar la venta";
       AlertService.error(errorMessage, "Error", "top-start");
     }
+};
+
+
+
+const FreeSolo = ({ data, dataComplete, setDataPerson }) => {
+  const onHandlerChange = (e, value) => {
+    if (data?.length <= 0) return;
+    if (value === null) {
+      setDataPerson(dataComplete); // Restaura la lista completa si no hay selección
+    } else {
+      const filter = data.filter((item) => item.name === value); // Filtra por nombre
+      setDataPerson(filter ?? data);
+    }
+  };
+
+  if (data?.length <= 0) return null;
+
+  return (
+    <Stack sx={{ width: '100%' }} spacing={2}>
+      <Autocomplete
+        freeSolo
+        onChange={onHandlerChange}
+        options={data.map((option) => option.name)}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Buscar Cliente"
+            placeholder="Nombre del cliente"
+            fullWidth
+            margin="normal"
+          />
+        )}
+      />
+    </Stack>
+  );
 };
 
 
@@ -423,89 +460,91 @@ const handleSale = async () => {
         </Box>
       )}
     </Drawer>
-    <Drawer         sx={{
+
+    <Drawer
+        sx={{
           '& .MuiPaper-root': {
-            background: '#FFFEEE'
-          }
-        }} anchor="right" open={isSaleDrawerOpen} onClose={closeSaleDrawer}>
-      {selectedRoom && (
-        <Box sx={{ width: 300, padding: 2, marginTop: 10 }}>
-          <Typography variant="h5" gutterBottom>
-            Registrar Venta - Habitación {selectedRoom.number_room}
-          </Typography>
+            background: '#FFFEEE',
+          },
+        }}
+        anchor="right"
+        open={isSaleDrawerOpen}
+        onClose={closeSaleDrawer}
+      >
+        {selectedRoom && (
+          <Grid container spacing={2} direction="column" sx={{ width: 300, padding: 2, marginTop: 10 }}>
+            <Grid item>
+              <Typography variant="h5" gutterBottom>
+                Registrar Venta - Habitación {selectedRoom.number_room}
+              </Typography>
+            </Grid>
+            <Grid item>
+              {/* <Typography variant="subtitle1">Cliente</Typography> */}
+              <FreeSolo
+                data={persons}
+                dataComplete={persons}
+                setDataPerson={(filtered) => {
+                  if (filtered.length > 0) {
+                    handleFieldChange('cliente', filtered[0].id, e.target.value);
+                  } else {
+                    handleFieldChange('cliente', '', e.target.value);
+                  }
+                }}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                label="Valor"
+                type="number"
+                value={saleData.value}
+                onChange={(e) => setSaleData({ ...saleData, value: e.target.value })}
+                fullWidth
+              />
+            </Grid>
+            <Grid item>
+              <Select
+                label="Tipo de Pago"
+                value={saleData.payment_type}
+                onChange={(e) => setSaleData({ ...saleData, payment_type: e.target.value })}
+                fullWidth
+              >
+                <MenuItem value="2">Factura</MenuItem>
+                <MenuItem value="1">Sin Factura</MenuItem>
+              </Select>
+            </Grid>
+            <Grid item>
+              <TextField
+                label="Fecha de Inicio"
+                type="datetime-local"
+                value={saleData.date}
+                onChange={(e) => setSaleData({ ...saleData, date: e.target.value })}
+                fullWidth
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                label="Fecha de Fin"
+                type="datetime-local"
+                value={saleData.date_finish}
+                onChange={(e) => setSaleData({ ...saleData, date_finish: e.target.value })}
+                fullWidth
+              />
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSale}
+                fullWidth
+                sx={{ color: '#fff', background: '#320001' }}
+              >
+                Confirmar Venta
+              </Button>
+            </Grid>
+          </Grid>
 
-          {/* Selección de cliente */}
-          <Select
-            label="Cliente"
-            value={saleData.id_guest}
-            onChange={(e) => setSaleData({ ...saleData, id_guest: e.target.value })}
-            fullWidth
-            margin="normal"
-          >
-            {persons?.length > 0 ? (
-              persons.map((person) => (
-                <MenuItem key={person.id} value={person.id}>
-                  {person.name}
-                </MenuItem>
-              ))
-            ) : (
-              <MenuItem disabled>Cargando personas...</MenuItem>
-            )}
-          </Select>
-
-          {/* Valor de la venta */}
-          <TextField
-            label="Valor"
-            type="number"
-            value={saleData.value}
-            onChange={(e) => setSaleData({ ...saleData, value: e.target.value })}
-            fullWidth
-            margin="normal"
-          />
-
-          {/* Tipo de pago */}
-          <Select
-            label="Tipo de Pago"
-            value={saleData.payment_type}
-            onChange={(e) => setSaleData({ ...saleData, payment_type: e.target.value })}
-            fullWidth
-            margin="normal"
-          >
-            <MenuItem value="2">Factura</MenuItem>
-            <MenuItem value="1">Sin Factura</MenuItem>
-          </Select>
-
-          {/* Fechas */}
-          <TextField
-            label="Fecha de Inicio"
-            type="datetime-local"
-            value={saleData.date}
-            onChange={(e) => setSaleData({ ...saleData, date: e.target.value })}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Fecha de Fin"
-            type="datetime-local"
-            value={saleData.date_finish}
-            onChange={(e) => setSaleData({ ...saleData, date_finish: e.target.value })}
-            fullWidth
-            margin="normal"
-          />
-
-          {/* Botón para confirmar */}
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSale}
-            fullWidth
-            style={{ marginTop: 20, color: '#fff', background: '#320001' }}
-          >
-            Confirmar Venta
-          </Button>
-        </Box>
-      )}
-    </Drawer>
+        )}
+      </Drawer>
     </BoxPrimary>
   );
 };

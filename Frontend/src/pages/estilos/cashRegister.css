@@ -1,0 +1,26 @@
+.container-centered {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; /* Espaciado entre tarjetas */
+    width: 100%; /* Asegura que ocupe todo el ancho */
+    margin: 0 auto; /* Centra el contenedor */
+  }
+  .card {
+    width: 200px; /* Ancho de las tarjetas */
+    height: 250px; /* Alto de las tarjetas */
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    transition: transform 0.3s;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
