@@ -108,10 +108,39 @@ const Person = () => {
     }
   };
 
-  const deletePerson = (id) => {
-    setPersons(persons.filter((person) => person.id !== id));
-    AlertService.success("Persona eliminada con éxito", "Éxito", "top-start");
+  const deletePerson = async (id) => {
+    try {
+      // Buscar la persona seleccionada
+      const personToUpdate = persons.find((person) => person.id === id);
+      if (!personToUpdate) {
+        AlertService.warning("No se pudo encontrar la persona", "Advertencia", "top-start");
+        return;
+      }
+  
+      // Cambiar is_active a false
+      const updatedPerson = { ...personToUpdate, is_active: false };
+  
+      // Actualizar en el servidor
+      const response = await updatePerson(id, updatedPerson);
+  
+      if (response?.id) {
+        AlertService.success("Persona marcada como inactiva con éxito", "Éxito", "top-start");
+  
+        // Actualizar la lista de personas
+        setPersons((prevPersons) =>
+          prevPersons.map((person) =>
+            person.id === response.id ? response : person
+          )
+        );
+      } else {
+        AlertService.error("Error al marcar la persona como inactiva", "Error", "top-start");
+      }
+    } catch (error) {
+      console.error("Error al marcar la persona como inactiva:", error);
+      AlertService.error("Error al marcar la persona como inactiva", "Error", "top-start");
+    }
   };
+  
 
   return (
     <BoxPrimary title={"Personas"}>
@@ -134,25 +163,32 @@ const Person = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {persons?.length > 0 && persons.map((person) => (
-                  <TableRow key={person.id}>
-                    <TableCell>{person.name}</TableCell>
-                    <TableCell>{person.identification}</TableCell>
-                    <TableCell>{person.lugar_expedicion}</TableCell>
-                    <TableCell>{person.type_person}</TableCell>
-                    <TableCell>{person.company || "N/A"}</TableCell>
-                    <TableCell>{person.is_active ? "Sí" : "No"}</TableCell>
-                    <TableCell>
-                      <IconButton onClick={() => openEditDrawer(person)}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton onClick={() => deletePerson(person.id)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+  {persons.map((person) => (
+    <TableRow
+      key={person.id}
+      style={{
+        backgroundColor: person.is_active ? "#FFFFFF" : "rgb(195, 176, 165)", // Blanco si es activo, rojo si es inactivo
+        color: person.is_active ? "#000000" : "#FFFFFF", // Texto negro si activo, blanco si inactivo
+      }}
+    >
+      <TableCell>{person.name}</TableCell>
+      <TableCell>{person.identification}</TableCell>
+      <TableCell>{person.lugar_expedicion}</TableCell>
+      <TableCell>{person.type_person}</TableCell>
+      <TableCell>{person.company || "N/A"}</TableCell>
+      <TableCell>{person.is_active ? "Sí" : "No"}</TableCell>
+      <TableCell>
+        <IconButton onClick={() => openEditDrawer(person)}>
+          <EditIcon />
+        </IconButton>
+        <IconButton onClick={() => deletePerson(person.id)}>
+          <DeleteIcon />
+        </IconButton>
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+
             </Table>
           </TableContainer>
 
@@ -275,6 +311,18 @@ const Person = () => {
                   <MenuItem value={1}>Cliente</MenuItem>
                   <MenuItem value={2}>Proveedor</MenuItem>
                   <MenuItem value={3}>Empleado</MenuItem>
+                </Select>
+                <Typography variant="subtitle1" style={{ marginTop: 20 }}>
+                  Estado
+                </Typography>
+                <Select
+                  value={selectedPerson.is_active ? "Activo" : "Inactivo"}
+                  onChange={(e) => handleFieldChange("is_active", e.target.value === "Activo")}
+                  fullWidth
+                  margin="normal"
+                >
+                  <MenuItem value="Activo">Activo</MenuItem>
+                  <MenuItem value="Inactivo">Inactivo</MenuItem>
                 </Select>
                 <Typography variant="subtitle1" style={{ marginTop: 20 }}>Empresa</Typography>
                 <Select

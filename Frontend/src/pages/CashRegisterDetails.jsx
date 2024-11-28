@@ -10,7 +10,9 @@ import BoxPrimary from "../components/Share/BoxPrimary.jsx"
 const CashRegisterDetails = () => {
   const { id } = useParams(); // Obtiene el ID de la caja registradora desde la URL
   const navigate = useNavigate();
+  const [deductionDescription, setDeductionDescription] = useState(""); // Descripción de la resta
   const [transactions, setTransactions] = useState([]);
+  const [cashBalance, setCashBalance] = useState(null); // Almacena el balance actual de la caja
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // Controla el estado del Drawer
   const [deductionAmount, setDeductionAmount] = useState(""); // Almacena el valor a restar
 
@@ -44,14 +46,10 @@ const CashRegisterDetails = () => {
         id: cashRegister.id,
         data: { ...cashRegister, cash_balance: newBalance },
       });
-
-      if (response?.id) {
-        AlertService.success("Resta aplicada con éxito.", "Éxito", "top-start");
-        setIsDrawerOpen(false);
-        setDeductionAmount(""); // Resetea el valor
-        fetchTransactions(); // Refrescar transacciones
-      } else {
-        AlertService.error("No se pudo aplicar la resta.", "Error", "top-start");
+  
+      if (!updateResponse?.id) {
+        AlertService.error("No se pudo actualizar el balance de la caja.", "Error", "top-start");
+        return;
       }
   
       // Crear la transacción de resta
@@ -59,25 +57,29 @@ const CashRegisterDetails = () => {
         data: {
           type_transaction: typeTransaction, // Asignado dinámicamente
           cash_register: cashRegister.id,
-          description: `Resta manual aplicada en la caja ${cashRegister.id}`,
+          description: deductionDescription, // Descripción ingresada
           value: parseFloat(deductionAmount),
         },
       });
   
       if (!transactionResponse?.id) {
-        alert("No se pudo registrar la transacción.");
+        AlertService.error("No se pudo registrar la transacción.", "Error", "top-start");
         return;
       }
   
-      alert("Resta aplicada y transacción registrada con éxito.");
+      // Éxito
+      AlertService.success("Resta aplicada y transacción registrada con éxito.", "Éxito", "top-start");
       setIsDrawerOpen(false);
       setDeductionAmount(""); // Resetea el valor
-      fetchTransactions(); // Refresca las transacciones
+      setDeductionDescription(""); // Resetea la descripción
+      await fetchTransactions(); // Refresca las transacciones
+      await fetchCashBalance();  // Refresca el balance actual
     } catch (error) {
       console.error("Error al restar a la caja:", error);
-      AlertService.error("Error al restar a la caja:", "Error", "top-start");
+      AlertService.error("Error al restar a la caja.", "Error", "top-start");
     }
   };
+  
   
 
   // Obtener las transacciones
@@ -92,12 +94,37 @@ const CashRegisterDetails = () => {
     }
   };
 
+  const fetchCashBalance = async () => {
+    try {
+      const cashRegister = await getCashRegisterById(id);
+      if (cashRegister?.id) {
+        setCashBalance(cashRegister.cash_balance);
+      }
+    } catch (error) {
+      console.error("Error al cargar el balance de la caja:", error);
+    }
+  };
+
   useEffect(() => {
     fetchTransactions();
+    fetchCashBalance();
   }, [id]);
 
   return (
-    <BoxPrimary title={`Transacciones para la Caja ${id}`}>
+    <BoxPrimary
+  title={
+    <Typography variant="h5" sx={{ display: "inline" }}>
+      {`Transacciones para la Caja ${id} `}
+      <Typography
+        variant="h5"
+        component="span"
+        sx={{ color: "#000000", fontWeight: "bold" }} // Cambia el color y estilo
+      >
+        {`- Balance actual: $${cashBalance !== null ? cashBalance.toLocaleString() : "Cargando..."}`}
+      </Typography>
+    </Typography>
+  }
+>
       {transactions.length > 0 ? (
         <Grid container spacing={2}>
           {transactions.map((transaction, index) => (
@@ -106,10 +133,20 @@ const CashRegisterDetails = () => {
                 <CardContent>
                   <Typography variant="h6">Transacción #{transaction.id}</Typography>
                   <Typography variant="body2">
-                    Tipo: {transaction.type_transaction === 1 ? "Venta" : transaction.type_transaction === 2 ? "Compra" : "Otro"}
+                    Tipo: {transaction.type_transaction === 1 ? "Venta" : transaction.type_transaction === 2 ? "Compra o pago" : "Otro"}
                   </Typography>
                   <Typography variant="body2">Valor: ${transaction.value}</Typography>
-                  <Typography variant="body2">Fecha: {new Date(transaction.date).toLocaleString()}</Typography>
+                  <Typography variant="body2">
+                    Fecha: {new Date(transaction.create_at).toLocaleString("es-ES", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })}
+                  </Typography>
+                  <Typography variant="body2">Descripción: {transaction.description}</Typography>
                 </CardContent>
               </Card>
             </Grid>
@@ -123,9 +160,15 @@ const CashRegisterDetails = () => {
 
       {/* Botón para abrir el Drawer */}
       <Button
-        variant="outlined"
-        color="secondary"
-        sx={{ marginTop: 2 }}
+        variant="contained"
+        color="error"
+        sx={{
+          fontWeight: "bold",
+          padding: "10px 20px",
+          "&:hover": {
+            backgroundColor: "#b71c1c", // Rojo más oscuro
+          },
+        }}
         onClick={() => setIsDrawerOpen(true)}
       >
         Restar a la Caja
@@ -144,6 +187,15 @@ const CashRegisterDetails = () => {
             onChange={(e) => setDeductionAmount(e.target.value)}
             fullWidth
             margin="normal"
+          />
+          <TextField
+            label="Descripción"
+            value={deductionDescription}
+            onChange={(e) => setDeductionDescription(e.target.value)}
+            fullWidth
+            margin="normal"
+            multiline
+            rows={3}
           />
           <Button
             variant="contained"

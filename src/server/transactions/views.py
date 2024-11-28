@@ -60,7 +60,7 @@ class TransactionsByCashRegister(APIView):
                 )
 
             # Filtra las transacciones por el ID de la caja registradora
-            transactions = Transactions.objects.filter(cash_register_id=cash_register_id, is_active=True)
+            transactions = Transactions.objects.filter(cash_register_id=cash_register_id, is_active=True).order_by('-create_at')
 
             if not transactions.exists():
                 return Response(
