@@ -1,40 +1,16 @@
-// import React, { useState, useEffect } from "react";
-// import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Typography, Box, Drawer, TextField, Button, Select, MenuItem } from "@mui/material";
-// import EditIcon from '@mui/icons-material/Edit';
-// import DeleteIcon from '@mui/icons-material/Delete';
-// import AddIcon from '@mui/icons-material/Add';
-// import { Fab } from "@mui/material";
-// import { createPerson, getPersons , updatePerson} from '../tools/api/person/api'; // Ajusta la ruta de importación
-
-// import './estilos/Person.css';
-
-// // Componets
-// import BoxPrimary from "../components/Share/BoxPrimary.jsx"
-
 import React, { useState, useEffect } from "react";
-
 import { Table, TableBody, TableCell, Grid2, TableContainer, TableHead, TableRow, Paper, IconButton, Typography, Box, Drawer, TextField, Button, Select, MenuItem } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { Fab } from "@mui/material";
 import { createPerson, getPersons, updatePerson } from '../tools/api/person/api'; // Ajusta la ruta de importación
-import AlertService from "./utils/AlertService";// Importa el servicio de alertas
-
-import './estilos/Person.css';
-
-// Components
-import BoxPrimary from "../components/Share/BoxPrimary.jsx";
-import { createPerson, getPersons , updatePerson} from '../tools/api/person/api'; // Ajusta la ruta de importación
+import AlertService from "./utils/AlertService"; // Importa el servicio de alertas
 import Stack from '@mui/material/Stack';
 import Autocomplete from '@mui/material/Autocomplete';
-
-
-// Styles
-import styles from "../css/jscss/root"
-
-// Componets
-import BoxPrimary from "../components/Share/BoxPrimary.jsx"
+import BoxPrimary from "../components/Share/BoxPrimary.jsx";
+import styles from "../css/jscss/root";
+import './estilos/Person.css';
 
 const Person = () => {
   const [persons, setPersons] = useState([]);
@@ -72,13 +48,12 @@ const Person = () => {
       console.error("Error al guardar cambios:", error);
     }
   };
-  
 
   const fetchPersons = async () => {
     try {
       const data = await getPersons();
       setPersons(data);
-      setPersonsFilter(data)
+      setPersonsFilter(data);
     } catch (error) {
       AlertService.error("Error al obtener la lista de personas");
       console.error("Error al obtener personas:", error);
@@ -123,184 +98,102 @@ const Person = () => {
     try {
       const response = await createPerson(newPerson);
       if (response && response.id) {
-        fetchPersons(); // Refresca la lista de personas
+        fetchPersons();
         closeNewPersonDrawer();
-        AlertService.success("Nueva persona creada con éxito", "Éxito","top-start");
+        AlertService.success("Nueva persona creada con éxito", "Éxito", "top-start");
       }
     } catch (error) {
-      AlertService.error("Error al agregar nueva persona", "Éxito", "top-start");
-      console.error("Error al agregar nueva persona:", error, "top-start");
+      AlertService.error("Error al agregar nueva persona", "Error", "top-start");
+      console.error("Error al agregar nueva persona:", error);
     }
   };
 
   const deletePerson = (id) => {
     setPersons(persons.filter((person) => person.id !== id));
-    AlertService.success("Persona eliminada con éxito","Error", "top-start");
+    AlertService.success("Persona eliminada con éxito", "Éxito", "top-start");
   };
 
   return (
     <BoxPrimary title={"Personas"}>
-    <Box sx={styles.containerPerson}>
-      <Grid2>
-        <FreeSolo data={persons} dataComplete={personsFilter} setDataPerson={setPersons} />
-      </Grid2>
-      <Box className="contenedor">
-        <TableContainer component={Paper} className="tabla">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nombre</TableCell>
-                <TableCell>Identificación</TableCell>
-                <TableCell>Lugar de Expedición</TableCell>
-                <TableCell>Tipo de Persona</TableCell>
-                <TableCell>Empresa</TableCell>
-                <TableCell>Activo</TableCell>
-                <TableCell>Acciones</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {persons?.length>0 && persons.map((person) => (
-                <TableRow key={person.id}>
-                  <TableCell>{person.name}</TableCell>
-                  <TableCell>{person.identification}</TableCell>
-                  <TableCell>{person.lugar_expedicion}</TableCell>
-                  <TableCell>{person.type_person}</TableCell>
-                  <TableCell>{person.company || "N/A"}</TableCell>
-                  <TableCell>{person.is_active ? "Sí" : "No"}</TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => openEditDrawer(person)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => deletePerson(person.id)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
+      <Box sx={styles.containerPerson}>
+        <Grid2>
+          <FreeSolo data={persons} dataComplete={personsFilter} setDataPerson={setPersons} />
+        </Grid2>
+        <Box className="contenedor">
+          <TableContainer component={Paper} className="tabla">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Nombre</TableCell>
+                  <TableCell>Identificación</TableCell>
+                  <TableCell>Lugar de Expedición</TableCell>
+                  <TableCell>Tipo de Persona</TableCell>
+                  <TableCell>Empresa</TableCell>
+                  <TableCell>Activo</TableCell>
+                  <TableCell>Acciones</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {persons?.length > 0 && persons.map((person) => (
+                  <TableRow key={person.id}>
+                    <TableCell>{person.name}</TableCell>
+                    <TableCell>{person.identification}</TableCell>
+                    <TableCell>{person.lugar_expedicion}</TableCell>
+                    <TableCell>{person.type_person}</TableCell>
+                    <TableCell>{person.company || "N/A"}</TableCell>
+                    <TableCell>{person.is_active ? "Sí" : "No"}</TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => openEditDrawer(person)}>
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => deletePerson(person.id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
 
-        {/* Crear Persona */}
-        <Drawer 
-          anchor="right" 
-          open={isNewPersonDrawerOpen} 
-          onClose={closeNewPersonDrawer}
-          sx={{
-            '& .MuiPaper-root': {
-              background: '#FFFEEE'
-            }
-          }}>
-          <Box sx={{ width: 300, padding: 3 }}>
-            <Typography variant="h5" gutterBottom>Agregar Nueva Persona</Typography>
-            <TextField
-              label="Nombre"
-              value={newPerson.name}
-              onChange={(e) => handleNewPersonFieldChange("name", e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Identificación"
-              type="number"
-              value={newPerson.identification}
-              onChange={(e) => handleNewPersonFieldChange("identification", e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Lugar de Expedición"
-              value={newPerson.lugar_expedicion}
-              onChange={(e) => handleNewPersonFieldChange("lugar_expedicion", e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-            <Typography variant="subtitle1">Tipo de Persona</Typography>
-            <Select
-              value={newPerson.type_person}
-              onChange={(e) => handleNewPersonFieldChange("type_person", e.target.value)}
-              fullWidth
-              margin="normal"
-            >
-              <MenuItem value={1}>Cliente</MenuItem>
-              <MenuItem value={2}>Proveedor</MenuItem>
-              <MenuItem value={3}>Empleado</MenuItem>
-            </Select>
-            <Typography variant="subtitle1">Empresa</Typography>
-            <Select
-              value={newPerson.company}
-              onChange={(e) => handleNewPersonFieldChange("company", e.target.value)}
-              fullWidth
-              margin="normal"
-            >
-              <MenuItem value={null}>N/A</MenuItem>
-              <MenuItem value={1}>Empresa A</MenuItem>
-              <MenuItem value={2}>Empresa B</MenuItem>
-            </Select>
-            <Typography variant="subtitle1" >Estado</Typography>
-            <Select
-              value={newPerson.is_active ? "Activo" : "Inactivo"}
-              onChange={(e) => handleNewPersonFieldChange("is_active", e.target.value === "Activo")}
-              fullWidth
-              margin="normal"
-            >
-              <MenuItem value="Activo">Activo</MenuItem>
-              <MenuItem value="Inactivo">Inactivo</MenuItem>
-            </Select>
-            <Box display="flex" justifyContent="space-between" mt={2}>
-              <Button sx={{ color: '#320001', background: '#dad0d0', border: '1px solid #320001'}} variant="outlined" onClick={closeNewPersonDrawer}>Cancelar</Button>
-              <Button sx={{ color: '#fff', background: '#320001'}} variant="contained" color="primary" onClick={addNewPerson}>Agregar</Button>
-            </Box>
-          </Box>
-        </Drawer>
-
-        <Drawer 
-          sx={{
-            '& .MuiPaper-root': {
-              background: '#FFFEEE'
-            }
-          }} 
-          anchor="right" 
-          open={isDrawerOpen} 
-          onClose={closeEditDrawer}>
-          {selectedPerson && (
-            <Box sx={{ width: 300, padding: 3}}>
-              <Typography variant="h5" gutterBottom>Editar {selectedPerson.name}</Typography>
-              
-              {/* Nombre */}
+          {/* Crear Persona */}
+          <Drawer
+            anchor="right"
+            open={isNewPersonDrawerOpen}
+            onClose={closeNewPersonDrawer}
+            sx={{
+              '& .MuiPaper-root': {
+                background: '#FFFEEE'
+              }
+            }}>
+            <Box sx={{ width: 300, padding: 3 }}>
+              <Typography variant="h5" gutterBottom>Agregar Nueva Persona</Typography>
               <TextField
                 label="Nombre"
-                value={selectedPerson.name}
-                onChange={(e) => handleFieldChange("name", e.target.value)}
+                value={newPerson.name}
+                onChange={(e) => handleNewPersonFieldChange("name", e.target.value)}
                 fullWidth
                 margin="normal"
               />
-              
-              {/* Identificación */}
               <TextField
                 label="Identificación"
                 type="number"
-                value={selectedPerson.identification}
-                onChange={(e) => handleFieldChange("identification", e.target.value)}
+                value={newPerson.identification}
+                onChange={(e) => handleNewPersonFieldChange("identification", e.target.value)}
                 fullWidth
                 margin="normal"
               />
-              
-              {/* Lugar de Expedición */}
               <TextField
                 label="Lugar de Expedición"
-                value={selectedPerson.lugar_expedicion}
-                onChange={(e) => handleFieldChange("lugar_expedicion", e.target.value)}
+                value={newPerson.lugar_expedicion}
+                onChange={(e) => handleNewPersonFieldChange("lugar_expedicion", e.target.value)}
                 fullWidth
                 margin="normal"
               />
-
-              {/* Tipo de Persona */}
-              <Typography variant="subtitle1" style={{ marginTop: 20 }}>Tipo de Persona</Typography>
+              <Typography variant="subtitle1">Tipo de Persona</Typography>
               <Select
-                label="Tipo de Persona"
-                value={selectedPerson.type_person}
-                onChange={(e) => handleFieldChange("type_person", e.target.value)}
+                value={newPerson.type_person}
+                onChange={(e) => handleNewPersonFieldChange("type_person", e.target.value)}
                 fullWidth
                 margin="normal"
               >
@@ -308,13 +201,10 @@ const Person = () => {
                 <MenuItem value={2}>Proveedor</MenuItem>
                 <MenuItem value={3}>Empleado</MenuItem>
               </Select>
-
-              {/* Empresa */}
-              <Typography variant="subtitle1" style={{ marginTop: 20 }}>Empresa</Typography>
+              <Typography variant="subtitle1">Empresa</Typography>
               <Select
-                label="Empresa"
-                value={selectedPerson.company}
-                onChange={(e) => handleFieldChange("company", e.target.value)}
+                value={newPerson.company}
+                onChange={(e) => handleNewPersonFieldChange("company", e.target.value)}
                 fullWidth
                 margin="normal"
               >
@@ -322,98 +212,112 @@ const Person = () => {
                 <MenuItem value={1}>Empresa A</MenuItem>
                 <MenuItem value={2}>Empresa B</MenuItem>
               </Select>
-
-              {/* Botones de Acción */}
-              <Box display="flex" justifyContent="space-between" mt={2}>
-                <Button sx={{ color: '#320001', background: '#dad0d0', border: '1px solid #320001'}} variant="outlined" onClick={closeEditDrawer}>Cancelar</Button>
-                <Button sx={{ color: '#fff', background: '#320001'}} variant="contained" color="primary" onClick={saveChanges}>Guardar</Button>
-              </Box>
-            </Box>
-          )}
-        </Drawer>
-
-        {/* Editar Persona */}
-        <Drawer anchor="right" open={isDrawerOpen} onClose={closeEditDrawer}>
-          {selectedPerson && (
-            <Box sx={{ width: 300, padding: 3, marginTop: 10 }}>
-              <Typography variant="h5" gutterBottom>Editar {selectedPerson.name}</Typography>
-              <TextField
-                label="Nombre"
-                value={selectedPerson.name}
-                onChange={(e) => handleFieldChange("name", e.target.value)}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Identificación"
-                type="number"
-                value={selectedPerson.identification}
-                onChange={(e) => handleFieldChange("identification", e.target.value)}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Lugar de Expedición"
-                value={selectedPerson.lugar_expedicion}
-                onChange={(e) => handleFieldChange("lugar_expedicion", e.target.value)}
-                fullWidth
-                margin="normal"
-              />
-              <Typography variant="subtitle1" style={{ marginTop: 20 }}>Tipo de Persona</Typography>
+              <Typography variant="subtitle1">Estado</Typography>
               <Select
-                label="Tipo de Persona"
-                value={selectedPerson.type_person}
-                onChange={(e) => handleFieldChange("type_person", e.target.value)}
+                value={newPerson.is_active ? "Activo" : "Inactivo"}
+                onChange={(e) => handleNewPersonFieldChange("is_active", e.target.value === "Activo")}
                 fullWidth
                 margin="normal"
               >
-                <MenuItem value={1}>Cliente</MenuItem>
-                <MenuItem value={2}>Proveedor</MenuItem>
-                <MenuItem value={3}>Empleado</MenuItem>
-              </Select>
-              <Typography variant="subtitle1" style={{ marginTop: 20 }}>Empresa</Typography>
-              <Select
-                label="Empresa"
-                value={selectedPerson.company}
-                onChange={(e) => handleFieldChange("company", e.target.value)}
-                fullWidth
-                margin="normal"
-              >
-                <MenuItem value={null}>N/A</MenuItem>
-                <MenuItem value={1}>Empresa A</MenuItem>
-                <MenuItem value={2}>Empresa B</MenuItem>
+                <MenuItem value="Activo">Activo</MenuItem>
+                <MenuItem value="Inactivo">Inactivo</MenuItem>
               </Select>
               <Box display="flex" justifyContent="space-between" mt={2}>
-                <Button variant="outlined" onClick={closeEditDrawer}>Cancelar</Button>
-                <Button variant="contained" color="primary" onClick={saveChanges}>Guardar</Button>
+                <Button sx={{ color: '#320001', background: '#dad0d0', border: '1px solid #320001' }} variant="outlined" onClick={closeNewPersonDrawer}>Cancelar</Button>
+                <Button sx={{ color: '#fff', background: '#320001' }} variant="contained" color="primary" onClick={addNewPerson}>Agregar</Button>
               </Box>
             </Box>
-          )}
-        </Drawer>
+          </Drawer>
 
-        <Fab color="primary" aria-label="add" onClick={openNewPersonDrawer} className="boton-flotante">
-          <AddIcon />
-        </Fab>
+          {/* Editar Persona */}
+          <Drawer
+            sx={{
+              '& .MuiPaper-root': {
+                background: '#FFFEEE'
+              }
+            }}
+            anchor="right"
+            open={isDrawerOpen}
+            onClose={closeEditDrawer}>
+            {selectedPerson && (
+              <Box sx={{ width: 300, padding: 3 }}>
+                <Typography variant="h5" gutterBottom>Editar {selectedPerson.name}</Typography>
+                <TextField
+                  label="Nombre"
+                  value={selectedPerson.name}
+                  onChange={(e) => handleFieldChange("name", e.target.value)}
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  label="Identificación"
+                  type="number"
+                  value={selectedPerson.identification}
+                  onChange={(e) => handleFieldChange("identification", e.target.value)}
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  label="Lugar de Expedición"
+                  value={selectedPerson.lugar_expedicion}
+                  onChange={(e) => handleFieldChange("lugar_expedicion", e.target.value)}
+                  fullWidth
+                  margin="normal"
+                />
+                <Typography variant="subtitle1" style={{ marginTop: 20 }}>Tipo de Persona</Typography>
+                <Select
+                  label="Tipo de Persona"
+                  value={selectedPerson.type_person}
+                  onChange={(e) => handleFieldChange("type_person", e.target.value)}
+                  fullWidth
+                  margin="normal"
+                >
+                  <MenuItem value={1}>Cliente</MenuItem>
+                  <MenuItem value={2}>Proveedor</MenuItem>
+                  <MenuItem value={3}>Empleado</MenuItem>
+                </Select>
+                <Typography variant="subtitle1" style={{ marginTop: 20 }}>Empresa</Typography>
+                <Select
+                  label="Empresa"
+                  value={selectedPerson.company}
+                  onChange={(e) => handleFieldChange("company", e.target.value)}
+                  fullWidth
+                  margin="normal"
+                >
+                  <MenuItem value={null}>N/A</MenuItem>
+                  <MenuItem value={1}>Empresa A</MenuItem>
+                  <MenuItem value={2}>Empresa B</MenuItem>
+                </Select>
+                <Box display="flex" justifyContent="space-between" mt={2}>
+                  <Button sx={{ color: '#320001', background: '#dad0d0', border: '1px solid #320001' }} variant="outlined" onClick={closeEditDrawer}>Cancelar</Button>
+                  <Button sx={{ color: '#fff', background: '#320001' }} variant="contained" color="primary" onClick={saveChanges}>Guardar</Button>
+                </Box>
+              </Box>
+            )}
+          </Drawer>
+
+          <Fab color="primary" aria-label="add" onClick={openNewPersonDrawer} className="boton-flotante">
+            <AddIcon />
+          </Fab>
+        </Box>
       </Box>
-    </Box>
     </BoxPrimary>
   );
 };
 
 const FreeSolo = ({ data, dataComplete, setDataPerson }) => {
-  const onHandlerChange = (e,value) => {
-    if (data?.length <= 0) return
+  const onHandlerChange = (e, value) => {
+    if (data?.length <= 0) return;
     if (value === null) {
-      setDataPerson(dataComplete)
+      setDataPerson(dataComplete);
+    } else {
+      const filter = data.filter(item => item.name === value);
+      setDataPerson(filter ?? data);
     }
-    else {
-      const filter = data.filter(item => item.name == value)
-      setDataPerson(filter ?? dataOld)
-    }
-  }
+  };
 
-  if (data?.length <= 0 ) return
-  
+  if (data?.length <= 0) return null;
+
   return (
     <Stack sx={styles.containerSearch} spacing={2}>
       <Autocomplete
@@ -424,5 +328,6 @@ const FreeSolo = ({ data, dataComplete, setDataPerson }) => {
       />
     </Stack>
   );
-}
+};
+
 export default Person;

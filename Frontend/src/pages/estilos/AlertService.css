@@ -4,7 +4,7 @@
 .custom-swal-popup-warning,
 .custom-swal-popup-info {
   border-radius: 10px;
-  border: 2px solid #5f1414; /* Color del marco */
+  border: 2px solid #145f42; /* Color del marco */
   padding: 15px; /* Ajusta el padding para un diseño compacto */
   width: 300px; /* Dimensiones personalizadas */
   font-size: 14px;
@@ -33,7 +33,7 @@
 
 /* Barra de progreso personalizada */
 .custom-swal-progress-bar {
-  background-color: #5f1414; /* Color de la barra */
+  background-color: #145f49; /* Color de la barra */
   height: 4px;
   border-radius: 2px;
 }
