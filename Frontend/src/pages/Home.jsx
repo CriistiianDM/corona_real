@@ -42,7 +42,9 @@ export default function () {
 const ContainerPrimary = () => {
   return (
     <BoxPrimary title={"Panel de Control"}>
-      <For func={listOptions} list={routes} />
+      <Box sx={styles.containerFixedHome}>
+        <For func={listOptions} list={routes} />
+      </Box>
     </BoxPrimary>
   )
 }

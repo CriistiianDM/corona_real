@@ -73,11 +73,7 @@ const CashRegisterDetails = () => {
   }, [id]);
 
   return (
-    <BoxPrimary>
-      {/* <Typography variant="h4" gutterBottom>
-        Transacciones para la Caja #{id}
-      </Typography> */}
-
+    <BoxPrimary title={`Transacciones para la Caja ${id}`}>
       {transactions.length > 0 ? (
         <Grid container spacing={2}>
           {transactions.map((transaction, index) => (
@@ -145,10 +141,6 @@ const CashRegisterDetails = () => {
           </Button>
         </Box>
       </Drawer>
-
-      <Button variant="outlined" onClick={() => navigate("/cash_register")} sx={{ marginTop: 3 }}>
-        Volver a Cajas Registradoras
-      </Button>
       </BoxPrimary>
   );
 };

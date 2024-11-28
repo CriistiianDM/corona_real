@@ -8,6 +8,9 @@ import AlertService from "./utils/AlertService";//
 // Componets
 import BoxPrimary from "../components/Share/BoxPrimary.jsx"
 
+// Styles
+import styles from "../css/jscss/root"
+
 const Product = () => {
   const [products, setProducts] = useState([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -308,7 +311,7 @@ const Product = () => {
   };
 
   return (
-    <BoxPrimary>
+    <BoxPrimary title={"Productos"}>
     <div style={{ width: '100%' }}>
       <Grid container spacing={3} style={{ flex: 1 }}>
         {products?.length>0 && products.map((product) => (
@@ -321,7 +324,9 @@ const Product = () => {
                 padding: 1,
                 textAlign: "center",
                 height: "100%",
-                maxWidth: 250,
+                background: "#f8f9fb",
+                maxWidth: 300,
+                margin: 'auto'
               }}
             >
               <Box
@@ -334,7 +339,7 @@ const Product = () => {
                 }}
               >
                 <img
-                  src={product.imageUrl}
+                  src={"/Products.avif"}
                   alt={product.name}
                   style={{
                     width: "100%",
@@ -356,16 +361,16 @@ const Product = () => {
                 </Typography>
               </CardContent>
               <Box display="flex" flexDirection="column" justifyContent="space-around" width="100%" sx={{ padding: 1 }}>
-                <Button variant="contained" color="primary" sx={{ flex: 1, marginBottom: 1 }} onClick={() => openDrawer(product, "compra")}>
-                  Compra
-                </Button>
-                <Button variant="contained" color="secondary" sx={{ flex: 1, marginBottom: 1 }} onClick={() => openDrawer(product, "venta")}>
+              <Button variant="contained" color="secondary" sx={{ flex: 1, marginBottom: 1, background: '#79665a' }} onClick={() => openDrawer(product, "venta")}>
                   Venta
                 </Button>
-                <Button variant="contained" color="warning" sx={{ flex: 1, marginBottom: 1 }} onClick={() => openDrawer(product, "obsolescencia")}>
+                <Button variant="contained" color="primary" sx={{ flex: 1, marginBottom: 1, background: '#a58f80' }} onClick={() => openDrawer(product, "compra")}>
+                  Compra
+                </Button>
+                <Button variant="contained" color="warning" sx={{ flex: 1, marginBottom: 1, background: '#897373cf' }} onClick={() => openDrawer(product, "obsolescencia")}>
                   Obsolescencia
                 </Button>
-                <Button variant="contained" color="info" sx={{ flex: 1, marginBottom: 1 }} onClick={() => openEditDrawer(product)}>
+                <Button variant="contained" color="info" sx={{ flex: 1, marginBottom: 1, background: '#9e9e9e' }} onClick={() => openEditDrawer(product)}>
                   Editar
                 </Button>
               </Box>
@@ -375,7 +380,16 @@ const Product = () => {
       </Grid>
 
       {/* Drawer para Transacciones */}
-      <Drawer anchor="right" open={isDrawerOpen} onClose={closeDrawer}>
+      <Drawer 
+        anchor="right" 
+        open={isDrawerOpen}
+        onClose={closeDrawer}
+        sx={{
+          '& .MuiPaper-root': {
+            background: '#FFFEEE'
+          }
+        }}
+        >
         <Box sx={{ width: 300, padding: 3, marginTop: 10 }}>
           <Typography variant="h5" gutterBottom>
             {transactionType === "compra"
@@ -408,13 +422,14 @@ const Product = () => {
           )}
 
           <Box display="flex" justifyContent="space-between" mt={2}>
-            <Button variant="outlined" onClick={closeDrawer}>
+            <Button sx={{ color: '#320001', background: '#dad0d0', border: '1px solid #320001'}} variant="outlined" onClick={closeDrawer}>
               Cancelar
             </Button>
             <Button
               variant="contained"
               color="primary"
               onClick={handleSellerProduct}
+              sx={{ color: '#fff', background: '#320001'}}
               disabled={transactionType === "compra" && (!transactionCost || transactionCost <= 0)}
             >
               Aceptar
@@ -425,7 +440,16 @@ const Product = () => {
 
 
       {/* Drawer para agregar producto */}
-      <Drawer anchor="right" open={isNewProductDrawerOpen} onClose={closeNewProductDrawer}>
+      <Drawer 
+        anchor="right" 
+        open={isNewProductDrawerOpen} 
+        onClose={closeNewProductDrawer}
+        sx={{
+          '& .MuiPaper-root': {
+            background: '#FFFEEE'
+          }
+        }}
+        >
         <Box sx={{ width: 300, padding: 3, marginTop: 10 }}>
           <Typography variant="h5" gutterBottom>
             {editingProduct ? "Editar Producto" : "Agregar Producto"}
@@ -456,10 +480,10 @@ const Product = () => {
             margin="normal"
           />
           <Box display="flex" justifyContent="space-between" mt={2}>
-            <Button variant="outlined" onClick={closeNewProductDrawer}>
+            <Button sx={{ color: '#320001', background: '#dad0d0', border: '1px solid #320001'}} variant="outlined" onClick={closeNewProductDrawer}>
               Cancelar
             </Button>
-            <Button variant="contained" onClick={saveProduct}>
+            <Button sx={{ color: '#fff', background: '#320001'}} variant="contained" onClick={saveProduct}>
               {editingProduct ? "Guardar Cambios" : "Agregar"}
             </Button>
           </Box>
@@ -472,7 +496,7 @@ const Product = () => {
         color="primary"
         aria-label="add"
         onClick={() => setIsNewProductDrawerOpen(true)}
-        sx={{ position: "fixed", bottom: 16, right: 16 }}
+        sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 999 }}
       >
         <AddIcon />
       </Fab>

@@ -42,11 +42,13 @@ const ContainerPrimary = () => {
    }, [global.update])
 
    return (
-    <BoxPrimary>
-      <Grid2 sx={styles.containerPrimary}>
-        <ActionsForms {...{ ...global, handlers}} />
-        <ListCashRegister {...{ ...global, handlers}} />
-      </Grid2>
+    <BoxPrimary title={"Cajas Registradoras"}>
+      <Box sx={styles.containerFixed}>
+        <Grid2 sx={styles.containerPrimary}>
+          <ActionsForms {...{ ...global, handlers}} />
+          <ListCashRegister {...{ ...global, handlers}} />
+        </Grid2>
+      </Box>
     </BoxPrimary>
    )
 }
