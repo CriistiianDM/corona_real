@@ -24,7 +24,7 @@ const AppContent = () => {
   const navigate = useNavigate();
 
   // Determina si se debe mostrar el Sidebar
-  const showSidebar = location.pathname !== "/" && location.pathname !== "/register";
+  const showSidebar = location.pathname !== "/";
 
   // Carga inicial para verificar si hay un usuario autenticado
   useEffect(() => {
@@ -47,9 +47,6 @@ const AppContent = () => {
       {/* Barra superior */}
       { showSidebar && <Header /> }
       { showSidebar && <CoronaReal />}
-
-      {/* Sidebar (si aplica) */}
-      {/* {showSidebar && <Sidebar />} */}
 
       {/* Contenido principal */}
        {/* Espacio para la barra superior */}

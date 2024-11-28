@@ -1,13 +1,13 @@
 export default {
     containerPrimary: {
-        display: 'flex',
-        flexDirection: 'column',
+        height: 'min-content',
         boxSizing: 'border-box',
         overflow: 'hidden',
         '& > section:first-of-type': {
             position: 'fixed',
             bottom: '16px',
             right: '16px',
+            zIndex: '999',
             '& button': {
                 background: 'rgb(95 20 20)',
                 color: 'white'
@@ -19,13 +19,39 @@ export default {
             alingItems: 'center',
             minHeigth: '3em',
             width: '100%',
+            height: '100%',
             flexWrap: 'wrap',
-            '& > div > div': {
+            '& > div': {
+                margin: '10px 20px',
                 position: 'relative',
                 width: '200px',
                 height: '234px',
+                padding: '20px',
                 '& > div': {
                     padding: 'unset',
+                    height: '100%',
+                    '& > div > img': {
+                        objectFit: 'cover'
+                    },
+                    '& > div': {
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alingItems: 'center',
+                        height: '100px',
+                    },
+                    '& button': {
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderColor: 'gray',
+                        background: '#7c7766',
+                        color: 'white',
+                        '& > div': {
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alingItems: 'center',
+                        },
+                    }   
                 },
                 '& > div > button': {
                     display: 'flex',
@@ -39,15 +65,6 @@ export default {
                     top: '-5px',
                     left: '10px',
                     borderColor: 'gray',
-                    '& > div': {
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alingItems: 'center',
-                    },
-                    '& > div > img': {
-                        width: '15px',
-                        height: '15px',
-                    }
                 }   
             }
         }
@@ -117,13 +134,7 @@ export default {
         }
     },
     containerPanelLogin: {
-        // width: "95%",
         height: "100%",
-        // border: "solid rgb(95 20 20) 1px",
-        // borderRadius: "10px",
-        // padding: "5px",
-        // background: "#fff",
-        // overflow: "hidden"
         '& video': {
             objectFit: "cover"
         }
@@ -182,7 +193,7 @@ export default {
         justifyContent: 'space-between',
         padding: "20px",
         maxWidth: "1300px",
-        margin: "-50px auto 30px auto",
+        margin: "0px auto 30px auto",
         minHeight: "500px",
         borderRadius: "10px",
         width: "calc(95% - 40px)",
@@ -203,12 +214,12 @@ export default {
         padding: "14px",
         margin: "10px 10px",
         background: '#D9D9D9',
-        width: '150px',
+        width: '160px',
         overflow: "hidden",
         '@media (max-width: 500px)': {
             width: '100%',
         },
-        height: '170px',
+        height: '200px',
         borderRadius: '8px',
         '& .MuiListItemIcon-root': {
             display: "flex",
@@ -216,8 +227,8 @@ export default {
             alignItems: 'center',
             width: '100%',
             '& svg': {
-                width: "70%",
-                height: "70%",
+                width: "50%",
+                height: "60%",
                 fill: '#5c0100',
                 '@media (max-width: 500px)': {
                     width: "50%",
@@ -300,5 +311,39 @@ export default {
                 }
             }
         },
+    },
+    containerSearch: {
+        background: 'white',
+        borderRadius: '8px',
+        width: '400px',
+        '@media (max-width: 500px)': {
+            width: "300px",
+        },
+    },
+    containerRegister: {
+        borderRadius: '10px',
+        padding: '30px',
+        background: 'white',
+        maxWidth: '600px',
+        width: '70%',
+        margin: 'auto',
+        marginBottom: '30px',
+    },
+    containerPerson: {
+        height: 'calc(100% - 46px)',
+        width: '-webkit-fill-available',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '23px'
+    },
+    containerFixed: {
+        height: 'calc(100% - 60px)'
+    },
+    containerFixedHome: {
+        display: 'flex',
+        justifyContent: 'space-evenly',
+        flexWrap: 'wrap',
+        height: 'calc(100% - 60px)',
+        width: '100%'
     }
 }
