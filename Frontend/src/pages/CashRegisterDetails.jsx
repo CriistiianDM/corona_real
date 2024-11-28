@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Typography, Grid, Card, CardContent, Button, Drawer, Box, TextField } from "@mui/material";
-import { getTransactionsByCashRegisterId, getCashRegisterById, putCashRegister } from "../tools/api/transaction/api";
+import { getTransactionsByCashRegisterId, getCashRegisterById, putCashRegister, postTransaction } from "../tools/api/transaction/api";
 
 // Componets
 import BoxPrimary from "../components/Share/BoxPrimary.jsx"
@@ -20,40 +20,60 @@ const CashRegisterDetails = () => {
         alert("Por favor, ingresa un valor válido.");
         return;
       }
-
+  
       // Obtener la caja registradora
       const cashRegister = await getCashRegisterById(id);
       if (!cashRegister?.id) {
         alert("No se pudo obtener la caja registradora.");
         return;
       }
-
+  
+      // Determinar el tipo de transacción según el ID de la caja
+      const typeTransaction = cashRegister.id === 2 ? 1 : 2;
+  
       // Calcular el nuevo balance
       const newBalance = cashRegister.cash_balance - parseFloat(deductionAmount);
       if (newBalance < 0) {
         alert("El balance no puede ser negativo.");
         return;
       }
-
-      // Actualizar el balance
-      const response = await putCashRegister({
+  
+      // Actualizar el balance de la caja registradora
+      const updateResponse = await putCashRegister({
         id: cashRegister.id,
         data: { ...cashRegister, cash_balance: newBalance },
       });
-
-      if (response?.id) {
-        alert("Resta aplicada con éxito.");
-        setIsDrawerOpen(false);
-        setDeductionAmount(""); // Resetea el valor
-        fetchTransactions(); // Refrescar transacciones
-      } else {
-        alert("No se pudo aplicar la resta.");
+  
+      if (!updateResponse?.id) {
+        alert("No se pudo actualizar el balance de la caja.");
+        return;
       }
+  
+      // Crear la transacción de resta
+      const transactionResponse = await postTransaction({
+        data: {
+          type_transaction: typeTransaction, // Asignado dinámicamente
+          cash_register: cashRegister.id,
+          description: `Resta manual aplicada en la caja ${cashRegister.id}`,
+          value: parseFloat(deductionAmount),
+        },
+      });
+  
+      if (!transactionResponse?.id) {
+        alert("No se pudo registrar la transacción.");
+        return;
+      }
+  
+      alert("Resta aplicada y transacción registrada con éxito.");
+      setIsDrawerOpen(false);
+      setDeductionAmount(""); // Resetea el valor
+      fetchTransactions(); // Refresca las transacciones
     } catch (error) {
       console.error("Error al restar a la caja:", error);
       alert("Ocurrió un error al intentar restar a la caja.");
     }
   };
+  
 
   // Obtener las transacciones
   const fetchTransactions = async () => {
@@ -99,14 +119,14 @@ const CashRegisterDetails = () => {
       )}
 
       {/* Botón para abrir el Drawer */}
-      {/* <Button
+      <Button
         variant="outlined"
         color="secondary"
         sx={{ marginTop: 2 }}
         onClick={() => setIsDrawerOpen(true)}
       >
         Restar a la Caja
-      </Button> */}
+      </Button>
 
       {/* Drawer para restar */}
       <Drawer anchor="right" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
