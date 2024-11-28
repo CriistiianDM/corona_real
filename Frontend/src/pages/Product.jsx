@@ -488,7 +488,7 @@ const Product = () => {
         color="primary"
         aria-label="add"
         onClick={() => setIsNewProductDrawerOpen(true)}
-        sx={{ position: "fixed", bottom: 16, right: 16 }}
+        sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 999 }}
       >
         <AddIcon />
       </Fab>
