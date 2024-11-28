@@ -16,6 +16,7 @@ import AddIcon from "@mui/icons-material/Add";
 import For from "../components/For/For"
 import AddNewCashRegister from "../components/CashRegister/Menu"
 import ListCashRegister from "../components/CashRegister/ListItems"
+import BoxPrimary from "../components/Share/BoxPrimary.jsx"
 
 /** Cash Register */
 export default function (props) {
@@ -41,13 +42,14 @@ const ContainerPrimary = () => {
    }, [global.update])
 
    return (
-      <Grid2 sx={styles.containerPrimary}>
-        <Typography variant="h2" gutterBottom>
-                Cajas Registradoras
-        </Typography>
-        <ActionsForms {...{ ...global, handlers}} />
-        <ListCashRegister {...{ ...global, handlers}} />
-      </Grid2>
+    <BoxPrimary title={"Cajas Registradoras"}>
+      <Box sx={styles.containerFixed}>
+        <Grid2 sx={styles.containerPrimary}>
+          <ActionsForms {...{ ...global, handlers}} />
+          <ListCashRegister {...{ ...global, handlers}} />
+        </Grid2>
+      </Box>
+    </BoxPrimary>
    )
 }
 

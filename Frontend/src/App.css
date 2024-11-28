@@ -8,10 +8,6 @@
 }
 #root {
   max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-  
 }
 
 .button-grid {
@@ -36,6 +32,11 @@
 .styled-button:hover {
   background-color: #7a1b1b; /* Color al pasar el mouse */
   transform: scale(1.05); /* Efecto de crecimiento al pasar el mouse */
+}
+
+.MuiDrawer-root.MuiDrawer-modal .MuiButtonBase-root.MuiButton-root {
+  background-color: #5f1414 !important;
+  color: #fff !important;
 }
 
 .logo {

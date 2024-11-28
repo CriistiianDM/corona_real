@@ -1,28 +1,64 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Grid, Card, CardContent, Typography, Button, Drawer, Select, MenuItem, TextField, Box, Fab } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
+import { getRooms, updateRoom} from "../tools/api/inventory/api";
+import { getPersons} from "../tools/api/person/api";
 
-const initialRooms = [
-  { id: 1, number_room: 101, type_room: "Sencilla", name: "Royal", status: "Libre", isActive: true, cliente: "", valor: "" },
-  { id: 2, number_room: 203, type_room: "Doble", name: "Supreme", status: "Ocupada", isActive: true, cliente: "Juan Pérez", valor: 100 },
-  { id: 3, number_room: 104, type_room: "Sencilla", name: "General", status: "Libre", isActive: true, cliente: "", valor: "" },
-  { id: 4, number_room: 403, type_room: "Doble", name: "General", status: "Ocupada", isActive: true, cliente: "María López", valor: 150 },
-  { id: 5, number_room: 204, type_room: "Doble", name: "Deluxe", status: "Mantenimiento", isActive: true, cliente: "", valor: "" },
-];
+import { createRoomReservation } from "../tools/api/transaction/api";
+import { getData } from "../tools/utils/utils";
 
-const clients = ["Juan Pérez", "María López", "Carlos Gómez", "Ana Ramírez"];
+// Componets
+import BoxPrimary from "../components/Share/BoxPrimary.jsx"
+
+// Styles
+import styles from "../css/jscss/root"
+import AlertService from "./utils/AlertService.js";
 
 const Room = () => {
-  const [rooms, setRooms] = useState(initialRooms);
+  const [rooms, setRooms] = useState([])
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isAddDrawerOpen, setIsAddDrawerOpen] = useState(false);
   const [newRoom, setNewRoom] = useState({ number_room: '', type_room: 'Sencilla', name: '', status: 'Libre', cliente: '', valor: '' });
+  const [persons, setPersons] = useState([]);
+
+useEffect(() => {
+  const fetchPersons = async () => {
+    try {
+      const personsData = await getPersons();
+      setPersons(personsData); // Almacena las personas en el estado
+    } catch (error) {
+      console.error("Error al obtener personas:", error);
+      const errorMessage = error.response?.data?.message || error.message || "Error al obtener personas";
+      AlertService.error(errorMessage, "Error", "top-start");
+    }
+  };
+
+  fetchPersons();
+}, []);
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const roomsData = await getRooms();
+        setRooms(roomsData); // Actualiza el estado con los datos obtenidos
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message || "Error al obtener habitaciones";
+        AlertService.error(errorMessage, "Error", "top-start");
+      }
+    };
+
+
+  
+    fetchRooms();
+  }, []);
 
   const openEditDrawer = (room) => {
+    console.log("Habitación seleccionada:", room); 
     setSelectedRoom(room);
     setIsDrawerOpen(true);
   };
+  
 
   const closeEditDrawer = () => {
     setSelectedRoom(null);
@@ -33,18 +69,47 @@ const Room = () => {
     setSelectedRoom({ ...selectedRoom, [field]: value });
   };
 
-  const saveChanges = () => {
-    const updatedRooms = rooms.map(room =>
-      room.id === selectedRoom.id ? selectedRoom : room
-    );
-    setRooms(updatedRooms);
-    closeEditDrawer();
+  const saveChanges = async () => {
+    try {
+      if (!selectedRoom) {
+        AlertService.warning("No se ha seleccionado ninguna habitación", "Advertencia", "top-start");
+        return;
+      }
+  
+      // Prepara los datos para la actualización
+      const updatedRoomData = {
+        ...selectedRoom,
+        cliente: selectedRoom.status === "disponible" ? null : selectedRoom.cliente, // Elimina cliente si es "disponible"
+      };
+  
+      // Realiza la solicitud PUT al backend
+      const response = await updateRoom(selectedRoom.id, updatedRoomData);
+  
+      if (response?.id) {
+        // Actualiza el estado local con la respuesta del backend
+        const updatedRooms = rooms.map((room) =>
+          room.id === response.id ? response : room
+        );
+        setRooms(updatedRooms);
+  
+        AlertService.success("La habitación se ha actualizado correctamente", "Éxito", "top-start");
+      } else {
+        AlertService.error("No se pudo actualizar la habitación", "Error", "top-start");
+      }
+  
+      closeEditDrawer(); // Cierra el drawer
+    } catch (error) {
+      console.error("Error al guardar cambios:", error);
+      AlertService.error(errorMessage, "Error", "top-start");
+    }
   };
+  
 
   const handleDeleteRoom = () => {
     const updatedRooms = rooms.filter(room => room.id !== selectedRoom.id);
     setRooms(updatedRooms);
     closeEditDrawer();
+    AlertService.success("Habitación eliminada con éxito", "Éxito", "top-start");
   };
 
   const openAddDrawer = () => {
@@ -65,51 +130,151 @@ const Room = () => {
     setRooms([...rooms, newRoomWithId]);
     closeAddDrawer();
   };
+// Venta habs
+const [isSaleDrawerOpen, setIsSaleDrawerOpen] = useState(false);
+const [saleData, setSaleData] = useState({
+  id_guest: "",
+  value: "",
+  payment_type: 1, // Debe ser un id
+  date: new Date().toISOString(), // Fecha de inicio
+  date_finish: "", // Fecha de fin (puedes calcularla automáticamente)
+});
+
+const openSaleDrawer = (room) => {
+  setSelectedRoom(room); // Configura la habitación seleccionada
+  setSaleData((prev) => ({ ...prev, room_id: room.id })); // Asigna la habitación al registro de venta
+  setIsSaleDrawerOpen(true); // Abre el Drawer de venta
+};
+
+const closeSaleDrawer = () => {
+  setIsSaleDrawerOpen(false);
+};
+
+const handleSale = async () => {
+    try {
+        //Valida que los campos obligatorios estén completos
+        if (!saleData.id_guest || !saleData.value || !saleData.date || !saleData.date_finish) {
+          AlertService.warning("Por favor, completa todos los campos", "Advertencia", "top-start");
+          return;
+        }
+
+        const dbClient = await getData() ?? {}
+        const cash_register = Number(saleData.payment_type) === 2? 2 : 3;
+        const dataSend = {
+            data_room: selectedRoom,
+            data_transactions: {
+            type_transaction: Number(saleData.payment_type),
+            cash_register: cash_register,
+            value: Number(saleData.value),
+            },
+            data_user: dbClient?.user_data,
+            data_room_reservation: {
+              count_accompany: 0, // Falta
+              date: saleData.date,
+              date_finish: saleData.date_finish,
+              status: "RESERVACION", // Falta
+            }
+        }
+        const response = await createRoomReservation({ data: dataSend }); // Usa la API para crear la reserva
+        if (response?.id) {
+          AlertService.success("Funciona","Éxito", "top-start")
+          const updatedRooms = await getRooms();
+          setRooms(updatedRooms);
+          closeSaleDrawer();
+        }
+
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message || "Error al registrar la venta";
+      AlertService.error(errorMessage, "Error", "top-start");
+    }
+};
+
+
+
 
   return (
-    <div style={{ display: "flex" }}>
-      <Grid container spacing={3} style={{ flex: 1, transition: "all 0.3s", transform: isDrawerOpen ? "scale(0.9)" : "scale(1)" }}>
-        {rooms.map((room) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={room.id}>
-            <Card
-              className="thumb-cards_room"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                borderColor: room.status === "Ocupada" ? "red" : room.status === "Mantenimiento" ? "blue" : "green",
-                borderWidth: 2,
-                borderStyle: "solid",
-                padding: "10px",
-              }}
+    <BoxPrimary title={"Habitaciones"}>
+      <Grid sx={styles.containerRooms}>
+      {rooms.map((room) => {
+    // Función para determinar el color del borde
+    const borderColor = (() => {
+      switch (room.status) {
+        case "ocupado":
+          return "#6a0203";
+        case "disponible":
+          return "#589958";
+        case "sucio":
+          return "orange";
+        case "averiada":
+          return "#328ecd";
+        default:
+          return "black"; // Color por defecto
+      }
+    })();
+
+    return (
+      <Grid  key={room.id}>
+        <Card
+          className="thumb-cards_room"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            borderColor: borderColor, // Aplica el color basado en el estado
+            borderWidth: 7,
+            borderStyle: "solid",
+          }}
+        >
+          <div>
+            <img
+              src="/Room2.png"
+              alt={`Habitación ${room.number_room}`}
+              style={{ width: 245, height: 300, objectFit: "cover", borderRadius: "8px" }}
+            />
+          </div>
+          <CardContent>
+          <Grid>
+            <Typography variant="h6" style={{ fontSize: "1rem" }}>{room.number_room}</Typography>
+            <Typography variant="h6" style={{ fontSize: "1rem" }}>{room.name}</Typography>
+            <Typography variant="body2"><b>Tipo:</b> {room.type_room}</Typography>
+            <Typography variant="body2" style={{ color: borderColor }}>
+              <b>Estado: </b>{room.status}
+            </Typography>
+            {room.status === "ocupada" && (
+              <Typography variant="body2" style={{ fontWeight: "bold", marginTop: 5 }}>
+                Cliente: {room.cliente || "Sin asignar"}
+              </Typography>
+            )}
+            </Grid>
+            <Grid>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => openEditDrawer(room)}
+              style={{ marginTop: 10 }}
             >
-              <div style={{ flexShrink: 0, marginRight: 10 }}>
-                <img
-                  src="/Room2.png"
-                  alt={`Habitación ${room.number_room}`}
-                  style={{ width: 60, height: 60, objectFit: "cover", borderRadius: "8px" }}
-                />
-              </div>
-              <CardContent style={{ flex: 1, padding: 0 }}>
-              <Typography variant="h6" style={{ fontSize: "1rem" }}>{room.number_room}</Typography>
-                <Typography variant="h6" style={{ fontSize: "1rem" }}>{room.name}</Typography>
-                <Typography variant="body2">Tipo: {room.type_room}</Typography>
-                <Typography variant="body2">Estado: {room.status}</Typography>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => openEditDrawer(room)}
-                  style={{ marginTop: 10 }}
-                >
-                  Editar información
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+              Editar información
+            </Button>
+            {room.status === "disponible" && (
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => openSaleDrawer(room)}
+                style={{ marginTop: 10 }}
+              >
+                Registrar Venta
+              </Button>
+            )}
+            </Grid>
+          </CardContent>
+        </Card>
       </Grid>
+    );
+  })}
+</Grid>
+
 
       {/* Botón para agregar nueva habitación */}
-      <Fab className="boton-flotante" color="primary" aria-label="add" style={{ position: 'absolute', bottom: 20, right: 20 }} onClick={openAddDrawer}>
+      <Fab className="boton-flotante" color="primary" aria-label="add" style={{ position: 'fixed', zIndex: 99, bottom: 20, right: 20 }} onClick={openAddDrawer}>
         <AddIcon />
       </Fab>
 
@@ -117,20 +282,18 @@ const Room = () => {
         anchor="right"
         open={isAddDrawerOpen}
         onClose={closeAddDrawer}
+        sx={{
+          '& .MuiPaper-root': {
+            background: '#FFFEEE'
+          }
+        }}
       >
-        <Box sx={{ width: 300, padding: 2, marginTop: 10 }}>
+        <Box sx={{ width: 300, padding: 2, marginTop: 10, background: '#FFFEEE'}}>
           <Typography variant="h5" gutterBottom>Agregar Nueva Habitación</Typography>
           <TextField
             label="Número de Habitación"
             value={newRoom.number_room}
             onChange={(e) => handleNewRoomFieldChange("number_room", e.target.value)}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Nombre de la Habitación"
-            value={newRoom.name}
-            onChange={(e) => handleNewRoomFieldChange("name", e.target.value)}
             fullWidth
             margin="normal"
           />
@@ -162,60 +325,66 @@ const Room = () => {
             color="primary"
             onClick={addNewRoom}
             fullWidth
-            style={{ marginTop: 20, borderColor: 'blue', color: 'blue', borderWidth: 2, borderStyle: 'solid' }} // Borde azul
+            style={{ marginTop: 20, color: '#fff', background: '#320001' }} // Borde azul
           >
             Agregar
           </Button>
         </Box>
       </Drawer>
 
-      <Drawer
-        anchor="right"
-        open={isDrawerOpen}
-        onClose={closeEditDrawer}
-      >
-        {selectedRoom && (
-          <Box sx={{ width: 300, padding: 2, marginTop: 10 }}>
-            <Typography variant="h5" gutterBottom>Editar {selectedRoom.name}</Typography>
-            <TextField
-              label="Número de Habitación"
-              value={selectedRoom.number_room}
-              onChange={(e) => handleFieldChange("number_room", e.target.value)}
-              fullWidth
-              margin="normal"
-              disabled
-            />
-            <TextField
-              label="Nombre de la Habitación"
-              value={selectedRoom.name}
-              onChange={(e) => handleFieldChange("name", e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-            <Typography variant="subtitle1" style={{ marginTop: 20 }}>Tipo de Habitación</Typography>
-            <Select
-              label="Tipo de Habitación"
-              value={selectedRoom.type_room}
-              onChange={(e) => handleFieldChange("type_room", e.target.value)}
-              fullWidth
-              margin="normal"
-            >
-              <MenuItem value="Sencilla">Sencilla</MenuItem>
-              <MenuItem value="Doble">Doble</MenuItem>
-            </Select>
-            <Typography variant="subtitle1" style={{ marginTop: 20 }}>Estado</Typography>
-            <Select
-              label="Estado"
-              value={selectedRoom.status}
-              onChange={(e) => handleFieldChange("status", e.target.value)}
-              fullWidth
-              margin="normal"
-            >
-              <MenuItem value="Libre">Libre</MenuItem>
-              <MenuItem value="Ocupada">Ocupada</MenuItem>
-              <MenuItem value="Mantenimiento">Mantenimiento</MenuItem>
-            </Select>
-            {selectedRoom.status === "Ocupada" && (
+      <Drawer sx={{
+          '& .MuiPaper-root': {
+            background: '#FFFEEE'
+          }
+        }} anchor="right" open={isDrawerOpen} onClose={closeEditDrawer}>
+      {selectedRoom && (
+        <Box sx={{ width: 300, padding: 2, marginTop: 10 }}>
+          <Typography variant="h5" gutterBottom>
+            Editar Habitación {selectedRoom.number_room}
+          </Typography>
+
+          {/* Campo: Número de Habitación */}
+          <TextField
+            label="Número de Habitación"
+            value={selectedRoom.number_room}
+            onChange={(e) => handleFieldChange("number_room", e.target.value)}
+            fullWidth
+            margin="normal"
+            disabled
+          />
+
+          {/* Campo: Tipo de Habitación */}
+          <Typography variant="subtitle1" style={{ marginTop: 20 }}>
+            Tipo de Habitación
+          </Typography>
+          <Select
+            label="Tipo de Habitación"
+            value={selectedRoom.type_room}
+            onChange={(e) => handleFieldChange("type_room", e.target.value)}
+            fullWidth
+            margin="normal"
+            disabled 
+          >
+            <MenuItem value="sencilla">Sencilla</MenuItem>
+            <MenuItem value="doble">Doble</MenuItem>
+          </Select>
+
+          {/* Campo: Estado */}
+          <Typography variant="subtitle1" style={{ marginTop: 20 }}>
+            Estado
+          </Typography>
+          <Select
+            label="Estado"
+            value={selectedRoom.status} 
+            onChange={(e) => handleFieldChange("status", e.target.value)}
+            fullWidth
+            margin="normal"
+          >
+            <MenuItem value="disponible">Disponible</MenuItem>
+            <MenuItem value="sucio">Sucia</MenuItem>
+            <MenuItem value="averiada">Averiada</MenuItem>
+          </Select>
+          {/* {selectedRoom.status === "Ocupada" && (
               <Box sx={{ pl: 2, mt: 2 }}>
                 <Select
                   label="Cliente"
@@ -239,29 +408,105 @@ const Room = () => {
                   margin="normal"
                 />
               </Box>
+            )} */}
+
+          {/* Botón para guardar los cambios */}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={saveChanges}
+            fullWidth
+            style={{ marginTop: 20, color: '#fff', background: '#320001' }}
+          >
+            Guardar Cambios
+          </Button>
+        </Box>
+      )}
+    </Drawer>
+    <Drawer         sx={{
+          '& .MuiPaper-root': {
+            background: '#FFFEEE'
+          }
+        }} anchor="right" open={isSaleDrawerOpen} onClose={closeSaleDrawer}>
+      {selectedRoom && (
+        <Box sx={{ width: 300, padding: 2, marginTop: 10 }}>
+          <Typography variant="h5" gutterBottom>
+            Registrar Venta - Habitación {selectedRoom.number_room}
+          </Typography>
+
+          {/* Selección de cliente */}
+          <Select
+            label="Cliente"
+            value={saleData.id_guest}
+            onChange={(e) => setSaleData({ ...saleData, id_guest: e.target.value })}
+            fullWidth
+            margin="normal"
+          >
+            {persons?.length > 0 ? (
+              persons.map((person) => (
+                <MenuItem key={person.id} value={person.id}>
+                  {person.name}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled>Cargando personas...</MenuItem>
             )}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={saveChanges}
-              fullWidth
-              style={{ marginTop: 20 }}
-            >
-              Guardar Cambios
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={handleDeleteRoom}
-              fullWidth
-              style={{ marginTop: 10 }}
-            >
-              Eliminar Habitación
-            </Button>
-          </Box>
-        )}
-      </Drawer>
-    </div>
+          </Select>
+
+          {/* Valor de la venta */}
+          <TextField
+            label="Valor"
+            type="number"
+            value={saleData.value}
+            onChange={(e) => setSaleData({ ...saleData, value: e.target.value })}
+            fullWidth
+            margin="normal"
+          />
+
+          {/* Tipo de pago */}
+          <Select
+            label="Tipo de Pago"
+            value={saleData.payment_type}
+            onChange={(e) => setSaleData({ ...saleData, payment_type: e.target.value })}
+            fullWidth
+            margin="normal"
+          >
+            <MenuItem value="2">Factura</MenuItem>
+            <MenuItem value="1">Sin Factura</MenuItem>
+          </Select>
+
+          {/* Fechas */}
+          <TextField
+            label="Fecha de Inicio"
+            type="datetime-local"
+            value={saleData.date}
+            onChange={(e) => setSaleData({ ...saleData, date: e.target.value })}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Fecha de Fin"
+            type="datetime-local"
+            value={saleData.date_finish}
+            onChange={(e) => setSaleData({ ...saleData, date_finish: e.target.value })}
+            fullWidth
+            margin="normal"
+          />
+
+          {/* Botón para confirmar */}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSale}
+            fullWidth
+            style={{ marginTop: 20, color: '#fff', background: '#320001' }}
+          >
+            Confirmar Venta
+          </Button>
+        </Box>
+      )}
+    </Drawer>
+    </BoxPrimary>
   );
 };
 
