@@ -337,7 +337,8 @@ export default {
         gap: '23px'
     },
     containerFixed: {
-        height: 'calc(100% - 60px)'
+        height: 'calc(100% - 60px)',
+        width: '-webkit-fill-available',
     },
     containerFixedHome: {
         display: 'flex',
