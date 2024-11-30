@@ -23,6 +23,8 @@ const Room = () => {
   const [isAddDrawerOpen, setIsAddDrawerOpen] = useState(false);
   const [newRoom, setNewRoom] = useState({ number_room: '', type_room: 'Sencilla', name: '', status: 'Libre', cliente: '', valor: '' });
   const [persons, setPersons] = useState([]);
+  const [isEditSaleDrawerOpen, setIsEditSaleDrawerOpen] = useState(false);
+  const [editSaleData, setEditSaleData] = useState(null);
 
 useEffect(() => {
   const fetchPersons = async () => {
@@ -54,6 +56,48 @@ useEffect(() => {
   
     fetchRooms();
   }, []);
+
+
+
+
+
+
+  // const openEditSaleDrawer = (room) => {
+  //   // Carga los datos de la venta correspondiente
+  //   const saleToEdit = {
+  //     //id_guest: room.cliente,
+  //     id_guest: 2,
+  //     value: room.valor,
+  //     payment_type: 1, // Por defecto, ajusta según tus datos reales
+  //     date: new Date().toISOString(),
+  //     date_finish: "", // Ajusta con la lógica correspondiente
+  //   };
+  //   setEditSaleData(saleToEdit);
+  //   setIsEditSaleDrawerOpen(true);
+  // };
+
+  const openEditSaleDrawer = (room) => {
+    console.log("Abrir Edit Sale Drawer para la habitación:", room);
+  
+    const saleToEdit = {
+      id_guest: room.cliente || "", // Carga datos del cliente
+      value: room.valor || "", // Carga el valor
+      payment_type: 1, // Ajusta según tu lógica
+      date: new Date().toISOString(),
+      date_finish: "", // Ajusta según los datos reales
+    };
+  
+    setEditSaleData(saleToEdit);
+    setIsEditSaleDrawerOpen(true); // Cambia el estado para abrir el Drawer
+  
+    setTimeout(() => {
+      console.log("Estado actualizado de isEditSaleDrawerOpen:", isEditSaleDrawerOpen);
+    }, 100); // Verifica el estado después de la actualización
+  };
+  
+  const closeEditSaleDrawer = () => {
+    setIsEditSaleDrawerOpen(false);
+  };
 
   const openEditDrawer = (room) => {
     console.log("Habitación seleccionada:", room); 
@@ -132,6 +176,8 @@ useEffect(() => {
     setRooms([...rooms, newRoomWithId]);
     closeAddDrawer();
   };
+
+
 // Venta habs
 const [isSaleDrawerOpen, setIsSaleDrawerOpen] = useState(false);
 const [saleData, setSaleData] = useState({
@@ -192,6 +238,46 @@ const handleSale = async () => {
 };
 
 
+  const handleEditSale = async () => {
+    try {
+      //Valida que los campos obligatorios estén completos
+      if (!saleData.id_guest || !saleData.value || !saleData.date || !saleData.date_finish) {
+        AlertService.warning("Por favor, completa todos los campos", "Advertencia", "top-start");
+        return;
+      }
+
+      const dbClient = await getData() ?? {}
+      const cash_register = Number(saleData.payment_type) === 2? 2 : 3;
+      const dataSend = {
+          data_room: selectedRoom,
+          data_transactions: {
+          type_transaction: Number(saleData.payment_type),
+          cash_register: cash_register,
+          value: Number(saleData.value),
+          },
+          data_user: dbClient?.user_data,
+          data_room_reservation: {
+            count_accompany: 0, // Falta
+            date: saleData.date,
+            date_finish: saleData.date_finish,
+            status: "RESERVACION", // Falta
+          }
+      }
+      const response = await createRoomReservation({ data: dataSend }); // Usa la API para crear la reserva
+      if (response?.id) {
+        AlertService.success("Funciona","Éxito", "top-start")
+        const updatedRooms = await getRooms();
+        setRooms(updatedRooms);
+        closeSaleDrawer();
+      }
+
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message || "Error al registrar la venta";
+      AlertService.error(errorMessage, "Error", "top-start");
+    }
+  };
+
+
 
 const FreeSolo = ({ data, dataComplete, setDataPerson }) => {
   const onHandlerChange = (e, value) => {
@@ -225,6 +311,9 @@ const FreeSolo = ({ data, dataComplete, setDataPerson }) => {
     </Stack>
   );
 };
+
+
+
 
 
 
@@ -299,6 +388,16 @@ const FreeSolo = ({ data, dataComplete, setDataPerson }) => {
                 style={{ marginTop: 10 }}
               >
                 Registrar Venta
+              </Button>
+            )}
+            {room.status === "ocupado" && (
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => openEditSaleDrawer(room)}
+                style={{ marginTop: 10 }}
+              >
+                Editar Venta
               </Button>
             )}
             </Grid>
@@ -545,8 +644,96 @@ const FreeSolo = ({ data, dataComplete, setDataPerson }) => {
 
         )}
       </Drawer>
+
+
+
+      <Drawer
+        sx={{
+          '& .MuiPaper-root': {
+            background: '#FFFEEE',
+          },
+        }}
+        anchor="right"
+        open={isEditSaleDrawerOpen}
+        onClose={closeEditSaleDrawer}
+      >
+        {editSaleData && (
+          <Grid container spacing={2} direction="column" sx={{ width: 300, padding: 2, marginTop: 10 }}>
+            <Grid item>
+              <Typography variant="h5" gutterBottom>
+                Editar Venta - Habitación {selectedRoom?.number_room}
+              </Typography>
+            </Grid>
+            <Grid item>
+            <FreeSolo
+                data={persons}
+                dataComplete={persons}
+                setDataPerson={(filtered) => {
+                  if (filtered.length > 0) {
+                    handleFieldChange('cliente', filtered[0].id, e.target.value);
+                  } else {
+                    handleFieldChange('cliente', '', e.target.value);
+                  }
+                }}
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                label="Valor"
+                type="number"
+                value={editSaleData.value}
+                onChange={(e) => setEditSaleData({ ...editSaleData, value: e.target.value })}
+                fullWidth
+              />
+            </Grid>
+            <Grid item>
+              <Select
+                label="Tipo de Pago"
+                value={editSaleData.payment_type}
+                onChange={(e) => setEditSaleData({ ...editSaleData, payment_type: e.target.value })}
+                fullWidth
+              >
+                <MenuItem value="2">Factura</MenuItem>
+                <MenuItem value="1">Sin Factura</MenuItem>
+              </Select>
+            </Grid>
+            <Grid item>
+              <TextField
+                label="Fecha de Inicio"
+                type="datetime-local"
+                value={editSaleData.date}
+                onChange={(e) => setEditSaleData({ ...editSaleData, date: e.target.value })}
+                fullWidth
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                label="Fecha de Fin"
+                type="datetime-local"
+                value={editSaleData.date_finish}
+                onChange={(e) => setEditSaleData({ ...editSaleData, date_finish: e.target.value })}
+                fullWidth
+              />
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleEditSale}
+                fullWidth
+                sx={{ color: '#fff', background: '#320001' }}
+              >
+                Guardar Cambios
+              </Button>
+            </Grid>
+          </Grid>
+        )}
+      </Drawer>
+
+
     </BoxPrimary>
   );
+  
 };
 
 export default Room;
