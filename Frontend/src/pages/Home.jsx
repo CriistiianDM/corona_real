@@ -20,6 +20,7 @@ import BoxPrimary from "../components/Share/BoxPrimary.jsx"
 
 // Styles
 import styles from "../css/jscss/root"
+import { BookOnline } from '@mui/icons-material';
 
 const routes = [
   { to: "/rooms", name: "Habitaciones", icon: <WeekendIcon /> },
@@ -28,6 +29,7 @@ const routes = [
   { to: "/company", name: "Company", icon: <BusinessIcon /> },
   { to: "/cash_register", name: "Billeteras", icon: <MonetizationOnIcon /> },
   { to: "/register", name: "Usuarios", icon: <PersonAddIcon /> },
+  { to: "/notes", name: "Notes", icon: <BookOnline /> }
 ]
 
 export default function () {

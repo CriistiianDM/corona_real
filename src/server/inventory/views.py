@@ -4,9 +4,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import  Products, SellerProducts, Reservations, Rooms
+from .models import  Products, SellerProducts, Reservations, Rooms, Notes
 # , TypesProducts
-from .serializers import ProductsSerializer, SellerProductsSerializer, ReservationsSerializer, RoomsSerializer
+from .serializers import ProductsSerializer, SellerProductsSerializer, ReservationsSerializer, RoomsSerializer, NotesSerializer
 # ,TypesProductsSerializer
 
 # @method_decorator(csrf_protect, name='dispatch')
@@ -43,3 +43,10 @@ class RoomsViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Rooms.objects.all().order_by('id')
     serializer_class = RoomsSerializer
+
+# @method_decorator(csrf_protect, name='dispatch')
+class NotesViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = Notes.objects.all().order_by('id')
+    serializer_class = NotesSerializer

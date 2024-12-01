@@ -12,11 +12,13 @@ import { isUserAuthenticated, removeUserData, initDB } from "./tools/indexedDB/i
 import Company from "./pages/Company";
 import CashRegister from "./pages/CashRegister";
 import { createDB } from "./tools/api/api"
+import Notes from "./pages/Notes";
 
 // Components
 import Header from "./components/Header/Header"
 import CoronaReal from "./components/Header/CoronaReal"
 import CashRegisterDetails from "./pages/CashRegisterDetails";
+
 
 const AppContent = () => {
   const [user, setUser] = useState(null); // Estado para guardar la información del usuario
@@ -54,7 +56,8 @@ const AppContent = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/rooms" element={<Room />} />
           <Route path="/products" element={<Product />} />
-          <Route path="/wallets" element={<Product />} />
+          <Route path="/products" element={<Product />} />
+          <Route path="/notes" element={<Notes />} />
           <Route path="/person" element={<Person />} />
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
