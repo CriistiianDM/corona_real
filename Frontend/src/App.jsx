@@ -31,7 +31,7 @@ const AppContent = () => {
     initDB();
     isUserAuthenticated((data) => {
       if (data) setUser(data.username);
-      if (data?.token == undefined) navigate("/login");
+      if (data?.token == undefined) navigate("/");
     });
   }, []);
 
