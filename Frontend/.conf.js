@@ -1,5 +1,5 @@
 const LOCAL_URL = "http://localhost:8000";
-const REMOTE_URL = "https://redesigned-xylophone-gwvxgwqj65395x7-8000.app.github.dev";
+const REMOTE_URL = "https://corona-real-backend.onrender.com";
 
 // Selecciona la URL adecuada dependiendo del hostname
 const URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
