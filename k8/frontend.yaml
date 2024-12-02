@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend-pod
+  labels:
+    app: frontend-app
+spec:
+  containers:
+  - name: frontend-container
+    image: cristiank/corona_frontend:1.0
+    ports:
+    - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    app: frontend-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
+  type: NodePort

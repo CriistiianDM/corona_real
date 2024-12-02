@@ -7,9 +7,22 @@ metadata:
 spec:
   containers:
   - name: backend-container
-    image: cristiank/corona-real-backend:1.2
+    image: cristiank/corona_backend:1.0
     ports:
-    - containerPort: 4800
+    - containerPort: 8000
+    env:
+    - name: DJANGO_DB_NAME
+      value: ""
+    - name: DJANGO_DB_USER
+      value: ""
+    - name: DJANGO_DB_PASSWORD
+      value: ""
+    - name: DJANGO_DB_HOST
+      value: ""
+    - name: DJANGO_DB_PORT
+      value: ""
+    - name: DJANGO_TOKEN_KEY
+      value: ""
 ---
 apiVersion: v1
 kind: Service
@@ -20,6 +33,6 @@ spec:
     app: backend-app
   ports:
   - protocol: TCP
-    port: 4800
-    targetPort: 80
-  type: NodePort
+    port: 8000
+    targetPort: 8000
+  type: ClusterIP
