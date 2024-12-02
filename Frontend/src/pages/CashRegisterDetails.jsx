@@ -165,6 +165,7 @@ const CashRegisterDetails = () => {
         sx={{
           fontWeight: "bold",
           padding: "10px 20px",
+          marginTop: "20px",
           "&:hover": {
             backgroundColor: "#b71c1c", // Rojo más oscuro
           },

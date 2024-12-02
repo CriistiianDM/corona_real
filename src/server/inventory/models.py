@@ -72,3 +72,16 @@ class Rooms(models.Model):
 
     def __str__(self):
         return f"{self.number_room} - {self.get_status_display()}"
+
+class Notes(models.Model):
+    name = models.TextField()
+    contenido = models.CharField(max_length=255)
+    date = models.DateTimeField()
+    # person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    # type_person = models.ForeignKey('TypePerson', null=False, on_delete=models.CASCADE, unique=False)
+    update_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+
+    def str(self):
+        return self.name
+    

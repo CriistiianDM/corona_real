@@ -40,6 +40,9 @@ const Sidebar = () => {
         <ListItem button component={Link} to="/cash_register">
           <ListItemText primary="Billeteras" />
         </ListItem>
+        <ListItem button component={Link} to="/notes">
+          <ListItemText primary="Notes" />
+        </ListItem>
       </List>
     </Drawer>
   );

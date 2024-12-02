@@ -43,7 +43,8 @@ const ContainerPrimary = () => {
 
    return (
     <BoxPrimary title={"Cajas Registradoras"}>
-      <Box sx={styles.containerFixed}>
+      {/* <Box sx={styles.containerFixed}> */}
+      <Box sx={styles.containerFixed}> 
         <Grid2 sx={styles.containerPrimary}>
           <ActionsForms {...{ ...global, handlers}} />
           <ListCashRegister {...{ ...global, handlers}} />

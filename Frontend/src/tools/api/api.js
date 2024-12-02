@@ -3,7 +3,7 @@ import json from "../../../.conf";
 
 // Importaciones de utilidades y funciones
 import { initDB } from "../indexedDB/indexedDB";
-import { fetchPostGeneral , fetchGetGeneral , fetchPutGeneral} from "../fetchs/fetchs";
+import { fetchPostGeneral , fetchGetGeneral , fetchPutGeneral, fetchDeleteGeneral} from "../fetchs/fetchs";
 import { Login , CreateUser } from "./person/api"
 
 export const createDB = () => initDB()
@@ -49,3 +49,18 @@ export const fetchPut = async ({ data ,url }) => {
     }
     return response
 }
+
+
+export const fetchDelete = async ({ data, url }) => {
+    let response = {};
+    try {
+        const res_ = await fetchDeleteGeneral({
+            dataSend: data,
+            urlEndPoint: url
+        });
+        if (res_) response = res_;
+    } catch (e) {
+        console.log(e);
+    }
+    return response;
+};

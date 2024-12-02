@@ -13,6 +13,7 @@ export default {
     "login": `${URL}/api/person/login/`,
     "create": `${URL}/api/person/accounts/`,
     "products": `${URL}/api/inventory/products/`,
+    "notes": `${URL}/api/inventory/notes/`,
     "person": `${URL}/api/person/person/`,
     "cashRegister": `${URL}/api/transactions/cash_register/`,
     "typeCashRegister": `${URL}/api/transactions/types_cash_register/`,

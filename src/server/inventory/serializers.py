@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Products, SellerProducts, Reservations, Rooms
+from .models import Products, SellerProducts, Reservations, Rooms, Notes
 # , TypesProducts
 
 
@@ -28,4 +28,9 @@ class ReservationsSerializer(serializers.ModelSerializer):
 class RoomsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rooms
+        fields = '__all__'
+
+class NotesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notes
         fields = '__all__'

@@ -1,5 +1,5 @@
 import json from "../../../../.conf";
-import { fetchPost, fetchGet, fetchPut } from "../api"; 
+import { fetchPost, fetchGet, fetchPut, fetchDelete } from "../api"; 
 import { postTransaction, putCashRegister, getCashRegisterById } from  "../transaction/api";
 
 // Obtener todos los productos
@@ -91,6 +91,65 @@ export const updateRoom = async (roomId, roomData) => {
         throw error;
     }
 };
+
+
+//Crear una nota
+export const createNote = async (noteData) => {
+  console.log(noteData)
+  try {
+      const response = await fetchPost({
+          url: json.notes,
+          body: noteData,
+      });
+      return response;
+  } catch (error) {
+      console.error("Error al crear la nota:", error);
+  }
+};
+
+
+
+//Actualzar una nota
+export const updateNote = async (noteId, noteData) => {
+  try {
+      const response = await fetchPut({
+          url: json.notes + noteId + '/',
+          data: noteData, 
+      });
+      return response;
+  } catch (error) {
+      console.error("Error al actualizar la nota", error);
+      throw error;
+  }
+};
+
+//Listar notas
+export const getNotes = async () => {
+  try {
+      const response = await fetchGet({ url: json.notes });
+      return response;
+  } catch (error) {
+      console.error("Error al obtener las notas:", error);
+  }
+};
+
+
+// Eliminar una nota
+export const deleteNote = async (noteId) => {
+  try {
+      const url = json.notes + noteId + '/';
+      const response = await fetchDelete({
+          data: {}, // Si no necesitas enviar datos en el cuerpo, puede ser vacío
+          url: url
+      });
+      return response;
+  } catch (error) {
+      console.error("Error al eliminar una nota:", error);
+      throw error;
+  }
+};
+
+
   
 export const createSellerProduct = async ({ data }) => {
     let response = {};
