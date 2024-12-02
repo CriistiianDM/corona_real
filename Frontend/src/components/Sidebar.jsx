@@ -22,7 +22,7 @@ const Sidebar = () => {
         </Box>
       </Toolbar>
       <List>
-        <ListItem button component={Link} to="/">
+        <ListItem button component={Link} to="/home">
           <ListItemText primary="Home" />
         </ListItem>
         <ListItem button component={Link} to="/rooms">

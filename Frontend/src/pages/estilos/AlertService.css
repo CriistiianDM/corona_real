@@ -1,0 +1,39 @@
+/* Estilo genérico para todas las alertas */
+.custom-swal-popup-success,
+.custom-swal-popup-error,
+.custom-swal-popup-warning,
+.custom-swal-popup-info {
+  border-radius: 10px;
+  border: 2px solid #145f42; /* Color del marco */
+  padding: 15px; /* Ajusta el padding para un diseño compacto */
+  width: 300px; /* Dimensiones personalizadas */
+  font-size: 14px;
+  color: #5f1414;
+}
+
+/* Fondo especial para errores */
+.custom-swal-popup-error {
+  background-color: #fdecea; /* Fondo claro para contraste */
+}
+
+/* Fondo especial para éxito */
+.custom-swal-popup-success {
+  background-color: #edf7ed;
+}
+
+/* Fondo especial para advertencias */
+.custom-swal-popup-warning {
+  background-color: #fff8e5;
+}
+
+/* Fondo especial para información */
+.custom-swal-popup-info {
+  background-color: #e3f2fd;
+}
+
+/* Barra de progreso personalizada */
+.custom-swal-progress-bar {
+  background-color: #145f49; /* Color de la barra */
+  height: 4px;
+  border-radius: 2px;
+}

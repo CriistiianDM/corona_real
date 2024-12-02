@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Card, CardContent, Typography, Button, Drawer, TextField, Box, Fab } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { getProducts, createProduct, updateProduct } from "../tools/api/inventory/api";
+import { getProducts, createProduct, updateProduct, createSellerProduct} from "../tools/api/inventory/api";
+import { getData } from "../tools/utils/utils";
+import AlertService from "./utils/AlertService";//
+
+// Componets
+import BoxPrimary from "../components/Share/BoxPrimary.jsx"
+
+// Styles
+import styles from "../css/jscss/root"
 
 const Product = () => {
   const [products, setProducts] = useState([]);
@@ -11,6 +19,22 @@ const Product = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [Updateproducts, setUpdateProducts] = useState(null);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [transactionCost, setTransactionCost] = useState(0);
+
+
+  const openEditDrawer = (product) => {
+    setEditingProduct(product);
+    setNewProduct({
+      name: product.name,
+      stock: product.stock,
+      price: product.price,
+      is_active: product.is_active,
+      update_by: product.update_by,
+      image_url: product.image_url || "",
+    });
+    setIsNewProductDrawerOpen(true);
+  };
 
   const [isNewProductDrawerOpen, setIsNewProductDrawerOpen] = useState(false);
   const [newProduct, setNewProduct] = useState({
@@ -30,6 +54,7 @@ const Product = () => {
         const data = await getProducts();
         setProducts(data);
       } catch (error) {
+        AlertService.error(errorMessage, "Error", "top-start");
         console.log("Error al cargar productos:", error);
       }
     };
@@ -47,35 +72,171 @@ const Product = () => {
 
   const closeDrawer = () => {
     setSelectedProduct(null);
+    setTransactionType("");
+    setTransactionAmount(1);
+    setTransactionCost(0); // Resetea el costo
     setIsDrawerOpen(false);
   };
+  
 
-  const handleTransaction = async () => {
-    const updatedProduct = {
-      ...selectedProduct,
-      quantity:
-        transactionType === "compra"
-          ? selectedProduct.quantity + transactionAmount
-          : Math.max(0, selectedProduct.quantity - transactionAmount),
-      stock:
-        transactionType === "obsolescencia"
-          ? Math.max(0, selectedProduct.stock - transactionAmount)
-          : selectedProduct.stock,
-    };
-
+  const handleSellerProduct = async () => {
     try {
-      await updateProduct(selectedProduct.id, updatedProduct);
-      setProducts((prevProducts) =>
-        prevProducts.map((product) =>
-          product.id === selectedProduct.id ? updatedProduct : product
-        )
-      );
+      if (!selectedProduct || !transactionType) {
+        AlertService.warning("Selecciona un producto y un tipo de transacción", "Advertencia", "top-start");
+        return;
+      }
+  
+      // Delegar a funciones específicas según el tipo de transacción
+      if (transactionType === "obsolescencia") {
+        await handleObsolescence(); // Llama a la lógica de obsolescencia
+      } else {
+        await handleSell(); // Llama a la lógica para compra/venta
+      }
+  
+      closeDrawer(); // Cierra el Drawer después de completar la acción
+      AlertService.success("Transacción completada con éxito", "Éxito", "top-start");
     } catch (error) {
-      console.error("Error al realizar la transacción:", error);
+      console.error("Error en handleSellerProduct:", error);
+      AlertService.error(errorMessage, "Error", "top-start");
     }
-    closeDrawer();
   };
 
+  const handleObsolescence = async () => {
+    const updatedProduct = {
+      ...selectedProduct, // Copia los datos actuales del producto seleccionado
+      stock: Math.max(0, selectedProduct.stock - transactionAmount), // Reduce el stock pero no permite valores negativos
+    };
+  
+    try {
+      // Actualiza el producto en el backend
+      await updateProduct(selectedProduct.id, updatedProduct);
+  
+      // Recarga los productos desde el backend para mantener sincronización
+      const updatedProducts = await getProducts();
+      setProducts(updatedProducts); // Sincroniza el estado del frontend con el backend
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message || "Error al realizar la transacción";
+
+      AlertService.error(errorMessage, "Error", "top-start");
+    }
+  
+    closeDrawer(); // Cierra el Drawer después de la operación
+  };
+
+  
+
+  // // opcion 1
+  // const handleSell = async () => {
+  //   try {
+  //     if (!selectedProduct || !transactionType) {
+  //       alert("Por favor, selecciona un producto y un tipo de transacción.");
+  //       return;
+  //     }
+  
+  //     const dbClient = await getData() ?? {} // Obtén el usuario actual desde el almacenamiento
+  //     if (!dbClient?.user_data) {
+  //       alert("No se pudo obtener la información del usuario.");
+  //       return;
+  //     }
+  
+  //     // Calcula el nuevo stock según el tipo de transacción
+  //     const newStock =
+  //       transactionType === "compra"
+  //         ? selectedProduct.stock + transactionAmount
+  //         : Math.max(0, selectedProduct.stock - transactionAmount);
+  
+  //     // Crea una copia del producto seleccionado y actualiza solo el stock
+  //     const updatedProduct = {
+  //       ...selectedProduct,
+  //       stock: newStock,
+  //     };
+  
+  //     // Prepara los datos para la transacción
+  //     const dataSend = {
+  //       data_product: updatedProduct,
+  //       data_user: dbClient.user_data, // Usuario que realiza la operación
+  //       data_transactions: {
+  //         value: transactionAmount * selectedProduct.price, // Calcula el valor de la transacción
+  //       },
+  //     };
+  
+  //     // Llama a la API con los datos
+  //     const response = await createSellerProduct({ data: dataSend });
+  
+  //     if (response?.success) {
+  //       alert("Transacción completada con éxito");
+  //       const updatedProducts = await getProducts(); // Refresca los productos
+  //       setProducts(updatedProducts);
+  //       closeDrawer();
+  //     } else {
+  //       alert("No se pudo completar la transacción.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error al realizar la transacción:", error);
+  //     alert("Error al realizar la transacción.");
+  //   }
+  // };
+  const handleSell = async () => {
+    try {
+      if (!selectedProduct || !transactionType) {
+        AlertService.warning("Por favor, selecciona un producto y un tipo de transacción.", "Advertencia", "top-start");
+        return;
+      }
+  
+      const dbClient = await getData(); // Obtener datos del usuario desde el almacenamiento local
+      if (!dbClient?.user_data) {
+        AlertService.error("No se pudo obtener la información del usuario", "Error", "top-start");
+        return;
+      }
+  
+      // Calcular el nuevo stock
+      const newStock =
+        transactionType === "compra"
+          ? selectedProduct.stock + transactionAmount
+          : Math.max(0, selectedProduct.stock - transactionAmount);
+  
+      // Calcular el valor de la transacción
+      const transactionValue =
+        transactionType === "compra"
+          ? transactionCost // Valor ingresado en el frontend para compras
+          : transactionAmount * selectedProduct.price; // Precio del producto en ventas
+  
+      // Preparar los datos a enviar
+      const dataSend = {
+        data_product: {
+          ...selectedProduct,
+          stock: newStock, // Actualiza el stock
+        },
+        data_transactions: {
+          type_transaction: transactionType === "compra" ? 2 : 1, // 2: Compra, 1: Venta
+          value: transactionValue, // Valor de la transacción calculado
+          amount: transactionAmount, // Cantidad transaccionada
+          user_id: dbClient.user_data.id, // ID del usuario que realiza la operación
+        },
+      };
+  
+      // Llamar a `createSellerProduct` para manejar la lógica completa
+      const response = await createSellerProduct({ data: dataSend });
+  
+      if (response?.success) {
+        AlertService.success("Transacción completada con éxito", "Éxito", "top-start");
+        const updatedProducts = await getProducts(); // Refrescar la lista de productos
+        setProducts(updatedProducts);
+        closeDrawer(); // Cerrar el Drawer
+      } else {
+        AlertService.error("No se pudo completar la transacción", "Error", "top-start");
+
+      }
+    } catch (error) {
+      console.error("Error al realizar la transacción:", error);
+      const errorMessage = error.response?.data?.message || error.message || "Error al realizar la transacción";
+      AlertService.error(errorMessage, "Error", "top-start");
+    }
+  };
+  
+  
+  
+  
   const handleAmountChange = (e) => {
     const value = Math.max(1, parseInt(e.target.value, 10));
     if ((transactionType === "venta" || transactionType === "obsolescencia") && value > selectedProduct.stock) {
@@ -87,22 +248,47 @@ const Product = () => {
     }
   };
 
-  const addNewProduct = async () => {
+  const saveProduct = async () => {
     try {
-      const response = await createProduct(newProduct);
-      if (response?.id) {
-        const updatedProducts = await getProducts();
-        setProducts(updatedProducts);
-        setUpdateProducts(new Date(Date.now()))
-        closeNewProductDrawer();
+      if (editingProduct) {
+        // Incluye todos los campos necesarios, conservando los datos originales
+        const updatedProduct = {
+          ...editingProduct, // Conserva los datos originales del producto
+          name: newProduct.name, // Actualiza el nombre
+          price: newProduct.price, // Actualiza el precio
+        };
+  
+        console.log("Datos enviados al backend:", updatedProduct);
+  
+        // Llama a la función `updateProduct` para enviar la solicitud PUT al backend
+        await updateProduct(editingProduct.id, updatedProduct);
+      } else {
+        // Crear un nuevo producto
+        await createProduct(newProduct);
       }
+  
+      // Obtén la lista actualizada de productos después de la operación
+      const updatedProducts = await getProducts();
+      setProducts(updatedProducts);
+  
+      closeNewProductDrawer(); // Cierra el Drawer después de guardar
+      AlertService.success("Producto guardado con éxito", "Éxito", "top-start");
     } catch (error) {
-      console.error("Error al agregar producto:", error);
+      AlertService.error(errorMessage, "Error", "top-start");
     }
   };
-
+  
   const closeNewProductDrawer = () => {
     setIsNewProductDrawerOpen(false);
+    setEditingProduct(null); // Salir del modo edición
+    setNewProduct({
+      name: "",
+      stock: 0,
+      price: 0,
+      is_active: true,
+      update_by: 1,
+      image_url: "",
+    });
   };
 
   const handleNewProductChange = (field, value) => {
@@ -125,7 +311,8 @@ const Product = () => {
   };
 
   return (
-    <div style={{ display: "flex" }}>
+    <BoxPrimary title={"Productos"}>
+    <div style={{ width: '100%' }}>
       <Grid container spacing={3} style={{ flex: 1 }}>
         {products?.length>0 && products.map((product) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
@@ -137,7 +324,9 @@ const Product = () => {
                 padding: 1,
                 textAlign: "center",
                 height: "100%",
-                maxWidth: 250,
+                background: "#f8f9fb",
+                maxWidth: 300,
+                margin: 'auto'
               }}
             >
               <Box
@@ -150,7 +339,7 @@ const Product = () => {
                 }}
               >
                 <img
-                  src={product.imageUrl}
+                  src={"/Products.avif"}
                   alt={product.name}
                   style={{
                     width: "100%",
@@ -172,14 +361,17 @@ const Product = () => {
                 </Typography>
               </CardContent>
               <Box display="flex" flexDirection="column" justifyContent="space-around" width="100%" sx={{ padding: 1 }}>
-                <Button variant="contained" color="primary" sx={{ flex: 1, marginBottom: 1 }} onClick={() => openDrawer(product, "compra")}>
-                  Compra
-                </Button>
-                <Button variant="contained" color="secondary" sx={{ flex: 1, marginBottom: 1 }} onClick={() => openDrawer(product, "venta")}>
+              <Button variant="contained" color="secondary" sx={{ flex: 1, marginBottom: 1, background: '#79665a' }} onClick={() => openDrawer(product, "venta")}>
                   Venta
                 </Button>
-                <Button variant="contained" color="warning" sx={{ flex: 1, marginBottom: 1 }} onClick={() => openDrawer(product, "obsolescencia")}>
+                <Button variant="contained" color="primary" sx={{ flex: 1, marginBottom: 1, background: '#a58f80' }} onClick={() => openDrawer(product, "compra")}>
+                  Compra
+                </Button>
+                <Button variant="contained" color="warning" sx={{ flex: 1, marginBottom: 1, background: '#897373cf' }} onClick={() => openDrawer(product, "obsolescencia")}>
                   Obsolescencia
+                </Button>
+                <Button variant="contained" color="info" sx={{ flex: 1, marginBottom: 1, background: '#9e9e9e' }} onClick={() => openEditDrawer(product)}>
+                  Editar
                 </Button>
               </Box>
             </Card>
@@ -188,11 +380,23 @@ const Product = () => {
       </Grid>
 
       {/* Drawer para Transacciones */}
-      <Drawer anchor="right" open={isDrawerOpen} onClose={closeDrawer}>
+      <Drawer 
+        anchor="right" 
+        open={isDrawerOpen}
+        onClose={closeDrawer}
+        sx={{
+          '& .MuiPaper-root': {
+            background: '#FFFEEE'
+          }
+        }}
+        >
         <Box sx={{ width: 300, padding: 3, marginTop: 10 }}>
           <Typography variant="h5" gutterBottom>
-            {transactionType === "compra" ? "¿Cuántos desea comprar?" : "¿Confirmar la operación?"}
+            {transactionType === "compra"
+              ? "¿Cuántos desea comprar y a qué costo?"
+              : "¿Cuántos desea vender?"}
           </Typography>
+
           <TextField
             label="Cantidad"
             type="number"
@@ -203,21 +407,53 @@ const Product = () => {
             error={!!errorMessage}
             helperText={errorMessage}
           />
+
+          {transactionType === "compra" && (
+            <TextField
+              label="Costo Total de la Compra"
+              type="number"
+              value={transactionCost} // Estado adicional para el costo
+              onChange={(e) => setTransactionCost(Number(e.target.value))}
+              fullWidth
+              margin="normal"
+              error={!transactionCost || transactionCost <= 0}
+              helperText={!transactionCost ? "El costo es obligatorio" : ""}
+            />
+          )}
+
           <Box display="flex" justifyContent="space-between" mt={2}>
-            <Button variant="outlined" onClick={closeDrawer}>
+            <Button sx={{ color: '#320001', background: '#dad0d0', border: '1px solid #320001'}} variant="outlined" onClick={closeDrawer}>
               Cancelar
             </Button>
-            <Button variant="contained" color="primary" onClick={handleTransaction}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSellerProduct}
+              sx={{ color: '#fff', background: '#320001'}}
+              disabled={transactionType === "compra" && (!transactionCost || transactionCost <= 0)}
+            >
               Aceptar
             </Button>
           </Box>
         </Box>
       </Drawer>
 
+
       {/* Drawer para agregar producto */}
-      <Drawer anchor="right" open={isNewProductDrawerOpen} onClose={closeNewProductDrawer}>
+      <Drawer 
+        anchor="right" 
+        open={isNewProductDrawerOpen} 
+        onClose={closeNewProductDrawer}
+        sx={{
+          '& .MuiPaper-root': {
+            background: '#FFFEEE'
+          }
+        }}
+        >
         <Box sx={{ width: 300, padding: 3, marginTop: 10 }}>
-          <Typography variant="h5" gutterBottom>Agregar Producto</Typography>
+          <Typography variant="h5" gutterBottom>
+            {editingProduct ? "Editar Producto" : "Agregar Producto"}
+          </Typography>
           <TextField
             label="Nombre"
             value={newProduct.name}
@@ -225,39 +461,47 @@ const Product = () => {
             fullWidth
             margin="normal"
           />
-          <TextField
-            label="Stock"
-            type="number"
-            value={newProduct.stock}
-            onChange={(e) => handleNewProductChange("stock", parseInt(e.target.value, 10))}
-            fullWidth
-            margin="normal"
-          />
+          {!editingProduct && (
+            <TextField
+              label="Stock"
+              type="number"
+              value={newProduct.stock}
+              onChange={(e) => handleNewProductChange("stock", e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+          )}
           <TextField
             label="Precio"
             type="number"
             value={newProduct.price}
-            onChange={(e) => handleNewProductChange("price", parseFloat(e.target.value))}
+            onChange={(e) => handleNewProductChange("price", e.target.value)}
             fullWidth
             margin="normal"
           />
           <Box display="flex" justifyContent="space-between" mt={2}>
-            <Button variant="outlined" onClick={closeNewProductDrawer}>Cancelar</Button>
-            <Button variant="contained" onClick={addNewProduct}>Agregar</Button>
+            <Button sx={{ color: '#320001', background: '#dad0d0', border: '1px solid #320001'}} variant="outlined" onClick={closeNewProductDrawer}>
+              Cancelar
+            </Button>
+            <Button sx={{ color: '#fff', background: '#320001'}} variant="contained" onClick={saveProduct}>
+              {editingProduct ? "Guardar Cambios" : "Agregar"}
+            </Button>
           </Box>
         </Box>
       </Drawer>
+
 
       <Fab
         className="boton-flotante"
         color="primary"
         aria-label="add"
         onClick={() => setIsNewProductDrawerOpen(true)}
-        sx={{ position: "fixed", bottom: 16, right: 16 }}
+        sx={{ position: "fixed", bottom: 16, right: 16, zIndex: 999 }}
       >
         <AddIcon />
       </Fab>
     </div>
+    </BoxPrimary>
   );
 };
 

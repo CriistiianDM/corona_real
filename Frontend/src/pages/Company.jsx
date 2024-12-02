@@ -4,6 +4,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 
+// Componets
+import BoxPrimary from "../components/Share/BoxPrimary.jsx"
+
 const initialCompanies = [
   { id: 1, name: "Servimos S.A.S", nit: 1122, date: "2024-07-25T00:00:00" },
   { id: 2, name: "Todo Limpio Ltda", nit: 2233, date: "2021-05-20T00:00:00" },
@@ -67,11 +70,12 @@ const Company = () => {
   };
 
   return (
-    <div style={{ display: "flex" }}>
+    <BoxPrimary title={"Compañía"}>
+    <div style={{ display: "flex", width: "100%" }}>
       <Grid container spacing={3} style={{ flex: 1 }}>
         {companies.map((company) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={company.id}>
-            <Card sx={{ padding: 2, textAlign: "center", height: "100%" }}>
+            <Card sx={{ padding: 2, textAlign: "center", height: "350px" }}>
               <Typography variant="h6" sx={{ fontWeight: "bold", fontSize: "1.1rem" }}>{company.name}</Typography>
               <CardContent>
                 <Typography variant="body2" color="textSecondary">NIT: {company.nit}</Typography>
@@ -87,10 +91,10 @@ const Company = () => {
               </Box>
               </CardContent>
               <Box display="flex" justifyContent="space-around" width="100%" sx={{ padding: 1 }}>
-                <IconButton color="primary" onClick={() => openEditDrawer(company)}>
+                <IconButton sx={{ color: '#333030' }} color="primary" onClick={() => openEditDrawer(company)}>
                   <EditIcon />
                 </IconButton>
-                <IconButton color="secondary" onClick={() => deleteCompany(company.id)}>
+                <IconButton sx={{ color: '#aeaeae' }} color="secondary" onClick={() => deleteCompany(company.id)}>
                   <DeleteIcon />
                 </IconButton>
               </Box>
@@ -100,7 +104,16 @@ const Company = () => {
       </Grid>
 
       {/* Drawer para editar */}
-      <Drawer anchor="right" open={isDrawerOpen} onClose={closeEditDrawer}>
+      <Drawer 
+        anchor="right"
+        open={isDrawerOpen} 
+        onClose={closeEditDrawer}
+        sx={{
+          '& .MuiPaper-root': {
+            background: '#FFFEEE'
+          }
+        }}
+        >
         {selectedCompany && (
           <Box sx={{ width: 300, padding: 3, marginTop: 10 }}>
             <Typography variant="h5" gutterBottom>Editar {selectedCompany.name}</Typography>
@@ -131,15 +144,23 @@ const Company = () => {
               }}
             />
             <Box display="flex" justifyContent="space-between" mt={2}>
-              <Button variant="outlined" onClick={closeEditDrawer}>Cancelar</Button>
-              <Button variant="contained" color="primary" onClick={saveChanges}>Guardar</Button>
+              <Button sx={{ color: '#320001', background: '#dad0d0', border: '1px solid #320001'}} variant="outlined" onClick={closeEditDrawer}>Cancelar</Button>
+              <Button sx={{ color: '#fff', background: '#320001'}} variant="contained" color="primary" onClick={saveChanges}>Guardar</Button>
             </Box>
           </Box>
         )}
       </Drawer>
 
       {/* Drawer para agregar nueva empresa */}
-      <Drawer anchor="right" open={isNewCompanyDrawerOpen} onClose={closeNewCompanyDrawer}>
+      <Drawer 
+        anchor="right"
+         open={isNewCompanyDrawerOpen} 
+         onClose={closeNewCompanyDrawer}
+         sx={{
+          '& .MuiPaper-root': {
+            background: '#FFFEEE'
+          }
+        }}>
         <Box sx={{ width: 300, padding: 3, marginTop: 10 }}>
           <Typography variant="h5" gutterBottom>Agregar Nueva Empresa</Typography>
           <TextField
@@ -169,8 +190,8 @@ const Company = () => {
             }}
           />
           <Box display="flex" justifyContent="space-between" mt={2}>
-            <Button variant="outlined" onClick={closeNewCompanyDrawer}>Cancelar</Button>
-            <Button variant="contained" color="primary" onClick={addNewCompany}>Agregar</Button>
+            <Button sx={{ color: '#320001', background: '#dad0d0', border: '1px solid #320001'}} variant="outlined" onClick={closeNewCompanyDrawer}>Cancelar</Button>
+            <Button sx={{ color: '#fff', background: '#320001'}} variant="contained" color="primary" onClick={addNewCompany}>Agregar</Button>
           </Box>
         </Box>
       </Drawer>
@@ -180,6 +201,7 @@ const Company = () => {
         <AddIcon />
       </Fab>
     </div>
+    </BoxPrimary>
   );
 };
 

@@ -1,16 +1,13 @@
 
 services:
-  db:
-    image: postgres:13
-    container_name: postgres_db
-    environment:
-      POSTGRES_DB: coronaReal
-      POSTGRES_USER: corona
-      POSTGRES_PASSWORD: clave1234
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+
+  client:
+      build:
+        context: Frontend/
+        dockerfile: Dockerfile
+      container_name: frontend_app
+      ports:
+        - "3000:3000"
 
   server:
     build:
@@ -20,16 +17,14 @@ services:
     volumes:
       - .:/app
     ports:
-      - "4800:8000"
-    depends_on:
-      - db
+      - "8000:8000"
     environment:
-      - DJANGO_DB_NAME=coronaReal
-      - DJANGO_DB_USER=corona
-      - DJANGO_DB_PASSWORD=clave1234
-      - DJANGO_DB_HOST=db
-      - DJANGO_DB_PORT=5432
-      - DJANGO_TOKEN_KEY=TOKEN
+      - DJANGO_DB_NAME=${DJANGO_DB_NAME}
+      - DJANGO_DB_USER=${DJANGO_DB_USER}
+      - DJANGO_DB_PASSWORD=${DJANGO_DB_PASSWORD}
+      - DJANGO_DB_HOST=${DJANGO_DB_HOST}
+      - DJANGO_DB_PORT=${DJANGO_DB_PORT}
+      - DJANGO_TOKEN_KEY=${DJANGO_TOKEN_KEY}
 
 volumes:
   postgres_data: {}

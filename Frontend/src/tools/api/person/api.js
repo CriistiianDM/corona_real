@@ -23,6 +23,8 @@ export const Login = async ({ username, password}) => {
             response.authorization = db_?.authorization
             response.username = username
             response.password = password
+            response.rol = res?.user?.type_person ?? null
+            response.user_data = res?.user ?? null
             response.token = true
             saveUserData(response)
         }
