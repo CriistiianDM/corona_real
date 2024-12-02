@@ -27,6 +27,7 @@ import ProductionQuantityLimitsIcon from '@mui/icons-material/ProductionQuantity
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import BusinessIcon from '@mui/icons-material/Business';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import { BookOnline } from "@mui/icons-material";
 
 export default function () {
     return (
@@ -138,6 +139,7 @@ const TemporaryDrawer = ({ open, setOpen, toggleDrawer }) =>  {
         { to: "/person", name: "Personas", icon: <PeopleAltIcon /> },
         { to: "/company", name: "Company", icon: <BusinessIcon /> },
         { to: "/cash_register", name: "Billeteras", icon: <MonetizationOnIcon /> },
+        { to: "/notes", name: "Notas", icon: <BookOnline/> },
     ];
 
     const goToPage = (route: string) => {

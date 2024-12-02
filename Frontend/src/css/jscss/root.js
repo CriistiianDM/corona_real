@@ -214,7 +214,7 @@ export default {
         padding: "14px",
         margin: "10px 10px",
         background: '#D9D9D9',
-        width: '160px',
+        width: '130px',
         overflow: "hidden",
         '@media (max-width: 500px)': {
             width: '100%',
@@ -337,7 +337,8 @@ export default {
         gap: '23px'
     },
     containerFixed: {
-        height: 'calc(100% - 60px)'
+        height: 'calc(100% - 60px)',
+        width: '-webkit-fill-available',
     },
     containerFixedHome: {
         display: 'flex',
