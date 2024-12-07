@@ -26,7 +26,7 @@ const routes = [
   { to: "/rooms", name: "Habitaciones", icon: <WeekendIcon /> },
   { to: "/products", name: "Productos", icon: <ProductionQuantityLimitsIcon /> },
   { to: "/person", name: "Personas", icon: <PeopleAltIcon /> },
-  { to: "/company", name: "Company", icon: <BusinessIcon /> },
+  // { to: "/company", name: "Company", icon: <BusinessIcon /> },
   { to: "/cash_register", name: "Billeteras", icon: <MonetizationOnIcon /> },
   { to: "/register", name: "Usuarios", icon: <PersonAddIcon /> },
   { to: "/notes", name: "Notes", icon: <BookOnline /> }

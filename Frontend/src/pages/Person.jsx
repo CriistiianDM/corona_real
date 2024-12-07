@@ -157,7 +157,7 @@ const Person = () => {
                   <TableCell>Identificación</TableCell>
                   <TableCell>Lugar de Expedición</TableCell>
                   <TableCell>Tipo de Persona</TableCell>
-                  <TableCell>Empresa</TableCell>
+                  {/* <TableCell>Empresa</TableCell> */}
                   <TableCell>Activo</TableCell>
                   <TableCell>Acciones</TableCell>
                 </TableRow>
@@ -175,7 +175,7 @@ const Person = () => {
       <TableCell>{person.identification}</TableCell>
       <TableCell>{person.lugar_expedicion}</TableCell>
       <TableCell>{person.type_person}</TableCell>
-      <TableCell>{person.company || "N/A"}</TableCell>
+      {/* <TableCell>{person.company || "N/A"}</TableCell> */}
       <TableCell>{person.is_active ? "Sí" : "No"}</TableCell>
       <TableCell>
         <IconButton onClick={() => openEditDrawer(person)}>
@@ -237,8 +237,8 @@ const Person = () => {
                 <MenuItem value={2}>Proveedor</MenuItem>
                 <MenuItem value={3}>Empleado</MenuItem>
               </Select>
-              <Typography variant="subtitle1">Empresa</Typography>
-              <Select
+              {/* <Typography variant="subtitle1">Empresa</Typography> */}
+              {/* <Select
                 value={newPerson.company}
                 onChange={(e) => handleNewPersonFieldChange("company", e.target.value)}
                 fullWidth
@@ -247,7 +247,7 @@ const Person = () => {
                 <MenuItem value={null}>N/A</MenuItem>
                 <MenuItem value={1}>Empresa A</MenuItem>
                 <MenuItem value={2}>Empresa B</MenuItem>
-              </Select>
+              </Select> */}
               <Typography variant="subtitle1">Estado</Typography>
               <Select
                 value={newPerson.is_active ? "Activo" : "Inactivo"}
@@ -324,7 +324,7 @@ const Person = () => {
                   <MenuItem value="Activo">Activo</MenuItem>
                   <MenuItem value="Inactivo">Inactivo</MenuItem>
                 </Select>
-                <Typography variant="subtitle1" style={{ marginTop: 20 }}>Empresa</Typography>
+                {/* <Typography variant="subtitle1" style={{ marginTop: 20 }}>Empresa</Typography>
                 <Select
                   label="Empresa"
                   value={selectedPerson.company}
@@ -335,7 +335,7 @@ const Person = () => {
                   <MenuItem value={null}>N/A</MenuItem>
                   <MenuItem value={1}>Empresa A</MenuItem>
                   <MenuItem value={2}>Empresa B</MenuItem>
-                </Select>
+                </Select> */}
                 <Box display="flex" justifyContent="space-between" mt={2}>
                   <Button sx={{ color: '#320001', background: '#dad0d0', border: '1px solid #320001' }} variant="outlined" onClick={closeEditDrawer}>Cancelar</Button>
                   <Button sx={{ color: '#fff', background: '#320001' }} variant="contained" color="primary" onClick={saveChanges}>Guardar</Button>
