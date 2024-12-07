@@ -61,9 +61,9 @@ const ActionsForms = (props) => {
   return (
     <section>
       <AddNewCashRegister {...props} />
-      <Fab aria-label="add" onClick={handlers.closeModal}>
+      {/* <Fab aria-label="add" onClick={handlers.closeModal}>
         <AddIcon />
-      </Fab>
+      </Fab> */}
     </section>
   )
 }

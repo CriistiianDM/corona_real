@@ -48,5 +48,5 @@ class RoomsViewSet(viewsets.ModelViewSet):
 class NotesViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    queryset = Notes.objects.all().order_by('id')
+    queryset = Notes.objects.all().order_by('-update_at')
     serializer_class = NotesSerializer

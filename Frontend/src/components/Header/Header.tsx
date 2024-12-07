@@ -15,6 +15,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import InboxIcon from '@mui/icons-material/MoveToInbox'
 import MailIcon from '@mui/icons-material/Mail'
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 // Client Data
 import { getData } from "../../tools/utils/utils"
@@ -122,7 +123,7 @@ const MenuUser = ({ user }) => {
           }}
         >
           <h2 styles="text-aling: center;">{user?.name}</h2>
-          <MenuItem onClick={handleCloseSession}>Cerrar Session</MenuItem>
+          <MenuItem onClick={handleCloseSession}>Cerrar Sesión</MenuItem>
         </Menu>
       </div>
     )
@@ -137,8 +138,9 @@ const TemporaryDrawer = ({ open, setOpen, toggleDrawer }) =>  {
         { to: "/rooms", name: "Habitaciones", icon: <WeekendIcon /> },
         { to: "/products", name: "Productos", icon: <ProductionQuantityLimitsIcon /> },
         { to: "/person", name: "Personas", icon: <PeopleAltIcon /> },
-        { to: "/company", name: "Company", icon: <BusinessIcon /> },
+        //{ to: "/company", name: "Company", icon: <BusinessIcon /> },
         { to: "/cash_register", name: "Billeteras", icon: <MonetizationOnIcon /> },
+        { to: "/register", name: "Usuarios", icon: < PersonAddIcon/> },
         { to: "/notes", name: "Notas", icon: <BookOnline/> },
     ];
 

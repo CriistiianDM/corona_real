@@ -34,11 +34,14 @@ const Sidebar = () => {
         <ListItem button component={Link} to="/person">
           <ListItemText primary="Personas" />
         </ListItem>
-        <ListItem button component={Link} to="/company">
+        {/* <ListItem button component={Link} to="/company">
           <ListItemText primary="Company" />
-        </ListItem>
+        </ListItem> */}
         <ListItem button component={Link} to="/cash_register">
           <ListItemText primary="Billeteras" />
+        </ListItem>
+        <ListItem button component={Link} to="/register">
+          <ListItemText primary="Usuarios" />
         </ListItem>
         <ListItem button component={Link} to="/notes">
           <ListItemText primary="Notes" />

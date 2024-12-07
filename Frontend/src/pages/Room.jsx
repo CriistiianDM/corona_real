@@ -427,7 +427,7 @@ const Room = () => {
                         Registrar Venta
                       </Button>
                     )}
-                    {room.status === "ocupado" && (
+                    {/* {room.status === "ocupado" && (
                       <Button
                         variant="outlined"
                         color="primary"
@@ -436,7 +436,7 @@ const Room = () => {
                       >
                         Editar Venta
                       </Button>
-                    )}
+                    )} */}
                   </Grid>
                 </CardContent>
               </Card>
